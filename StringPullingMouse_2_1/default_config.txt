@@ -1,0 +1,3 @@
+Number of Color Clusters = 3
+Touching Hands Area = 3000
+
