@@ -27,12 +27,19 @@ F1 = double(rgb2gray(thisFrame));
 I = (rgb2gray(thisFrame));
 [regions_f,rrs] = detectMSERFeatures(I);
 mask_r = makeMaskFromRegions(rrs);
-temp = masks.Ih & mask_r;
+for ii = 1:3
+    thisFrameM(:,:,ii) = thisFrame(:,:,ii).*uint8(mask_r);
+end
+mask_rh = find_masks_hand(handles,thisFrameM);
+% mask_r = bwconvhull(mask_r,'objects');
+temp = masks.Ih & mask_rh;
+
 if sum(temp(:)) == 0
     [s sp] = findRegions(M,Cs,masks,F1,masks.Ih);
 else
     [s sp] = findRegions(M,Cs,masks,F1,temp);
 end
+
 if strcmp(type,'')
     C = sp;
     return;
@@ -53,7 +60,19 @@ else
     xrp = sRight.Centroid(1); yrp = sRight.Centroid(2);
     xlp = sLeft.Centroid(1); ylp = sLeft.Centroid(2);
 end
-tempCode1;
+% tempCode1;
+
+% if length(s) == 1
+%     s = find_centroids_coincident(s,[xrp yrp],[xlp ylp]);
+% end
+% if length(s) == 2
+%     C = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+% end
+% if length(s) == 3
+%     
+% end
+% return;
+
 
 bD_mask = masks.bd;
 fD_mask = masks.fd;

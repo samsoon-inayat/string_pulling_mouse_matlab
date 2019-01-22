@@ -12,6 +12,7 @@ global masks;
 global frames;
 frameNums = sfn:efn;
 zw = handles.md.resultsMF.zoomWindow;
+% zw = getParameter(handles,'autoZoomWindow');
 if isempty(zw)
     displayMessageBlinking(handles,'No Zoom Window Selected ... go to step 1',{'ForegroundColor','r'},3);
     return;
@@ -23,7 +24,7 @@ thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
 
 fileName = sprintf('masks.mat');
 fullfileName = fullfile(handles.md.processedDataFolder,fileName);
-if exist(fullfileName,'file')
+if exist(fullfileName,'file') & ~get(handles.checkbox_over_write,'Value')
     fMasks = masks.frameMasks;
 %     if ~get(handles.checkbox_over_write,'Value')
 %         frameNums = setdiff(frameNums,masks.frameNums);
@@ -56,6 +57,12 @@ for oo = 1:length(os)
         thisFrame = frames{fn};
         thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
         mask = compute_masks_KNN(handles,thisFrame,object);
+        if get(handles.checkbox_updateDisplay,'Value')
+            figure(100);clf;
+            Im = imoverlay(thisFrame,mask);
+            imagesc(Im);axis equal;
+            title(fn);
+        end
         bpMask(:,ind) = reshape(mask,numel(mask),1);
         if strcmp(object,'hands') && fn > 1
             thisFramem1 = frames{fn-1};

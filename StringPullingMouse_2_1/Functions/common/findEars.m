@@ -112,8 +112,10 @@ for ii = 1:length(frameNums)
     if length(Cs{2}) > 1
         try
             C = Cs{2}(2);%find_centroids(M,fn,'Left Ear');
+            CL = [];
             if isfield(C,'Area')
                 C = findBoundary(C,size(thisFrame));
+                CL = C;
                 x = C.Centroid(1)+zw(1);y = C.Centroid(2)+zw(2);
                 indexC = strfind(tags,'Left Ear');
                 tag = find(not(cellfun('isempty', indexC)));
@@ -125,8 +127,10 @@ for ii = 1:length(frameNums)
     %             saveMR(handles,fn,tag,x,y,0);
             end
             C = Cs{2}(1); % right ear
+            CR = []
             if isfield(C,'Area')
                 C = findBoundary(C,size(thisFrame));
+                CR = C;
                 x = C.Centroid(1)+zw(1);y = C.Centroid(2)+zw(2);
                 indexC = strfind(tags,'Right Ear');
                 tag = find(not(cellfun('isempty', indexC)));
@@ -135,6 +139,20 @@ for ii = 1:length(frameNums)
                 pixelsI = sub2ind(handles.md.frameSize,pixels(:,2),pixels(:,1));
                 PR = [PR;[ones(size(pixelsI))*fn ones(size(pixelsI))*tag pixelsI]];
     %             saveMR(handles,fn,tag,x,y,0);
+            end
+            
+            if get(handles.checkbox_updateDisplay,'Value')
+                figure(100);clf;
+                imagesc(thisFrame);axis equal;
+                hold on;
+                if ~isempty(CL)
+                    plot(CL.xb,CL.yb,'r');
+                end
+                if ~isempty(CR)
+                    plot(CR.xb,CR.yb,'b');
+                end
+                
+                title(fn);
             end
         catch
             display(sprintf('Could not find for frame %d',fn));

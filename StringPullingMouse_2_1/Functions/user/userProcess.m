@@ -62,11 +62,12 @@ try
 %             trainModel_hands(handles,sfn,efn);
 %             trainModel_hands_RCNN(handles,sfn,efn);
 %             findHands_ML(handles,sfn,efn);
-            detectFeatures(handles,sfn,efn);
+            
 
 
         case 2
         case 3
+            detectFeatures(handles,sfn,efn);
         case 4
     end
 catch

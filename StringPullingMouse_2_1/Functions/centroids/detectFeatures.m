@@ -3,17 +3,29 @@ function detectFeatures(handles,sfn,efn)
 handColors = getParameter(handles,'Hands Color');
 handDiffColors = getParameter(handles,'Hands Diff Color');
 
+
+M.R = handles.md.resultsMF.R;
+M.P = handles.md.resultsMF.P;
+M.tags = handles.md.tags;
+M.zw = handles.md.resultsMF.zoomWindow;
+M.scale = handles.md.resultsMF.scale;
+M.frameSize = handles.d.frameSize;
+
 global frames;
 zw = handles.md.resultsMF.zoomWindow;
-RE = handles.md.resultsMF.RE;
 frameNums = sfn:efn;
 for ii = 1:length(frameNums)
     tic;
     fn = frameNums(ii);
-    thisRE = RE(fn,2:6);
-    C = getSubjectFit([thisRE(1)-zw(1) thisRE(2)-zw(2)],thisRE(3),thisRE(4),thisRE(5));
     thisFrame = frames{fn};
     thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
+    tMasks = get_masks_KNN(handles,fn);
+    Cs{1} = find_centroids(M,fn,'mouse',tMasks,thisFrame,Cs);
+    Cs{2} = find_centroids(M,fn,'ears',tMasks,thisFrame,Cs);
+    Cs{2} = findBoundary(Cs{2},size(thisFrame));
+    thisRE = R(fn,2:6);
+    C = getSubjectFit([thisRE(1)-zw(1) thisRE(2)-zw(2)],thisRE(3),thisRE(4),thisRE(5));
+    
     mask = compute_masks_KNN_hands(handles,thisFrame);
     thisFramem1 = frames{fn-1};
     thisFramem1 = thisFramem1(zw(2):zw(4),zw(1):zw(3),:);

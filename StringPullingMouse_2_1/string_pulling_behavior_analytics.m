@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 06-Jan-2019 13:14:48
+% Last Modified by GUIDE v2.5 10-Jan-2019 15:45:41
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -289,6 +289,8 @@ function slider1_Callback(hObject, eventdata, handles)
 value = round(get(hObject,'Value'));
 set(hObject,'userdata',value);
 displayFrames(handles,value);
+fn = get(handles.figure1,'userdata');
+set(handles.text_selected_frame,'String',sprintf('(%d)',fn));
 n = 0;
 
 % --- Executes during object creation, after setting all properties.
@@ -1150,12 +1152,15 @@ title('Ears');
 subplot(rows,cols,4);
 imagesc(tMasks.Ih);axis equal;
 title('Hands');
+try
 subplot(rows,cols,5);
 imagesc(tMasks.bd);axis equal;
 title('Hands B Diff');
 subplot(rows,cols,6);
 imagesc(tMasks.fd);axis equal;
 title('Hands F Diff');
+catch
+end
 % if ~exist('allCs','var')
 %     displayFrameWithTags(handles,fn,gca);
 % else
@@ -1741,49 +1746,27 @@ if ~strcmp(get(handles.text_fileName,'String'),sprintf('File: %s',handles.d.file
     displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r'},3);
     return;
 end
-framesToProcess = get(handles.uibuttongroup_framesToProcess,'userdata');
-objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
 props = {'FontSize',9,'ForegroundColor','b'};
 displayMessage(handles,'',props);
-global frames;
-switch framesToProcess
-    case 1
-        sfn = get(handles.figure1,'userdata');
-        efn = sfn;
-    case 2
-        sfn = round(get(handles.slider1,'Value'));
-        efn = sfn + 19;
-    case 3
-        data = get(handles.epochs,'Data');
-        currentSelection = get(handles.epochs,'userdata');
-        fn = data{currentSelection};
-        if isempty(fn)
-            msgbox('Select an appropriate epoch');
-        end
-        startEnd = cell2mat(data(currentSelection(1),:));
-        sfn = startEnd(1);
-        efn = startEnd(2);
-    case 4
-        sfn = 1;
-        efn = length(frames);
-end
+[sfn,efn] = getFrameNums(handles);
 enable_disable(handles,0);
 set(handles.pushbutton_stop_processing,'visible','on');
-try
-    if get(handles.checkbox_useSimpleMasks,'Value')
-        thisFrame = frames{sfn};
-        tMasks = find_masks(handles,thisFrame);
-    else
-        tMasks = get_masks_KNN(handles,sfn);
-    end
-%     tMasks = find_masks_knn(handles,sfn);
-catch
-    props = {'FontSize',10,'ForegroundColor','r'};
-    displayMessage(handles,sprintf('Could not retrieve masks. As a first step, define colors and save masks'),props);
-    enable_disable(handles,1);
-    set(handles.pushbutton_stop_processing,'visible','off');
-    return;
-end
+% try
+%     if get(handles.checkbox_useSimpleMasks,'Value')
+%         thisFrame = frames{sfn};
+%         tMasks = find_masks(handles,thisFrame);
+%     else
+%         tMasks = get_masks_KNN(handles,sfn);
+%     end
+% %     tMasks = find_masks_knn(handles,sfn);
+% catch
+%     props = {'FontSize',10,'ForegroundColor','r'};
+%     displayMessage(handles,sprintf('Could not retrieve masks. As a first step, define colors and save masks'),props);
+%     enable_disable(handles,1);
+%     set(handles.pushbutton_stop_processing,'visible','off');
+%     return;
+% end
+objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
 try
     switch objectToProcess
         case 1
@@ -2189,7 +2172,7 @@ else
     handles.md.resultsMF.colorTol(2,4) = val;
 end
 fn = get(handles.figure1,'userdata');
-displayMasks(handles,fn);
+displayMaskFur(handles,fn);
 
 % --- Executes during object creation, after setting all properties.
 function slider_EM_CreateFcn(hObject, eventdata, handles)
@@ -2343,27 +2326,47 @@ function pushbutton_findMouse_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_findMouse (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-global frames;
-totalFrames = length(frames);
-frameNums = 1:totalFrames;
-zw = handles.md.resultsMF.zoomWindow;
-Rb = [];
-for ii = 1:length(frameNums)
-    fn = frameNums(ii);
-    thisFrame = frames{fn};
-    thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
-    tic;
-    mask = find_mask_fur_global(handles,thisFrame);
-    C = find_centroids_fur(mask);
-    if ~isempty(C)
-        Rb = [Rb;[fn C.Centroid(1)+zw(1) C.Centroid(2)+zw(2) C.MajorAxisLength C.MinorAxisLength C.Orientation]];
-    end
-    figure(100);clf;
-    Im = imoverlay(thisFrame,mask);
-    imagesc(Im);axis equal;
-    hold on;
-    plot(C.Ellipse_xs,C.Ellipse_ys,'g');
-    displayMessage(handles,sprintf('Finding %s fit ... Processing frame %d - %d/%d ... time remaining %s','body',ii,fn,length(frameNums),getTimeRemaining(length(frameNums),ii)));
+
+if ~strcmp(get(handles.text_fileName,'String'),sprintf('File: %s',handles.d.file_name))
+    displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r'},3);
+    return;
 end
-handles.md.resultsMF.RE = Rb;
-displayMessage(handles,sprintf('Done processing frames %d to %d',fn,length(frameNums)));
+props = {'FontSize',9,'ForegroundColor','b'};
+displayMessage(handles,'',props);
+[sfn,efn] = getFrameNums(handles);
+enable_disable(handles,0);
+findBody_Coarse(handles,sfn,efn);
+enable_disable(handles,1);
+% global frames;
+% totalFrames = length(frames);
+% frameNums = 1:totalFrames;
+% zw = handles.md.resultsMF.zoomWindow;
+% Rb = [];
+% for ii = 1:length(frameNums)
+%     fn = frameNums(ii);
+%     thisFrame = frames{fn};
+%     thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
+%     tic;
+%     mask = find_mask_fur_global(handles,thisFrame);
+%     C = find_centroids_fur(mask);
+%     if ~isempty(C)
+%         Rb = [Rb;[fn C.Centroid(1)+zw(1) C.Centroid(2)+zw(2) C.MajorAxisLength C.MinorAxisLength C.Orientation]];
+%     end
+%     figure(100);clf;
+%     Im = imoverlay(thisFrame,mask);
+%     imagesc(Im);axis equal;
+%     hold on;
+%     plot(C.Ellipse_xs,C.Ellipse_ys,'g');
+%     displayMessage(handles,sprintf('Finding %s fit ... Processing frame %d - %d/%d ... time remaining %s','body',ii,fn,length(frameNums),getTimeRemaining(length(frameNums),ii)));
+% end
+% handles.md.resultsMF.RE = Rb;
+% displayMessage(handles,sprintf('Done processing frames %d to %d',fn,length(frameNums)));
+
+
+% --- Executes on button press in checkbox_updateDisplay.
+function checkbox_updateDisplay_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_updateDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_updateDisplay

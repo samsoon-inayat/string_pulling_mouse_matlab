@@ -102,7 +102,9 @@ for ii = 1:numFrames
     displayMessage(handles,sprintf('Finding hands ... Processing frame %d',fn));
     set(handles.pushbutton_stop_processing,'userdata',fn);
     thisFrame = frames{fn};
-    allCs = find_all_centroids(handles,fn,thisFrame(zw(2):zw(4),zw(1):zw(3),:));
+    thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
+    allCs = find_all_centroids(handles,fn,thisFrame);
+    CL = []; CR = [];
     if ~isempty(allCs{3})
         Cs = allCs{3};%find_centroids(M,fn,'Right Hand_A');
         if strcmp(Cs(1).Hand,'Left Hand')
@@ -111,13 +113,14 @@ for ii = 1:numFrames
             C = Cs(2);
         end
         if ~isempty(C)
+            CL = C;
             x = C.Centroid(1)+zw(1);y = C.Centroid(2)+zw(2);
 %             indexC = strfind(tags,'Left Hand');
 %             tag = find(not(cellfun('isempty', indexC)));
 %             RL = [RL;[fn tag(1) x y C.manual]];
             saveMR(handles,fn,tag(1),x,y,C.manual);
             pixels = [(C.xb + zw(1)) (C.yb + zw(2))];
-            pixelsI = sub2ind([size(thisFrame,1) size(thisFrame,2)],pixels(:,2),pixels(:,1));
+            pixelsI = sub2ind(handles.md.frameSize,pixels(:,2),pixels(:,1));
 %             PL = [PL;[ones(size(pixelsI))*fn ones(size(pixelsI))*tag(1) pixelsI]];
             saveMP(handles,fn,tag(1),pixelsI);
         end
@@ -128,15 +131,28 @@ for ii = 1:numFrames
             C = Cs(2);
         end
         if ~isempty(C)
+            CR = C;
             x = C.Centroid(1)+zw(1);y = C.Centroid(2)+zw(2);
 %             indexC = strfind(tags,'Right Hand');
 %             tag = find(not(cellfun('isempty', indexC)));
 %             RR = [RR;[fn tag(2) x y C.manual]];
             saveMR(handles,fn,tag(2),x,y,C.manual);
             pixels = [(C.xb + zw(1)) (C.yb + zw(2))];
-            pixelsI = sub2ind([size(thisFrame,1) size(thisFrame,2)],pixels(:,2),pixels(:,1));
+            pixelsI = sub2ind(handles.md.frameSize,pixels(:,2),pixels(:,1));
 %             PR = [PR;[ones(size(pixelsI))*fn ones(size(pixelsI))*tag(2) pixelsI]];
             saveMP(handles,fn,tag(2),pixelsI);
+        end
+        if get(handles.checkbox_updateDisplay,'Value')
+            figure(100);clf;
+            imagesc(thisFrame);axis equal;
+            hold on;
+            if ~isempty(CL)
+                plot(CL.xb,CL.yb,'r');
+            end
+            if ~isempty(CR)
+                plot(CR.xb,CR.yb,'b');
+            end
+            title(fn);
         end
     end
     if numFrames > 1 & mod(ii,5) == 0

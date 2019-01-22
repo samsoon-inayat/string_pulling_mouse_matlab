@@ -18,7 +18,7 @@ preprocess_file_name = sprintf('%s_pre_processed_data.mat',file_name(1:(end-4)))
 if ~exist(fullfile(file_path,results_file_name),'file')
     R = []; RE = []; allCs = []; zoomWindow = []; epochStarts = []; epochEnds = []; colors = cell(1,4); diffColors = cell(1,3);
     P = [];
-    scale = []; colorTol = ones(2,4)*20;
+    scale = []; colorTol = ones(2,4)*10;
     save(fullfile(file_path,results_file_name),'R','RE','P','allCs','zoomWindow','epochStarts','epochEnds','colors','diffColors',...
         'tags','tag_labels','epoch_tags','scale','colorTol','-v7.3');
 end

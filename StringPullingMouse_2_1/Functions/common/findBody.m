@@ -91,6 +91,14 @@ for ii = 1:length(frameNums)
         indexC = strfind(tags,'Subject Props');
         tag = find(not(cellfun('isempty', indexC)));
         Rb = [Rb;[fn tag C.MajorAxisLength C.MinorAxisLength C.Orientation]];
+        
+        if get(handles.checkbox_updateDisplay,'Value')
+            figure(100);clf;
+            imagesc(thisFrame);axis equal;
+            hold on;
+            plot(C.Ellipse_xs,C.Ellipse_ys,'g');
+            title(fn);
+        end
     else
         display(sprintf('Could not find for frame %d',fn));
     end
@@ -100,6 +108,7 @@ end
 if ~isempty(Rb)
     M.R = [M.R;Rb];
     handles.md.resultsMF.R = M.R;
+%     handles.md.resultsMF.RE = M.R;
 else
     return;
 end

@@ -27,6 +27,7 @@ title(fn);
 subplot(rows,cols,2);
 
 imagesc(mask);axis equal;
+% colorbar
 title('Body');
 hold on;
 C = find_centroids_fur(mask);
