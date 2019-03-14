@@ -7,6 +7,10 @@ values = params.values;
 indexC = strcmp(names,paramName);
 % indexC = strfind(names,paramName);
 ind = find(indexC);%find(not(cellfun('isempty', indexC)));
+if isempty(ind)
+    value = [];
+    return;
+end
 value = values{ind};
 
 

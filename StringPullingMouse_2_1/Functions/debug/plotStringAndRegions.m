@@ -1,24 +1,30 @@
 function plotStringAndRegions(fn,thisFrame,masks,M,s,Cs)
 if ~isempty(Cs)
-    earsC = Cs{2};
-    xrp = earsC(1).Centroid(1); yrp = earsC(1).Centroid(2);
-    xlp = earsC(2).Centroid(1); ylp = earsC(2).Centroid(2);
+%     earsC = Cs{2};
+%     xrp = earsC(1).Centroid(1); yrp = earsC(1).Centroid(2);
+%     xlp = earsC(2).Centroid(1); ylp = earsC(2).Centroid(2);
+    Cm = Cs{1};
 end
 
 colors = {'m','c','y','r'};
 figure(fn);clf;
-chs = masks.Is;
-chs = bwconvhull(chs,'objects');
+try
+    chs = masks.Is;
+catch
+    masks = M.masks;
+%     chs = masks.Is;
+end
+% chs = bwconvhull(chs,'objects');
 % chs = bwfill(chs);
 if isempty(thisFrame)
-    thisFrame = masks.thisFrame;
+    thisFrame = M.thisFrame;
 end
 imagesc(thisFrame);
 hold on;
-if ~isempty(Cs)
-    plot(xrp,yrp,'*m');
-    plot(xlp,ylp,'*m');
-end
+% if ~isempty(Cs)
+%     plot(xrp,yrp,'*m');
+%     plot(xlp,ylp,'*m');
+% end
 
 if ~iscell(s)
     for ii = 1:length(s)
@@ -41,6 +47,10 @@ else
         s = alls{jj};
         for ii = 1:length(s)
             thisS = s(ii);
+            if ~isfield(thisS,'PixelList')
+                [PixelList(:,2),PixelList(:,1)] = ind2sub(size(thisFrame(:,:,1)),thisS.PixelIdxList);
+                thisS.PixelList = PixelList;%[PixelList(:,1)+M.zw(2) PixelList(:,2)+M.zw(1)];
+            end
             xs = thisS.PixelList(:,1);
             ys = thisS.PixelList(:,2);
         %     plot(xs,ys,'color',colors{ii});
@@ -48,7 +58,7 @@ else
             xs = thisS.Centroid(1);
             ys = thisS.Centroid(2);
             plot(xs,ys,'.b');
-            text(xs,thisS.PixelList(end,2)+5,num2str(ii),'color',colors{jj});
+            text(xs,thisS.PixelList(end,2)+5,num2str(ii),'color','w');%colors{jj});
 %             xs = thisS.WeightedCentroid(1);
 %             ys = thisS.WeightedCentroid(2);
 %             plot(xs,ys,'*k');
@@ -61,6 +71,17 @@ for ii = 1:length(colors)
 end
 title(titleText);
 axis equal;
+
+if ~isempty(Cs)
+    bCy = Cm.Centroid(2);
+    topOfEllipse = min(Cm.yb);
+    numberOfPixelsFromAbove = abs(topOfEllipse-bCy)/2.5;
+    yTa = topOfEllipse + numberOfPixelsFromAbove;
+    xs = 1:size(Cm.In,2);
+    ys = ones(size(xs))*yTa;
+    plot(xs,ys,'r');
+end
+
 % var = [];
 % for ii = 1:length(s)
 %     thisS = s(ii);

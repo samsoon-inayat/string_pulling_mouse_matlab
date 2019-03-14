@@ -4,6 +4,9 @@ for ii = 1:length(C)
     mask = maskz;
     mask(C(ii).PixelIdxList) = 1;
     temp = bwboundaries(mask);
-    C(ii).xb = temp{1}(:,2);
-    C(ii).yb = temp{1}(:,1);
+    try
+        C(ii).xb = temp{1}(:,2);
+        C(ii).yb = temp{1}(:,1);
+    catch
+    end
 end

@@ -17,7 +17,7 @@ fileNames = dataTable.fileNames;
 
 detector = vision.CascadeObjectDetector('handsDetector.xml');
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 frameNums = sfn:efn;
 for ii = 1:length(frameNums)
     tic;

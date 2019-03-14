@@ -15,7 +15,7 @@ function hsvMean = selectPixelsAndGetHSV(RGB, Area,handles,type)
 % Theodoros Giannakopoulos - January 2008
 % www.di.uoa.gr/~tyiannak
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 warning off;
 imshow(RGB); hold on;
 % if get(handles.checkbox_rotateLeft,'Value')

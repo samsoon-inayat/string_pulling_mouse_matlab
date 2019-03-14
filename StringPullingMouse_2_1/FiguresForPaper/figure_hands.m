@@ -3,8 +3,8 @@ type = 'hands';
 M.R = handles.md.resultsMF.R;
 M.P = handles.md.resultsMF.P;
 M.tags = handles.md.tags;
-M.zw = handles.md.resultsMF.zoomWindow;
-M.scale = handles.md.resultsMF.scale;
+M.zw = getParameter(handles,'Zoom Window');
+M.scale = getParameter(handles,'Scale');
 M.frameSize = handles.d.frameSize;
 
 fn = 133;
@@ -13,7 +13,7 @@ global frames;
 thisFrame = frames{fn};
 oThisFrame = thisFrame;
 zBigFrame = zeros(size(thisFrame(:,:,1)));
-zwt = handles.md.resultsMF.zoomWindow;
+zwt = getParameter(handles,'Zoom Window');
 thisFrame = thisFrame(zwt(2):zwt(4),zwt(1):zwt(3),:);
 
 Cs{1} = find_centroids(M,fn,'mouse',masks,thisFrame,[]);
@@ -31,9 +31,9 @@ In = inpolygon(allxs,allys,Cm.Ellipse_xs,Cm.Ellipse_ys);masks.In = In;
 startingVal = 0.9;
 cIn = expandOrCompressMask(In,startingVal);
 masks.cIn = cIn;
-% zw = handles.md.resultsMF.zoomWindow;
+% zw = getParameter(handles,'Zoom Window');
 F1 = double(rgb2gray(thisFrame));
-% zw1 = handles.md.resultsMF.zoomWindow;
+% zw1 = getParameter(handles,'Zoom Window');
 % global gradients;
 % thisGradient = reshape(gradients(:,fn),zw1(4)-zw1(2)+1,zw1(3)-zw1(1)+1);
 % maskGradient = find_mask_threshold(thisGradient,2);
@@ -48,7 +48,7 @@ ff = makeFigureRowsCols(101,[22 5.5 6.9 2],'RowsCols',[1 6],...
 gg = 1;
 set(gcf,'color','w');
 
-zw1 = handles.md.resultsMF.zoomWindow;
+zw1 = getParameter(handles,'Zoom Window');
 zw = zw1 + [150 50 -300 0];
 
 axes(ff.h_axes(1,1));

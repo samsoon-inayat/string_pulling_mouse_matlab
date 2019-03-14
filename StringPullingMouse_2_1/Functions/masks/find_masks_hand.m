@@ -7,9 +7,13 @@ rgbFrame = double(frame);
 
 
 handColors = getParameter(handles,'Hands Color');
-handColors = getOldColorFormat(handColors);
+% handColors = getOldColorFormat(handColors);
+hc = handColors(:,4:6);
 
-
-Ih = colorDetectHSV(rgbFrame,handColors(3,:),3*handColors(4,:));
-Ih = imfill(Ih);
-Ih = bwareaopen(Ih,100);
+nrows = size(frame,1);
+ncols = size(frame,2);
+% Ih = colorDetectHSV(rgbFrame,handColors(3,:),3*handColors(4,:));
+Ih = getThisMask(frame,hc,nrows,ncols,500);
+% Ih = compute_masks_KNN(handles,rgbFrame,'hands');
+% Ih = imfill(Ih);
+% Ih = bwareaopen(Ih,100);

@@ -20,7 +20,7 @@ ff = makeFigureRowsCols(101,[22 5.5 6.9 4.25],'RowsCols',[3 length(frameNums)+1]
 gg = 1;
 set(gcf,'color','w');
 
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 zw = zw + [150 150 -300 0];
 
 

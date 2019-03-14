@@ -1,7 +1,7 @@
 function [fn,fp] = getFileInfo
 fileName = 'recentFiles.mat';
 if ~exist(fileName)
-    [fn,fp,~] = uigetfile('*.mp4');
+    [fn,fp,~] = uigetfile;%('*.*');
     if ~ischar(fn)
         return;
     end
@@ -18,7 +18,7 @@ if ind == 0
     return;
 end
 if ind == 1
-    [fn,fp,~] = uigetfile({'*.mp4';'*.mts'});
+    [fn,fp,~] = uigetfile('*.*');
     if ~ischar(fn)
         return;
     end

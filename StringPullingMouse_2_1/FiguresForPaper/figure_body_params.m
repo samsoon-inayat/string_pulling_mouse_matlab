@@ -3,8 +3,8 @@ function figure_body_params(handles)
 M.R = handles.md.resultsMF.R;
 M.P = handles.md.resultsMF.P;
 M.tags = handles.md.tags;
-M.zw = handles.md.resultsMF.zoomWindow;
-M.scale = handles.md.resultsMF.scale;
+M.zw = getParameter(handles,'Zoom Window');
+M.scale = getParameter(handles,'Scale');
 M.frameSize = handles.d.frameSize;
 
 

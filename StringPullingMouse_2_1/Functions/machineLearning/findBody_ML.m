@@ -2,7 +2,7 @@ function findBody_ML(handles,sfn,efn)
 
 detector = vision.CascadeObjectDetector('furDetector.xml');
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 frameNums = sfn:efn;
 RE = handles.md.resultsMF.RE;
 for ii = 1:length(frameNums)

@@ -4,76 +4,57 @@ if ~strcmp(get(handles.text_fileName,'String'),sprintf('File: %s',handles.d.file
     displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r'},3);
     return;
 end
-framesToProcess = get(handles.uibuttongroup_framesToProcess,'userdata');
+
+M.R = handles.md.resultsMF.R;
+M.P = handles.md.resultsMF.P;
+M.tags = handles.md.tags;
+M.zw = getParameter(handles,'Auto Zoom Window');
+M.scale = getParameter(handles,'Scale');
+M.frameSize = handles.d.frameSize;
+M.TouchingHandsArea = getParameter(handles,'Touching Hands Area');
+masksMap = getParameter(handles,'Masks Order');
+tags = M.tags;
+zw = M.zw;
+
+
+[sfn,efn] = getFrameNums(handles);
 objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
 props = {'FontSize',9,'ForegroundColor','b'};
 displayMessage(handles,'',props);
 global frames;
-switch framesToProcess
-    case 1
-        sfn = get(handles.figure1,'userdata');
-        efn = sfn;
-    case 2
-        sfn = round(get(handles.slider1,'Value'));
-        efn = sfn + 19;
-    case 3
-        data = get(handles.epochs,'Data');
-        currentSelection = get(handles.epochs,'userdata');
-        fn = data{currentSelection};
-        if isempty(fn)
-            msgbox('Select an appropriate epoch');
-        end
-        startEnd = cell2mat(data(currentSelection(1),:));
-        sfn = startEnd(1);
-        efn = startEnd(2);
-    case 4
-        sfn = 1;
-        efn = length(frames);
-end
 enable_disable(handles,0);
 set(handles.pushbutton_stop_processing,'visible','on');
-% try
-%     if get(handles.checkbox_useSimpleMasks,'Value')
-%         thisFrame = frames{sfn};
-%         tMasks = find_masks(handles,thisFrame);
-%     else
-%         tMasks = get_masks_KNN(handles,sfn);
-%     end
-% %     tMasks = find_masks_knn(handles,sfn);
-% catch
-%     props = {'FontSize',10,'ForegroundColor','r'};
-%     displayMessage(handles,sprintf('Could not retrieve masks. As a first step, define colors and save masks'),props);
-%     enable_disable(handles,1);
-%     set(handles.pushbutton_stop_processing,'visible','off');
-%     return;
-% end
-try
-    switch objectToProcess
-        case 1
-            % for fur
-%            storeTrainingData(handles,sfn,efn);
-%             checkTrainingData(handles,sfn,efn);
-%             trainModel(handles,sfn,efn);
-%             findBody_ML(handles,sfn,efn);
-
-            % for hands
-%             storeTrainingData_hands(handles,sfn,efn);
-%             checkTrainingData_hands(handles,sfn,efn);
-%             trainModel_hands(handles,sfn,efn);
-%             trainModel_hands_RCNN(handles,sfn,efn);
-%             findHands_ML(handles,sfn,efn);
-            
-
-
-        case 2
-        case 3
-            detectFeatures(handles,sfn,efn);
-        case 4
-    end
-catch
-    fn = get(handles.pushbutton_stop_processing,'userdata');
-    props = {'FontSize',12,'ForegroundColor','r'};
-    displayMessage(handles,sprintf('Sorry ... :-( ... error occurred in frame %d',fn),props);
+switch objectToProcess
+    case 1
+    case 2
+        frameNums = sfn:efn;
+        indexC = strfind(M.tags,'Left Ear');
+        tagL = find(not(cellfun('isempty', indexC)));
+        indexC = strfind(M.tags,'Right Ear');
+        tagR = find(not(cellfun('isempty', indexC)));
+        frameNums = sfn:efn;
+        indsR = []; indsL = [];
+        for ii = 1:length(frameNums)
+            fn = frameNums(ii);
+            LiaL = ismember(M.R(:,[1 2]),[fn tagL],'rows');
+            LiaR = ismember(M.R(:,[1 2]),[fn tagR],'rows');
+            if M.R(LiaL,5) == 1
+                indsL = [indsL ii];
+            end
+            if M.R(LiaR,5) == 1
+                indsR = [indsR ii];
+            end
+        end
+        fns = unique([frameNums(indsR) frameNums(indsL)]);
+        for ii = 1:length(fns)
+            fn = fns(ii);
+            manuallyTagEars(handles,fn);
+        end
+    case 3
+    case 4
+    case 5
 end
 enable_disable(handles,1);
 set(handles.pushbutton_stop_processing,'visible','off');
+unique([frameNums(indsR) frameNums(indsL)])
+n = 0;

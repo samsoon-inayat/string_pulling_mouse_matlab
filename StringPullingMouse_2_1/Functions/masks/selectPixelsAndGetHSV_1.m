@@ -15,9 +15,11 @@ function hsvMean = selectPixelsAndGetHSV_1(RGB, Area,handles,type)
 % Theodoros Giannakopoulos - January 2008
 % www.di.uoa.gr/~tyiannak
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-zw = handles.md.resultsMF.zoomWindow;
+% zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Auto Zoom Window');
 if isempty(zw)
-    zw = [1 1 fliplr(handles.md.frameSize)];
+    zw = getParameter(handles,'Zoom Window');
+%     zw = [1 1 fliplr(handles.md.frameSize)];
 end
 warning off;
 % if get(handles.checkbox_rotateLeft,'Value')
@@ -33,7 +35,7 @@ warning off;
 tdx = zw(1)+20;
 tdy = zw(2)+20;
 while 1
-    figure(10);clf;
+    hf = figure(10);clf;
     imagesc(RGB); axis equal;
     if ~isempty(zw)
         xlim([zw(1) zw(3)]);
@@ -86,14 +88,16 @@ while 1
         end
     end
     selClus = ii;
-
-    figure(10);clf;imagesc(RGB);axis equal;
-    hold on;
+    tempMask = zeros(size(RGB(:,:,1)));
     for ii = selClus
         [y,x] = ind2sub(size(subFrame),find(cluster_idx == ii));
         y = y + rect(2)-1;
         x = x + rect(1)-1;
-        plot(x,y,'.','color',allColors{ii});
+        inds = sub2ind(size(RGB(:,:,1)),y,x);
+        tempMask(inds) = 1;
+        oRGB = imoverlay(RGB,tempMask);
+        figure(10);clf;imagesc(oRGB);axis equal;
+%         plot(x,y,'.','color',allColors{ii});
     end
     if ~isempty(zw)
         xlim([zw(1) zw(3)]);
@@ -106,10 +110,21 @@ while 1
     answer = questdlg(quest,'Please select',...
                       'Yes','No',opts);
     if strcmp(answer,'Yes')
+%         try
+%             tempMask = expandOrCompressMask(tempMask,0.75);
+%         catch
+%         end
+%         oRGB = imoverlay(RGB,tempMask);
+%         figure(10);clf;imagesc(oRGB);axis equal;
+        if ~isempty(zw)
+            xlim([zw(1) zw(3)]);
+            ylim([zw(2) zw(4)]);
+        end
+        inds = find(tempMask);
         RGB1 = double(RGB);
         HSV = rgb2hsv(RGB);
         HSV = rgb2hsv(HSV);
-        inds = sub2ind(size(RGB(:,:,1)),y,x);
+%         inds = sub2ind(size(RGB(:,:,1)),y,x);
         for ii = 1:3
             temp = HSV(:,:,ii);
             vals = temp(inds);
@@ -131,3 +146,4 @@ while 1
         break;
     end
 end
+% close(hf);

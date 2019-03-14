@@ -1,55 +1,10 @@
 function C = findHandsMethod2_1(handles,M,fn,type,masks,thisFrame,Cs)
-global frames;
-thisFramem1 = frames{fn-1};
 zw = M.zw;
-thisFramem1 = thisFramem1(zw(2):zw(4),zw(1):zw(3),:);
 sLeft = getRegion(M,fn-1,'Left Hand');
 sRight = getRegion(M,fn-1,'Right Hand');
-masks.thisFrame = thisFrame;
-Cm = Cs{1};
-tF = zeros(size(thisFrame(:,:,1)));
-[allxs,allys] = meshgrid(1:size(tF,2),1:size(tF,1));
-In = inpolygon(allxs,allys,Cm.Ellipse_xs,Cm.Ellipse_ys);masks.In = In;
-startingVal = 1;
-cIn = expandOrCompressMask(In,startingVal);
-masks.cIn = cIn;
-% zw = handles.md.resultsMF.zoomWindow;
-F1 = double(rgb2gray(thisFrame));
-% zw1 = handles.md.resultsMF.zoomWindow;
-% global gradients;
-% thisGradient = reshape(gradients(:,fn),zw1(4)-zw1(2)+1,zw1(3)-zw1(1)+1);
-% maskGradient = find_mask_threshold(thisGradient,2);
-% maskG = imfill(maskGradient);
-% maskG = bwareaopen(maskG,100);
-% sg = findRegions(M,Cs,masks,F1,maskG);
-% sbDhs = findRegions(M,Cs,masks,bDg,bDhs_mask);
-
-I = (rgb2gray(thisFrame));
-[regions_f,rrs] = detectMSERFeatures(I);
-mask_r = makeMaskFromRegions(rrs);
-for ii = 1:3
-    thisFrameM(:,:,ii) = thisFrame(:,:,ii).*uint8(mask_r);
-end
-mask_rh = find_masks_hand(handles,thisFrameM);
-% mask_r = bwconvhull(mask_r,'objects');
-temp = masks.Ih & mask_rh;
-
-if sum(temp(:)) == 0
-    [s sp] = findRegions(M,Cs,masks,F1,masks.Ih);
-else
-    [s sp] = findRegions(M,Cs,masks,F1,temp);
-end
-
-if strcmp(type,'')
-    C = sp;
-    return;
-end
-% if length(s) > 4
-%     s = narrowDownRegions(s,sbDhs);
-%     n = 0;
-% end
-
-% see if you can find which hand moved and how much it moved
+M.sLeft = sLeft;
+M.sRight = sRight;
+M.text_processing = handles.text_processing;
 if isempty(sRight)
     pf = 0;
     earsC = Cs{2};
@@ -60,304 +15,182 @@ else
     xrp = sRight.Centroid(1); yrp = sRight.Centroid(2);
     xlp = sLeft.Centroid(1); ylp = sLeft.Centroid(2);
 end
-% tempCode1;
+zf = zeros(size(thisFrame(:,:,1)));
+masks.thisFrame = thisFrame;
+Cm = Cs{1};
+cIn = expandOrCompressMask(Cm.In,0.99);
+masks.cIn = cIn;
 
-% if length(s) == 1
-%     s = find_centroids_coincident(s,[xrp yrp],[xlp ylp]);
-% end
-% if length(s) == 2
-%     C = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
-% end
-% if length(s) == 3
-%     
-% end
-% return;
-
-
-bD_mask = masks.bd;
-fD_mask = masks.fd;
-% bDhs_mask = find_mask_1(handles,bD,'handString');
-bDg = [];%double(rgb2gray(bD));
-[sbD sbDo] = findRegions(M,Cs,masks,bDg,bD_mask);
-[sfD sfDo] = findRegions(M,Cs,masks,bDg,fD_mask);
-
-[~,ssb] = findDistsAndOverlaps(M,thisFrame,s,sbD);
-if sum(ssb>0.1) > 0
-    for ii = 1:size(ssb,2)
-        thisssb = ssb(:,ii);
-        if sum(thisssb>0.1) > 1
-            inds = find(thisssb>0.1);
-            zM = zeros(size(thisFrame(:,:,1)));
-            for jj = 1:length(inds)
-                zM(s(inds(jj)).PixelIdxList) = 1;
-            end
-            zM = bwconvhull(zM);
-            ts = regionprops(zM,'centroid','area','PixelIdxList','PixelList','MajorAxisLength','MinorAxisLength',...
-            'Orientation','Extrema');
-            s(inds) = [];
-            s(length(s)+1) = ts;
-        end
-    end
+Is = masks.Is;
+Is = imfill(Is,'holes');
+Is = bwareaopen(Is,100);
+temp = [];
+if get(handles.checkbox_userMSERMethod,'Value') & get(handles.checkbox_useHandsColorMask,'Value')
+    I = (rgb2gray(thisFrame));
+    MSER_th = getParameter(handles,'MSER Threshold');
+    [regions_f,rrs] = detectMSERFeatures(I,'ThresholdDelta',MSER_th);
+    mask_r = makeMaskFromRegions(handles,thisFrame,rrs);
+    temp = ~Is & mask_r & expandOrCompressMask(masks.cIn,0.95) & masks.Ih;
 end
-
-mo = findIfMoved(sbD,sfD);
-co = findIfCoincident(handles,s,sbD);
-if co>0 & ~strcmp(mo,'11')
-    s = find_centroids_coincident(s(co),[xrp yrp],[xlp ylp]);
-    C = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+if get(handles.checkbox_userMSERMethod,'Value')
+    I = (rgb2gray(thisFrame));
+    MSER_th = getParameter(handles,'MSER Threshold');
+    [regions_f,rrs] = detectMSERFeatures(I,'ThresholdDelta',MSER_th);
+    mask_r = makeMaskFromRegions(handles,thisFrame,rrs);
+    temp = ~Is & mask_r & expandOrCompressMask(masks.cIn,0.95);
+end
+if get(handles.checkbox_useHandsColorMask,'Value')
+%     temp = ~Is & expandOrCompressMask(masks.cIn,0.95) & masks.Ih;
+    temp = masks.Ih;
+end
+if isempty(temp)
+    C = -1;
     return;
 end
 
-
-if strcmp(mo,'00')
-    for ii = 1:length(s)
-        areas(ii) = s(ii).Area;
-    end
-    [dl,ol] = findDistsAndOverlaps(M,thisFrame,s,sLeft);
-    [dr,or] = findDistsAndOverlaps(M,thisFrame,s,sRight);
-    indl = find(ol == max(ol));
-    indr = find(or == max(or));
-    if indl == indr
-        ss(1) = s(indl);
-        ss = find_centroids_coincident(ss,[xrp yrp],[xlp ylp]);
-        C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    else
-        ss(1) = s(indl);
-        ss(2) = s(indr);
-        C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    end
+M.masks = masks;
+M.thisFrame = thisFrame;
+M.TouchingHandsArea = getParameter(handles,'Touching Hands Area');
+s_r1 = findRegions(temp);
+plotStringAndRegions(100,[],[],M,{s_r1},[]);
+pause(0.15);
+if length(s_r1) > 1
+    s_r1 = reduceRegionsBySpatialClustering(M,s_r1);
 end
-
-
-
-if strcmp(mo,'01')
-    for ii = 1:length(s)
-        areas(ii) = s(ii).Area;
-    end
-    [d,o] = findDistsAndOverlaps(M,thisFrame,s,sbD);
-    if sum(o(:)>0) > 0
-        [rr,cc] = find(o == max(o(:)));
-        ss(1) = s(rr);
-        s(rr) = [];
-    end
-    [dl,ol] = findDistsAndOverlaps(M,thisFrame,s,sLeft);
-    [dr,or] = findDistsAndOverlaps(M,thisFrame,s,sRight);
-    if max(ol) > max(or)
-        ind = find(ol == max(ol));
-    else
-        ind = find(or == max(or));
-    end
-    ss(2) = s(ind);
-    C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-    return;
+s_in = selectAppropriateRegions(M,Cs,M.masks,s_r1);
+pause(0.15);
+if ~isempty(s_in)
+    C = processS(M,Cs,s_in,xrp,yrp,xlp,ylp);
+else
+    C = [];
 end
-
-if strcmp(mo,'10') 
-    for ii = 1:length(s)
-        areas(ii) = s(ii).Area;
-    end
-    clear ss;
-    [d,o] = findDistsAndOverlaps(M,thisFrame,s,sfD);
-    if sum(o(:)>0) > 0
-        [rr,cc] = find(o == max(o(:)));
-        ss(1) = s(rr);
-        s(rr) = [];
-    end
-    [dl,ol] = findDistsAndOverlaps(M,thisFrame,s,sLeft);
-    [dr,or] = findDistsAndOverlaps(M,thisFrame,s,sRight);
-    if exist('ss','var')
-        if max(ol) > max(or)
-            ind = find(ol == max(ol));
-        else
-            ind = find(or == max(or));
-        end
-        ss(2) = s(ind);
-        C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    else
-        ind = find(ol == max(ol));
-        ss(1) = s(ind);
-        ind = find(or == max(or));
-        ss(2) = s(ind);
-        C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    end
-end
-
-leftF = 0; rightF = 0;
-if strcmp(mo,'11')
-    if length(s) == 1
-        s = find_centroids_coincident(s,[xrp yrp],[xlp ylp]);
-        C = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
-        return;
-    end
-    for ii = 1:length(s)
-        areas(ii) = s(ii).Area;
-    end
-    if length(s) == 2
-        if co == 1 && (max(areas)/min(areas)) > 10
-            ind = find(areas == max(areas));
-            s = find_centroids_coincident(s(ind),[xrp yrp],[xlp ylp]);
-            C = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
-            return;
-        end
-        C = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
-        return;
-    end
-    [ss,inds] = findBasedOnPreviousHandPositions(M,thisFrame,s,sLeft,sRight); % see if previous hand positions can be used to find current hand positions
-    if length(ss) == 2 && (inds(1) ~= inds(2))
-        C = ss;%find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    end
-    if length(ss) == 1
-        if strcmp(ss(1).Hand,'Left Hand')
-            leftF = 1;
-        else
-            rightF = 1;
-        end
-    end
-    if ~rightF & leftF
-        s(inds) = [];
-        [d,o] = findDistsAndOverlaps(M,thisFrame,s,sRight);
-        if sum(o>0.1) > 0
-            [rr,cc] = find(o == max(o(:)));
-        else
-            [rr,cc] = find(d == min(d(:)));
-        end
-        s(rr).Hand = 'Right Hand';
-        ss(2) = s(rr);
-        C = ss;%find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    end
-    if ~leftF & rightF
-        s(inds) = [];
-        [d,o] = findDistsAndOverlaps(M,thisFrame,s,sLeft);
-        if sum(o>0.1) > 0
-            [rr,cc] = find(o == max(o(:)));
-        else
-            [rr,cc] = find(d == min(d(:)));
-        end
-        s(rr).Hand = 'Left Hand';
-        ss(2) = s(rr);
-        C = ss;%find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-        return;
-    end
-    if ~leftF & ~rightF
-        [db,ob] = findDistsAndOverlaps(M,thisFrame,s,sbD);
-        if length(sbD) == 1
-            [db,ob] = findDistsAndOverlaps(M,thisFrame,s,sbD);
-            if sum(ob>0.1) > 0
-                [rr,cc] = find(ob == max(ob(:)));
-
-            end
-            ssi = ssi + 1;
-            ss(ssi) = s(rr);
-            s(rr) = [];
-            if ssi == 2
-                C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-                return;
-            end
-    %         [df,of] = findDistsAndOverlaps(M,thisFrame,s,sfD);
-    %         if sum(of(:)>0.1) > 0
-    %             o = of;
-    %             [rr,cc] = find(o == max(o(:)));
-    %             ss(2) = s(rr);
-    %             C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-    %             return;
-    %         else
-    %             [dl,ol] = findDistsAndOverlaps(M,thisFrame,s,sLeft);
-    %             [dr,or] = findDistsAndOverlaps(M,thisFrame,s,sRight);
-    %             if max(ol) > max(or)
-    %                 ind = find(ol == max(ol));
-    %             else
-    %                 ind = find(or == max(or));
-    %             end
-    %             ss(2) = s(ind);
-    %             C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-    %             return;
-    %         end
-        end
-
-        if length(sbD) == 2
-            [d,o] = findDistsAndOverlaps(M,thisFrame,s,sbD);
-            clear ss;
-            if sum(o(:)>0.1) > 0
-                sii = 0;
-                for ii = 1:size(o,2)
-                    to = o(:,ii);
-                    if sum(to>0.1) > 0
-                    ind = find(to == max(to));
-                    sii = sii + 1;
-                    ss(sii) = s(ind);
-                    end
-                end
-            end
-            C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-            return;
-        end
-        if length(sbD) > 2
-            [d,o] = findDistsAndOverlaps(M,thisFrame,s,sbD);
-            clear ss;
-            if sum(o(:)>0.1) > 0
-                sii = 0;
-                for ii = 1:size(o,2)
-                    to = o(:,ii);
-                    if sum(to>0.1) > 0
-                    ind = find(to == max(to));
-                    sii = sii + 1;
-                    ss(sii) = s(ind);
-                    end
-                end
-            end
-            C = find_centroids_from_two(M,Cs,ss,xrp,yrp,xlp,ylp);
-            return;
-        end
-    end
-    n = 0;
-end
-
-% C = [];
+n = 0;
 return;
 
 
-function [ss,inds] = findBasedOnPreviousHandPositions(M,thisFrame,s,sLeft,sRight)
-inds = [];
-ssi = 0;
-[~,sl] = findDistsAndOverlaps(M,thisFrame,s,sLeft);
-[~,sr] = findDistsAndOverlaps(M,thisFrame,s,sRight);
-if sum(sl>0.1) > 0 & sum(sr>0.1) == 0
-    if sum(sl>0.1) == 1
-        ind = find(sl == max(sl));
-        ssi = ssi + 1;
-        ss(ssi) = s(ind);
-        ss(ssi).Hand = 'Left Hand';
-        inds = [inds ind];
+function s = processS(M,Cs,s,xrp,yrp,xlp,ylp)
+plotStringAndRegions(100,[],[],M,{s},[]);
+pause(0.15);
+if isfield(s(1),'Hand') | isempty(s)
+    return;
+end
+if length(s) == 1
+%     if s.Area > M.TouchingHandsArea
+        s = find_centroids_coincident(s,[xrp yrp],[xlp ylp]);
+%         s = processS(M,Cs,s,xrp,yrp,xlp,ylp);
+        s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        return;
+%     else
+%         s = [];
+%     end
+end
+if length(s) == 2
+    % If there are two regions and one of them is big area with two hands
+    if s(1).Area > s(2).Area
+        areaRatio = s(1).Area/s(2).Area;
+        toDiscard = 2;
+    else
+        areaRatio = s(2).Area/s(1).Area;
+        toDiscard = 1;
     end
-end
-if sum(sr>0.1) > 0 & sum(sl>0.1) == 0 
-    if sum(sr>0.1) == 1
-        ind = find(sr == max(sr));
-        ssi = ssi + 1;
-        ss(ssi) = s(ind);
-        ss(ssi).Hand = 'Right Hand';
-        inds = [inds ind];
+    if areaRatio > 5
+        s(toDiscard) = [];
     end
+    if length(s) == 2
+        if s(1).Area > (M.TouchingHandsArea/1.3)
+            s(2) = [];
+        elseif s(2).Area > (M.TouchingHandsArea/1.3)
+            s(1) = [];
+        end
+    end
+    if length(s) == 1
+        s = find_centroids_coincident(s,[xrp yrp],[xlp ylp]);
+        s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        return;
+    end
+    if length(s) == 2
+        [d_l,ol_l] = findDistsAndOverlaps(M,M.thisFrame,M.sLeft,s);
+        [d_r,ol_r] = findDistsAndOverlaps(M,M.thisFrame,M.sRight,s);
+        if sum(ol_l > 0) == 1 & sum(ol_r > 0) == 1
+            ind1 = find(ol_l > 0);
+            ind2 = find(ol_r > 0);
+            if ind1 ~= ind2
+                toDiscard = setxor(1:length(s),[ind1 ind2]);
+                s(toDiscard) = [];
+            end
+        end
+    end
+    if length(s) == 1
+        s = find_centroids_coincident(s,[xrp yrp],[xlp ylp]);
+        s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        return;
+    end
+    s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
 end
-if sum(sr>0.1) > 0 & sum(sl>0.1) > 0 
-    ind = find(sl == max(sl));
-    ssi = ssi + 1;
-    ss(ssi) = s(ind);
-    ss(ssi).Hand = 'Left Hand';
-    inds = [inds ind];
-    ind = find(sr == max(sr));
-    ssi = ssi + 1;
-    s(ind).Hand = 'Right Hand';
-    ss(ssi) = s(ind);
-    ss(ssi).Hand = 'Right Hand';
-    inds = [inds ind];
+% if length(s) == 3 | length(s) == 4
+if length(s) > 2
+    [d_l,ol_l,bd_l] = findDistsAndOverlaps(M,M.thisFrame,M.sLeft,s);
+    [d_r,ol_r,bd_r] = findDistsAndOverlaps(M,M.thisFrame,M.sRight,s);
+    if sum(ol_l > 0) == 1 & sum(ol_r > 0) == 1
+        ind1 = find(ol_l > 0);
+        ind2 = find(ol_r > 0);
+        if ind1 ~= ind2
+            toDiscard = setxor(1:length(s),[ind1 ind2]);
+            s(toDiscard) = [];
+            s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        else
+            [ds,ols] = findDistsAndOverlaps(M,M.thisFrame,s,s);
+            [rr,cc] = find(ds == min(ds(ds(:)>0)));
+            toDiscard = setxor(1:length(s),[rr(1) cc(1)]);
+            s(toDiscard) = [];
+            s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        end
+    else
+        if sum(ol_l > 0) == 1 & sum(ol_r > 0) ~= 1
+            ind = find(ol_l > 0);
+            s1(1) = s(ind);
+            s(ind) = [];
+            [d,ol] = findDistsAndOverlaps(M,M.thisFrame,M.sRight,s);
+            [~,ind] = min(d);
+            s1(2) = s(ind);
+            s = s1;
+            s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        elseif sum(ol_l > 0) ~= 1 & sum(ol_r > 0) == 1
+            ind = find(ol_r > 0);
+            s1(1) = s(ind);
+            s(ind) = [];
+            [d,ol] = findDistsAndOverlaps(M,M.thisFrame,M.sLeft,s);
+            [~,ind] = min(d);
+            s1(2) = s(ind);
+            s = s1;
+            s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+        else
+            [~,indl] = min(bd_l);
+            [~,indr] = min(bd_r);
+            if indl ~= indr
+                s1(1) = s(indl);
+                s1(2) = s(indr);
+                s = s1;
+                s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+            else
+                s1(1) = s(indl);
+                s(indl) = [];
+                [d_l,ol_l,bd_l] = findDistsAndOverlaps(M,M.thisFrame,M.sLeft,s);
+                [d_r,ol_r,bd_r] = findDistsAndOverlaps(M,M.thisFrame,M.sRight,s);
+                [~,indl] = min(bd_l);
+                [~,indr] = min(bd_r);
+                if indl == indr
+                    s1(2) = s(indl);
+                    s = s1;
+                    s = find_centroids_from_two(M,Cs,s,xrp,yrp,xlp,ylp);
+                else
+                    s = [];
+                end
+            end
+        end
+    end
+    s = processS(M,Cs,s,xrp,yrp,xlp,ylp);
 end
-if ~exist('ss','var')
-    ss = [];
-end
+% if length(s) > 4
+%     s = [];
+% end

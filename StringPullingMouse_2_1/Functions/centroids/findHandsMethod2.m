@@ -19,7 +19,7 @@ F1 = double(rgb2gray(thisFrame));
 % maskG = bwareaopen(maskG,100);
 % sg = findRegions(M,Cs,masks,F1,maskG);
 % sbDhs = findRegions(M,Cs,masks,bDg,bDhs_mask);
-[s sp] = findRegions(M,Cs,masks,F1,masks.Ih);
+[sp] = findRegions(M,Cs,masks,F1,masks.Ih);
 if strcmp(type,'')
     C = sp;
     return;

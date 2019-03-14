@@ -1,4 +1,15 @@
 function C = getSubjectFit(Centroid,MajorAxisLength,MinorAxisLength,Orientation)
+if isempty(Centroid)
+    C.Minor_axis_xs = NaN; C.Minor_axis_ys = NaN;
+    C.Major_axis_xs = NaN; C.Major_axis_ys = NaN;
+    C.Ellipse_xs = NaN;
+    C.Ellipse_ys = NaN;
+    C.Orientation = NaN;
+    C.Centroid = NaN;
+    C.MajorAxisLength = NaN;
+    C.MinorAxisLength = NaN;
+    return;
+end
 thetad = Orientation;
 theta = pi*Orientation/180;
 xd = (MajorAxisLength/2)*cosd(-Orientation);

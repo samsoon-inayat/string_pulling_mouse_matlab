@@ -11,8 +11,8 @@ end
 M.R = handles.md.resultsMF.R;
 M.P = handles.md.resultsMF.P;
 M.tags = handles.md.tags;
-M.zw = handles.md.resultsMF.zoomWindow;
-M.scale = handles.md.resultsMF.scale;
+M.zw = getParameter(handles,'Zoom Window');
+M.scale = getParameter(handles,'Scale');
 M.frameSize = handles.d.frameSize;
 Cs = [];
 fn = 126;
@@ -23,7 +23,7 @@ Cs = [];
 Cs = find_centroids(M,fn,'mouse',tMasks,thisFrame,Cs);
 % Cse = find_centroids(M,fn,'ears',tMasks,thisFrame,{Cs});
 
-zw1 = handles.md.resultsMF.zoomWindow;
+zw1 = getParameter(handles,'Zoom Window');
 zw = zw1 + [150 150 -300 0];
 
 ff = makeFigureRowsCols(101,[22 5.5 6.9 2],'RowsCols',[1 6],...

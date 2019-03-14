@@ -80,7 +80,7 @@ sm = regionprops(Im,'centroid','area','PixelIdxList');
 for ii = 1:length(sm)
     areasM(ii) = sm(ii).Area;
 end
-areasM = areasM * handles.md.resultsMF.scale;
+areasM = areasM * getParameter(handles,'Scale');
 inds = find(areasM>350);
 maskTemp = zeros(size(Im));
 for ii = 1:length(inds)

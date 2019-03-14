@@ -1,12 +1,10 @@
-thisFrameB = frames{fn};
-figure(100);clf
-imagesc(thisFrameB);
-axis equal
-xlim([zoomWindow(1) zoomWindow(3)]);
-ylim([zoomWindow(2) zoomWindow(4)]);
 
-mask = max(igTF,[],3);% - mean(igTF,3);
-% mask1 = max(mask,[],3);
-% mask1 = find_mask_threshold(mask,1);
-figure(100);clf;
-imagesc(mask);axis equal;
+
+[regions_f,rrs] = detectMSERFeatures(I,'ThresholdDelta',0.5);
+mask_r = makeMaskFromRegions(handles,thisFrame,rrs);
+temp = mask_r & masks.cIn & masks.Ih;
+temp = imfill(temp,'holes');
+temp = bwareaopen(temp,100);
+temp = bwconvhull(temp,'objects');
+
+mask_r1 = temp;

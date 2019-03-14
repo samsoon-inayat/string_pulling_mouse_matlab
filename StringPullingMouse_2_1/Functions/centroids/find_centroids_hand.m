@@ -1,10 +1,12 @@
 function C = find_centroids_hand(handles,M,fn,type,masks,thisFrame,Cs)
-Im = masks.Im; Ih = masks.Ih; Is = masks.Is; Ie = masks.Ie;
+% Im = masks.Im; Ih = masks.Ih; Is = masks.Is; Ie = masks.Ie;
 M.fn = fn;
 if strcmp(type,'hands')
-    C = findHandsMethod2_1(handles,M,fn,type,masks,thisFrame,Cs);
-    C(1).manual = 0;
-    C(2).manual = 0;
+    C = findHandsMethod2_1w(handles,M,fn,type,masks,thisFrame,Cs);
+    if isstruct(C)
+        C(1).manual = 0;
+        C(2).manual = 0;
+    end
     return;
 end
 % if strcmp(type,'handsNoInitialValue')

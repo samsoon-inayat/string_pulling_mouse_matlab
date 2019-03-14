@@ -4,13 +4,13 @@ thisFrame = frames{fn};
 if isempty(thisFrame)
     return;
 end
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
 try
     mask = find_mask_fur_global(handles,thisFrame);
 catch Err
-%     rethrow(Err);
     display('Could not compute masks ... check if colors are selected for body parts or select different thresholds');
+    rethrow(Err);
     return;
 end
 

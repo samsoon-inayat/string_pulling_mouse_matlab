@@ -3,8 +3,8 @@ function figure_higher_order_processing(handles)
 M.R = handles.md.resultsMF.R;
 M.P = handles.md.resultsMF.P;
 M.tags = handles.md.tags;
-M.zw = handles.md.resultsMF.zoomWindow;
-M.scale = handles.md.resultsMF.scale;
+M.zw = getParameter(handles,'Zoom Window');
+M.scale = getParameter(handles,'Scale');
 M.frameSize = handles.d.frameSize;
 times = handles.d.times;
 
@@ -28,10 +28,10 @@ ppromth = 20;
 ts = times(sfn:efn)-times(sfn);
 oxr = xr(1);
 oyr = yr(1);
-distR = handles.md.resultsMF.scale*sqrt((xr-oxr).^2 + (yr-oyr).^2);
+distR = getParameter(handles,'Scale')*sqrt((xr-oxr).^2 + (yr-oyr).^2);
 oxl = xl(1);
 oyl = yl(1);
-distL = handles.md.resultsMF.scale*sqrt((xl-oxl).^2 + (yl-oyl).^2);
+distL = getParameter(handles,'Scale')*sqrt((xl-oxl).^2 + (yl-oyl).^2);
 
 var1 = out.right_hand.centroid(:,2);
 var2 = out.left_hand.centroid(:,2);

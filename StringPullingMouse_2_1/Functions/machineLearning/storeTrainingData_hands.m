@@ -12,7 +12,7 @@ justHandsFolder = fullfile(pwd,'functions','machineLearning','justHands');
 negativeFolder = fullfile(pwd,'functions','machineLearning','handsNegativeData');
 
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 
 frameNums = sfn:efn;
 P = handles.md.resultsMF.P;

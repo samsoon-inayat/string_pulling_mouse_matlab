@@ -5,7 +5,7 @@ epoch_tags = {'Generic','L-Release','L-Reach','L-Grasp','L-Pull','L-Push','R-Rel
 
 file_path = fullfile(file_path,sprintf('%s_processed_data',file_name(1:(end-4))));
 
-if ~exist('file_path','dir')
+if ~exist(file_path,'dir')
     mkdir(file_path)
 end
 
@@ -14,13 +14,12 @@ end
 results_file_name = 'results.mat';
 config_file_name = 'config.mat';
 masks_file_name = 'masks.mat';
-preprocess_file_name = sprintf('%s_pre_processed_data.mat',file_name(1:(end-4)));
+cmasks_file_name = 'cmasks.mat';
+% preprocess_file_name = sprintf('%s_pre_processed_data.mat',file_name(1:(end-4)));
 if ~exist(fullfile(file_path,results_file_name),'file')
-    R = []; RE = []; allCs = []; zoomWindow = []; epochStarts = []; epochEnds = []; colors = cell(1,4); diffColors = cell(1,3);
+    R = []; RE = []; 
     P = [];
-    scale = []; colorTol = ones(2,4)*10;
-    save(fullfile(file_path,results_file_name),'R','RE','P','allCs','zoomWindow','epochStarts','epochEnds','colors','diffColors',...
-        'tags','tag_labels','epoch_tags','scale','colorTol','-v7.3');
+    save(fullfile(file_path,results_file_name),'R','RE','P','-v7.3');
 end
 % if ~exist(fullfile(file_path,preprocess_file_name),'file')
 %     frameMasks = uint8([]);
@@ -41,17 +40,24 @@ d.tag_labels = tag_labels;
 d.epoch_tags = epoch_tags;
 d.frameSize = d1.frameSize;
 global masks;
+global cmasks;
 disp('Please wait ... loading preprocessed variables');
 tic;
 if exist(fullfile(file_path,masks_file_name),'file')
     masks = load(fullfile(file_path,masks_file_name));
 %     masks = MasksData.frameMasks;
 end
-if isfield(d.resultsMF,'zoomWindow')
-    d.resultsMF.zoomWindow = d.preprocessMF.zoomWindow;
+if exist(fullfile(file_path,cmasks_file_name),'file')
+    temp = load(fullfile(file_path,cmasks_file_name));
+    cmasks = temp.cmasks;
+    d.cmasksMF = matfile(fullfile(file_path,cmasks_file_name),'writable',true);
+%     masks = MasksData.frameMasks;
 end
+% if isfield(d.resultsMF,'zoomWindow')
+%     d.resultsMF.zoomWindow = d.preprocessMF.zoomWindow;
+% end
 % gradients = d.preprocessMF.gradients;
-toc
+% toc
 
 
 function [names,values] = readConfigFile

@@ -22,8 +22,13 @@ y = rr - M.zw(2);
 
 mSize = [M.zw(4)-M.zw(2)+1 M.zw(3)-M.zw(1)+1];
 BW = poly2mask(x,y,mSize(1),mSize(2));
-s.PixelIdxList = find(BW);
-[s.PixelList(:,2),s.PixelList(:,1)] = ind2sub(mSize,s.PixelIdxList);
+s = findRegions(BW);
+if length(s) > 1
+    s = combineRegions(s,[1 2],size(M.masks.Im));
+end
+s = findBoundary(s,size(BW));
+% s.PixelIdxList = find(BW);
+% [s.PixelList(:,2),s.PixelList(:,1)] = ind2sub(mSize,s.PixelIdxList);
 
 
 

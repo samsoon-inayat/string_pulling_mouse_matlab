@@ -3,9 +3,10 @@ function findHands(handles,sfn,efn,erase)
 M.R = handles.md.resultsMF.R;
 M.P = handles.md.resultsMF.P;
 M.tags = handles.md.tags;
-M.zw = handles.md.resultsMF.zoomWindow;
-M.scale = handles.md.resultsMF.scale;
+M.zw = getParameter(handles,'Auto Zoom Window');
+M.scale = getParameter(handles,'Scale');
 M.frameSize = handles.d.frameSize;
+masksMap = getParameter(handles,'Masks Order');
 tags = M.tags;
 
 
@@ -52,6 +53,7 @@ if exist('erase','var')
     else
         if ~isempty(M.R)
             for ii = 1:length(frameNums)
+                tic
                 fn = frameNums(ii);
                 LiaL = ismember(M.R(:,[1 2]),[fn tag(1)],'rows');
                 LiaR = ismember(M.R(:,[1 2]),[fn tag(2)],'rows');
@@ -59,6 +61,7 @@ if exist('erase','var')
                 LiaL = ismember(M.P(:,[1 2]),[fn tag(1)],'rows');
                 LiaR = ismember(M.P(:,[1 2]),[fn tag(2)],'rows');
                 M.P(LiaL | LiaR,:) = [];
+                displayMessage(handles,sprintf('Erasing %s ... Processing frame %d - %d/%d ... time remaining %s','hands',fn,ii,length(frameNums),getTimeRemaining(length(frameNums),ii)));
             end
         end
     end
@@ -78,8 +81,8 @@ end
 RR = []; RL = [];
 PL = [];
 PR = [];
-
-zw = handles.md.resultsMF.zoomWindow;
+status = 0;
+zw = getParameter(handles,'Auto Zoom Window');
 stopped = 0;
 for ii = 1:numFrames
     if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off')
@@ -104,6 +107,14 @@ for ii = 1:numFrames
     thisFrame = frames{fn};
     thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
     allCs = find_all_centroids(handles,fn,thisFrame);
+    if ~isstruct(allCs{3})
+        if allCs{3} < 0
+            set(handles.pushbutton_stop_processing,'visible','off');
+            displayMessageBlinking(handles,'Select at least one method in Hands Identification Parameters Panel',{'ForegroundColor','r'},3);
+            status = 1;
+            continue;
+        end
+    end
     CL = []; CR = [];
     if ~isempty(allCs{3})
         Cs = allCs{3};%find_centroids(M,fn,'Right Hand_A');
@@ -154,13 +165,15 @@ for ii = 1:numFrames
             end
             title(fn);
         end
+        saveRegionsMask(handles,Cs,fn,masksMap{4});
     end
-    if numFrames > 1 & mod(ii,5) == 0
-        displayFrames(handles,sfn);
-    end
+%     if numFrames > 1 & mod(ii,5) == 0
+%         displayFrames(handles,sfn);
+%     end
     pause(0.1);
 end
-
+global cmasks;
+handles.md.cmasksMF.cmasks = cmasks;
 % if ~isempty(RR)
 %     M.R = [M.R;RR;RL];
 %     M.P = [M.P;PR;PL];
@@ -169,11 +182,12 @@ end
 % else
 %     return;
 % end
-
-if sfn==efn
-    fn = round(get(handles.slider1,'Value'));
-    displayFrames(handles,fn,sfn);
-else
-    displayFrames(handles,sfn);
+if status == 0
+    if sfn==efn
+        fn = round(get(handles.slider1,'Value'));
+        displayFrames(handles,fn,sfn);
+    else
+        displayFrames(handles,sfn);
+    end
+    displayMessage(handles,sprintf('Done processing frames from %d to %d',sfn,sfn+ii-1));
 end
-displayMessage(handles,sprintf('Done processing frames from %d to %d',sfn,sfn+ii-1));

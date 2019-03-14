@@ -4,7 +4,7 @@ positiveFolder = fullfile(pwd,'functions','machineLearning','furPositiveData');
 negativeFolder = fullfile(pwd,'functions','machineLearning','furNegativeData');
 
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 
 frameNums = sfn:efn;
 RE = handles.md.resultsMF.RE;

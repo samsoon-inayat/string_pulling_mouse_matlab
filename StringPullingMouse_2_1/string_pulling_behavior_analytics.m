@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 10-Jan-2019 15:45:41
+% Last Modified by GUIDE v2.5 07-Mar-2019 21:26:10
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -83,7 +83,7 @@ close(gcf);
 figure(1000);
 close(gcf);
 closereq;
-clearvars -global frames v frameNumber frameTimes masks gradients
+clearvars -global frames v frameNumber frameTimes masks gradients cmasks
 
 
 % --- Outputs from this function are returned to the command line.
@@ -114,30 +114,41 @@ handles.timer_video_loader = timer('Name','SP_video_loader','Tag','SP_video_load
 'fixedRate', 'Period', 0.1, 'TimerFcn', @(hObject, event) timerFunc(event, handles));
 handles = initializeDisplay (handles);
 d = handles.d;
-set(handles.slider1,'value',1, 'min',1, 'max',d.number_of_frames,'SliderStep', [1/d.number_of_frames , 20/d.number_of_frames],'userdata',1);
-set(handles.slider_HM,'value',handles.md.resultsMF.colorTol(1,1), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
-set(handles.slider_SM,'value',handles.md.resultsMF.colorTol(1,3), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
-set(handles.slider_MM,'value',handles.md.resultsMF.colorTol(1,2), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
-set(handles.slider_EM,'value',handles.md.resultsMF.colorTol(1,4), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
-set(handles.slider_numberOfClusters,'value',3, 'min',1, 'max',7,'SliderStep', [1/6 , 10/100]);
-set(handles.edit_handMaskTol,'String',num2str(handles.md.resultsMF.colorTol(1,1)));
-set(handles.edit_mouseMaskTol,'String',num2str(handles.md.resultsMF.colorTol(1,2)));
-set(handles.edit_stringMaskTol,'String',num2str(handles.md.resultsMF.colorTol(1,3)));
-set(handles.edit_earMaskTol,'String',num2str(handles.md.resultsMF.colorTol(1,4)));
+set(handles.slider1,'value',1, 'min',1, 'max',d.number_of_frames,'SliderStep', [1/d.number_of_frames , handles.disp.numFrames/d.number_of_frames],'userdata',1);
+set(handles.slider_HM,'value',getParameter(handles,'Hands Color Tolerance'), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
+set(handles.slider_SM,'value',getParameter(handles,'String Color Tolerance'), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
+set(handles.slider_MM,'value',getParameter(handles,'Fur Color Tolerance'), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
+set(handles.slider_EM,'value',getParameter(handles,'Ears Color Tolerance'), 'min',0, 'max',100,'SliderStep', [1/100 , 10/100]);
+set(handles.slider_numberOfClusters,'value',3, 'min',1, 'max',7,'SliderStep', [1/6 , 10/6]);
+set(handles.edit_handMaskTol,'String',num2str(getParameter(handles,'Hands Color Tolerance')));
+set(handles.edit_mouseMaskTol,'String',num2str(getParameter(handles,'Fur Color Tolerance')));
+set(handles.edit_stringMaskTol,'String',num2str(getParameter(handles,'String Color Tolerance')));
+set(handles.edit_earMaskTol,'String',num2str(getParameter(handles,'Ears Color Tolerance')));
 set(handles.text_folderName,'String',sprintf('Folder - %s',handles.d.file_path),'FontSize',10);
 set(handles.text_fileName,'String',sprintf('File-%s ... loading frame',handles.d.file_name));
 set(handles.text_fileName,'userdata',0);
 set(handles.text_processing,'userdata',0);
-set(handles.text_scale,'String',{'Scale',sprintf('%.3f',handles.md.resultsMF.scale),'mm/pixels'});
+set(handles.text_scale,'String',{'Scale',sprintf('%.3f',getParameter(handles,'Scale')),'mm/pixels'});
 set(handles.pushbutton_saveMasks,'Enable','off');
 global v;
 set(handles.text_fileInfo,'String',sprintf('Video Format: %s %d x %d pixels -- Frame Rate: %.4f fps -- Duration: %.3f s -- Total Frames: %d',v.VideoFormat,handles.md.frameSize(2),handles.md.frameSize(1),v.FrameRate,v.Duration,d.number_of_frames));
-
 temp = getParameter(handles,'Number of Color Clusters');
 set(handles.edit_numberOfClusters,'String',num2str(temp));
 displayFrames(handles,21);
 displayMessage(handles,'Loading will continue in the background!');
 displayFrames(handles,1);
+sarea = getParameter(handles,'Touching Hands Area');
+if isempty(sarea)
+    set(handles.text_touchingHandsArea,'String',{'Touching Hands Area',sprintf('Not Set')},'ForegroundColor','r');
+else
+    set(handles.text_touchingHandsArea,'String',{'Touching Hands Area',sprintf('%d Pixels',sarea)});
+end
+MSER_th = getParameter(handles,'MSER Threshold');
+ED_th = getParameter(handles,'Eucledian Distance Threshold');
+set(handles.edit_MSER_Threshold,'String',num2str(MSER_th));
+set(handles.edit_EucledianDistance,'String',num2str(ED_th));
+set(handles.checkbox_updateDisplay,'Value',1);
+
 
 function handles = initializeDisplay (handles)
 set(handles.figure1,'Name','String Pulling Behavior Analytics');
@@ -151,22 +162,24 @@ set(ff.hf,'WindowButtonUpFcn',@(hObject, event)dispFigureButtonUp(event, handles
 set(ff.hf,'WindowKeyPressFcn',@(hObject, event)dispFigureWindowKeyPressFcn(event, handles));
 set(ff.hf,'WindowKeyReleaseFcn',@(hObject, event)dispFigureWindowKeyReleaseFcn(event, handles));
 set(ff.hf,'userdata',[0 1 1]);
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
+% zw = getParameter(handles,'Zoom Window');
 if ~isempty(zw)
-    set(handles.text_zoomWindow,'String',char(hex2dec('2713')),'ForegroundColor','g');
+    set(handles.pushbutton_zoom_window,'Foregroundcolor',[0 0.6 0.2],'FontWeight','Bold');
     tdx = zw(1)+20;
     tdy = zw(2)+20;
     zw1 = [zw(1) zw(2) zw(3)-zw(1)+1 zw(4)-zw(2)+1];
     set(handles.text_zoomWindowSize,'String',sprintf('[%d %d %d %d]',zw1(1),zw1(2),zw1(4),zw1(3)),'userdata',zw1);
 else
-    set(handles.text_zoomWindow,'String','X','ForegroundColor','r');
+    set(handles.pushbutton_zoom_window,'Foregroundcolor','r','FontWeight','Bold');
     tdx = 50;
     tdy = 70;
 end
-if ~isempty(handles.md.resultsMF.scale)
-    set(handles.text_measure,'String',char(hex2dec('2713')),'ForegroundColor','g');
+scale = getParameter(handles,'Scale');
+if ~isempty(scale)
+    set(handles.pushbutton_measure,'ForegroundColor',[0 0.6 0.2]);
 else
-    set(handles.text_measure,'String','X','ForegroundColor','r');
+    set(handles.pushbutton_measure,'ForegroundColor','r');
 end
 for rr = 1:numRs
     for cc = 1:numCs
@@ -183,6 +196,7 @@ for rr = 1:numRs
 end
 
 handles.disp.numRs = numRs; handles.disp.numCs = numCs;
+handles.disp.numFrames = numRs * numCs;
 handles.disp.ff = ff;
 handles.disp.hims = hims;
 handles.disp.frns = frns;
@@ -199,7 +213,7 @@ if ~exist('ha','var')
     ha = axes;
 end
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 if ~isempty(zw)
     set(handles.text_zoomWindow,'String',char(hex2dec('2713')),'ForegroundColor','g');
     tdx = zw(1)+20;
@@ -225,7 +239,7 @@ if ~exist('ha','var')
     ha = axes;
 end
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 if ~isempty(zw)
     set(handles.text_zoomWindow,'String',char(hex2dec('2713')),'ForegroundColor','g');
     tdx = zw(1)+20;
@@ -370,11 +384,11 @@ end
 pos = round(hrect.getPosition);
 close(hf);
 left = pos(1);
-if left < 0
+if left <= 0
     left = 1;
 end
 top = pos(2);
-if top < 0
+if top <= 0
     top = 1;
 end
 global v;
@@ -386,7 +400,8 @@ bottom = pos(2) + pos(4);
 if bottom > v.Height
     bottom = v.Height;
 end
-handles.md.resultsMF.zoomWindow = [left top right bottom];
+setParameter(handles,'Zoom Window',[left top right bottom]);
+% handles.md.resultsMF.zoomWindow = [left top right bottom];
 zw = [left top right-left+1 bottom-top+1];
 set(handles.text_zoomWindowSize,'String',sprintf('[%d %d %d %d]',zw(1),zw(2),zw(4),zw(3)),'userdata',zw);
 displayFrames(handles,fn);
@@ -405,7 +420,7 @@ if ~isempty(eventdata.Indices)
     fn = data{eventdata.Indices(1),eventdata.Indices(2)};
     if ~isempty(fn)
         if eventdata.Indices(2) == 2
-            fn = fn - 19;
+            fn = fn - handles.disp.numFrames + 1;
         end
         try
             displayFrames(handles,fn);
@@ -469,15 +484,28 @@ set(gca,'box','on');
         if get(handles.checkbox_displayMasks,'Value')
             displayMasks(handles,fn);
         end
+        set(handles.radiobutton_selectedFrame,'Value',1);
+        set(handles.uibuttongroup_framesToProcess,'userdata',1);
         figure(handles.figure1);
     end
     if strcmp(buttonType,'alt')
-        manuallyTagHands(handles,fn);
-%         displayFrames(handles,fn);
-%         figure(handles.figure1);
+        objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
+        switch objectToProcess
+            case 1
+                manuallyTagBody(handles,fn);
+            case 2
+                manuallyTagEars(handles,fn);
+            case 3
+                manuallyTagHands(handles,fn);
+            case 4
+                manuallyTagNose(handles,fn);
+        end
     end
     if strcmp(buttonType,'open')
         displayFrames(handles,fn);
+        set(handles.radiobutton_framesInDisplayWindow,'Value',1);
+        set(handles.uibuttongroup_framesToProcess,'userdata',2);
+        figure(handles.figure1);
 %         handles1 = guidata(handles.figure1);
 %         disp = handles1.disp;
 %         fn1 = round(get(handles.slider1,'Value'));
@@ -491,7 +519,7 @@ set(gca,'box','on');
 % if ud == 3 % shift keyboard key
 %     manuallyTag(handles,fn);
 % end
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');%handles.md.resultsMF.zoomWindow;
 ffn = round(get(handles.slider1,'Value'));
 pfn = get(handles.figure1,'userdata');
 frns = ffn-1+reshape(1:(disp.numRs*disp.numCs),disp.numCs,disp.numRs)';
@@ -511,9 +539,9 @@ else
 end
 set(handles.figure1,'userdata',fn);
 set(handles.text_selected_frame,'String',sprintf('(%d)',fn));
-if get(handles.checkbox_displayMasks,'Value')
-    displayMasks(handles,fn);
-end
+% if get(handles.checkbox_displayMasks,'Value')
+%     displayMasks(handles,fn);
+% end
 
 
 function dispFigureWindowKeyPressFcn(event,handles)
@@ -551,8 +579,9 @@ if strcmp(eventdata.Key,'return')
     data = get(handles.epochs,'Data');
     estarts = cell2mat(data(:,1));
     eends = cell2mat(data(:,2));
-    handles.md.resultsMF.epochEnds = eends;
-    handles.md.resultsMF.epochStarts = estarts;
+    epochs{2} = eends;
+    epochs{1} = estarts;
+    setParameter(handles,'Epochs',epochs);
 end
 
 
@@ -589,7 +618,7 @@ function selectAndStoreColors(handles,type)
 % fn = round(get(handles.slider1,'Value'));
 fn = get(handles.figure1,'userdata');
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 thisFrame = frames{fn};
 if fn > 1
     thisFramem1 = frames{fn-1};
@@ -601,9 +630,13 @@ if ~isempty(intersect(type,[1 2 3 4]))
     try
 %         set(hf,'WindowStyle','modal');
         if type == 2
+%             thisFrame = imgaussfilt(thisFrame,5);
             colorVals = selCols(thisFrame,20,handles,types{type});
         end
         if type == 3 || type == 4
+            if type == 4
+                thisFrame = imsharpen(thisFrame,'Radius',10);%,'Amount',1,'Threshold',0.1);
+            end
             colorVals = selCols(thisFrame,5,handles,types{type});
         end
         if type == 1
@@ -661,21 +694,136 @@ function pushbutton_selectHandColor_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_selectHandColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-selectAndStoreColors(handles,1);
+global frames;
+colorVals = getParameter(handles,'Hands Color');
+if ~isempty(colorVals)
+    opts.Interpreter = 'tex';opts.Default = 'Yes';
+    quest = 'Add to existing colors?';
+    answer = questdlg(quest,'Please select',...
+                      'Yes','No',opts);
+    if strcmp(answer,'Yes')
+        existCols = 1;
+    else
+        existCols = 0;
+    end
+else
+    existCols = 0;
+end
+if existCols
+    [sfn,efn] = getFrameNums(handles);
+    thisFrame = frames{sfn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Right or Left Hand')];
+else  
+    [sfn,efn] = getFrameNums(handles);
+    fns = randi([sfn efn],1,3);
+    colorVals = [];
+    areas = [];
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        temp = selectPixelsAndGetHSV_1(thisFrame,20,handles,'Right Hand');
+        colorVals = [colorVals;temp];
+        areas = [areas size(temp,1)];
+    end
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        temp = selectPixelsAndGetHSV_1(thisFrame,20,handles,'Left Hand');
+        colorVals = [colorVals;temp];
+        areas = [areas size(temp,1)];
+    end
+end
+hf = figure(10);
+close(hf);
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'Hands Color',uColorVals);
+checkStatusOfColors(handles);
+if exist('areas','var')
+    aThresh = 2*max(areas);
+    setParameter(handles,'Touching Hands Area',aThresh);
+end
 
 % --- Executes on button press in pushbutton_selectFurColor.
 function pushbutton_selectFurColor_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_selectFurColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-selectAndStoreColors(handles,2);
+% selectAndStoreColors(handles,2);
+global frames;
+colorVals = getParameter(handles,'Fur Color');
+if ~isempty(colorVals)
+    opts.Interpreter = 'tex';opts.Default = 'Yes';
+    quest = 'Add to existing colors?';
+    answer = questdlg(quest,'Please select',...
+                      'Yes','No',opts);
+    if strcmp(answer,'Yes')
+        existCols = 1;
+    else
+        existCols = 0;
+    end
+else
+    existCols = 0;
+end
+if existCols
+    [sfn,efn] = getFrameNums(handles);
+    thisFrame = frames{sfn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Fur')];
+else    
+    [sfn,efn] = getFrameNums(handles);
+    fns = randi([sfn efn],1,5);
+    colorVals = [];
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Fur')];
+    end
+end
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'Fur Color',uColorVals);
+checkStatusOfColors(handles);
+figure(10);close(gcf);
 
 % --- Executes on button press in pushbutton_selectStringColor.
 function pushbutton_selectStringColor_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_selectStringColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-selectAndStoreColors(handles,3);
+global frames;
+colorVals = getParameter(handles,'String Color');
+if ~isempty(colorVals)
+    opts.Interpreter = 'tex';opts.Default = 'Yes';
+    quest = 'Add to existing colors?';
+    answer = questdlg(quest,'Please select',...
+                      'Yes','No',opts);
+    if strcmp(answer,'Yes')
+        existCols = 1;
+    else
+        existCols = 0;
+    end
+else
+    existCols = 0;
+end
+if existCols
+    [sfn,efn] = getFrameNums(handles);
+    thisFrame = frames{sfn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'String')];
+else    
+    [sfn,efn] = getFrameNums(handles);
+    fns = randi([sfn efn],1,5);
+    colorVals = [];
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'String')];
+    end
+end
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'String Color',uColorVals);
+checkStatusOfColors(handles);
+figure(10);close(gcf);
 
 % --- Executes on button press in pushbutton_help.
 function pushbutton_help_Callback(hObject, eventdata, handles)
@@ -690,7 +838,7 @@ function pushbutton_resetZoom_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % stop(handles.timer_video_loader)
-handles.md.resultsMF.zoomWindow = [];
+setParameter(handles,'Zoom Window',[]);
 value = round(get(handles.slider1,'Value'));
 displayFrames(handles,value);
 
@@ -716,7 +864,7 @@ thisFrame = frames{fn};
 hf = figure(10);clf;
 imagesc(thisFrame);
 axis equal;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 if ~isempty(zw)
     xlim([zw(1) zw(3)]);
     ylim([zw(2) zw(4)]);
@@ -738,8 +886,8 @@ saveMR(handles,fn,tag,x,y,1);
 % Lia = ismember(M.R(:,[1 2]),[fn tag(1)],'rows');
 % if ~any(Lia)
 %     tags = M.tags;
-%     M.zw = handles.md.resultsMF.zoomWindow;
-%     M.scale = handles.md.resultsMF.scale;
+%     M.zw = getParameter(handles,'Zoom Window');
+%     M.scale = getParameter(handles,'Scale');
 %     allCs = [];
 %     allCs{1} = find_centroids(M,fn,'mouse',tMasks,thisFrame,allCs);
 %     allCs{2} = find_centroids(M,fn,'ears',tMasks,thisFrame,allCs);
@@ -834,7 +982,7 @@ tags = handles.md.tags;
 sfn = fn - 1;
 set(handles.text_processing,'String',sprintf('Processing Frame %d',fn));
 pause(0.1);
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 stopped = 0;
 for ii = 1:numFrames
     if ~get(handles.pushbutton_processThisFrame,'userdata')
@@ -967,8 +1115,10 @@ times = handles.d.times;
 try
     out = get_all_params(handles,sfn,efn,0);
 catch
+    rethrow(lasterror);
     return;
 end
+display(sprintf('Hands - %d of %d (%.2f%%) were manually found',sum(out.right_hand.manual),length(out.right_hand.manual),sum(out.right_hand.manual)*100/length(out.right_hand.manual)))
 fns = sfn:efn;
 ts = times(fns);
 
@@ -983,7 +1133,7 @@ bodyAngle = out.body.body_angle;
 bodyLength = out.body.body_length;
 
 frame = frames{fns(1)};
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 figure(22);clf;
 subplot 421
 imagesc(frame);
@@ -1013,10 +1163,10 @@ else
 end
 oxr = xrs(1);
 oyr = yrs(1);
-distR = handles.md.resultsMF.scale*sqrt((xrs-oxr).^2 + (yrs-oyr).^2);
+distR = getParameter(handles,'Scale')*sqrt((xrs-oxr).^2 + (yrs-oyr).^2);
 oxl = xls(1);
 oyl = yls(1);
-distL = handles.md.resultsMF.scale*sqrt((xls-oxl).^2 + (yls-oyl).^2);
+distL = getParameter(handles,'Scale')*sqrt((xls-oxl).^2 + (yls-oyl).^2);
 subplot 422
 plot(ts,distR,'c','linewidth',1);hold on;
 plot(ts,distL,'m','linewidth',1);
@@ -1054,7 +1204,7 @@ xlabel(xlab);
 ylabel('Head Roll (Angle-Deg)');
 
 subplot 427
-plot(ts,bodyLength*handles.md.resultsMF.scale);hold on;
+plot(ts,bodyLength*getParameter(handles,'Scale'));hold on;
 set(gca,'FontSize',10,'FontWeight','Normal'); 
 xlabel(xlab);
 ylabel('Body Length (mm)');
@@ -1085,7 +1235,7 @@ function pushbutton_userProcess_Callback(hObject, eventdata, handles)
 userProcess(handles);
 % function findAllMasks(handles,startFrame,endFrame)
 % global frames;
-% zw = handles.md.resultsMF.zoomWindow;
+% zw = getParameter(handles,'Zoom Window');
 % totalFrames = endFrame - startFrame + 1;
 % h = waitbar(1/totalFrames,'Processing frames');
 % for fni = 1:totalFrames
@@ -1118,7 +1268,7 @@ userProcess(handles);
 
 function displayMasks(handles,fn,allCs)
 global frames;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');%handles.md.resultsMF.zoomWindow;
 thisFrame = frames{fn};
 if isempty(thisFrame)
     return;
@@ -1152,21 +1302,13 @@ title('Ears');
 subplot(rows,cols,4);
 imagesc(tMasks.Ih);axis equal;
 title('Hands');
-try
 subplot(rows,cols,5);
-imagesc(tMasks.bd);axis equal;
-title('Hands B Diff');
+imagesc(tMasks.In);axis equal;
+title('Nose');
 subplot(rows,cols,6);
-imagesc(tMasks.fd);axis equal;
-title('Hands F Diff');
-catch
-end
-% if ~exist('allCs','var')
-%     displayFrameWithTags(handles,fn,gca);
-% else
-%     displayFrameWithTags_F(handles,fn,allCs,gca);
-% end
-% title('Tags');
+imagesc(tMasks.Is);axis equal;
+title('String');
+
 set(hf,'userdata',fn);
 
 function displayMasksOnTheGo(handles,fn,thisFrame,tMasks)
@@ -1191,12 +1333,25 @@ title(tMasks.IeTitle);
 % subplot(rows,cols,6);
 
 
-% --- Executes on button press in pushbutton_selectEarColor.
-function pushbutton_selectEarColor_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_selectEarColor (see GCBO)
+% --- Executes on button press in pushbutton_selectRtEarColor.
+function pushbutton_selectRtEarColor_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_selectRtEarColor (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-selectAndStoreColors(handles,4);
+% selectAndStoreColors(handles,4);
+[sfn,efn] = getFrameNums(handles);
+fns = randi([sfn efn],1,5);
+global frames;
+colorVals = [];
+for ii = 1:length(fns)
+    fn = fns(ii);
+    thisFrame = frames{fn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Right Ear')];
+end
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'Right Ear Color',uColorVals);
+checkStatusOfColors(handles);
 
 
 function edit_earMaskTol_Callback(hObject, eventdata, handles)
@@ -1281,8 +1436,8 @@ diffP = diff(pos,1,1);
 % numPixels = right - left;
 numPixels = sqrt(sum(diffP.^2));
 mm = sscanf(answer{1},'%f');
-handles.md.resultsMF.scale = mm/numPixels;
-set(handles.text_scale,'String',{'Scale',sprintf('%.3f',handles.md.resultsMF.scale),'mm/pixels'});
+setParameter(handles,'Scale',mm/numPixels);
+set(handles.text_scale,'String',{'Scale',sprintf('%.3f',getParameter(handles,'Scale')),'mm/pixels'});
 displayFrames(handles,fn);
 set(handles.figure1,'userdata',fn);
 
@@ -1365,7 +1520,7 @@ set(handles.pushbutton_stopPlay,'userdata',0,'Visible','On');
 fn = round(get(handles.slider1,'Value'));
 figure(1001);clf;
 ha = axes;
-numFrames = fn+19;%(handles.d.number_of_frames-1);
+numFrames = fn+handles.disp.numFrames-1;%(handles.d.number_of_frames-1);
 try
 for ii = fn:numFrames
     if get(handles.pushbutton_stopPlay,'userdata')
@@ -1375,6 +1530,7 @@ for ii = fn:numFrames
     pause(0.1);
 end
 catch
+    rethrow(lasterror);
 end
 % displayMasks(handles,fn);
 set(handles.pushbutton_stopPlay,'Visible','Off');
@@ -1405,8 +1561,8 @@ efn = sfn+numFrames-1;
 global frames;
 times = handles.d.times;
 R = handles.md.resultsMF.R;
-tags = handles.md.resultsMF.tags;
-fns = fn:numFrames;
+tags = handles.md.tags;
+fns = fn:(fn+numFrames-1);
 indexC = strfind(tags,'Right Hand');
 tagR = find(not(cellfun('isempty', indexC)));
 indexC = strfind(tags,'Left Hand');
@@ -1420,15 +1576,17 @@ for ii = 1:length(fns)
         ind = ismember(R(:,[1 2]),[fns(ii) tagR],'rows');
         xrs(ii) = R(ind,3);
         yrs(ii) = R(ind,4);
+        mrs(ii) = R(ind,5);
     catch
-        xrs(ii) = -1; yrs(ii) = -1;
+        xrs(ii) = -1; yrs(ii) = -1; mrs(ii) = -1
     end
     try
         ind = ismember(R(:,[1 2]),[fns(ii) tagL],'rows');
         xls(ii) = R(ind,3);
         yls(ii) = R(ind,4);
+        mls(ii) = R(ind,5);
     catch
-        xls(ii) = -1; yls(ii) = -1;
+        xls(ii) = -1; yls(ii) = -1; mls(ii) = -1;
     end
     ind = ismember(R(:,[1 2]),[fns(ii) tagER],'rows');
     if any(ind)
@@ -1467,13 +1625,13 @@ thisTimes = times(fns);
 % tFN = sprintf('%s_frame%d_frame%d.xls',handles.d.file_name(1:(end-4)),sfn,efn);
 tFN = sprintf('XL_frame%d_frame%d.xls',sfn,efn);
 fileName = fullfile(handles.md.processedDataFolder,tFN);
-headings = {'Frame Number','Frame Time','Right Hand X','Right Hand Y','Left Hand X','Left Hand Y','Body Centroid X','Body Centroid Y','Body Length','Body Width','Orientation Angle','Right Ear X','Right Ear Y','Right Ear Area','Left Ear X','Left Ear Y','Left Ear Area'};
+headings = {'Frame Number','Frame Time','Right Hand X','Right Hand Y','Left Hand X','Left Hand Y','Body Centroid X','Body Centroid Y','Body Length','Body Width','Orientation Angle','Right Ear X','Right Ear Y','Right Ear Area','Left Ear X','Left Ear Y','Left Ear Area','Hands Auto/Manual'};
 props = {'FontSize',11,'ForegroundColor','b'};
 displayMessage(handles,'Writing to Excel file ... plz wait',props);
 pause(0.1);
-xlswrite(fileName,headings,1,'A1:Q1');
-data = [fns' thisTimes' xrs' yrs' xls' yls' bcx' bcy' bl' bw' ori' xers' yers' aers' xels' yels' aels'];
-xlswrite(fileName,data,1,sprintf('A2:Q%d',size(data,1)+1));
+xlswrite(fileName,headings,1,'A1:R1');
+data = [fns' thisTimes' xrs' yrs' xls' yls' bcx' bcy' bl' bw' ori' xers' yers' aers' xels' yels' aels' mls'];
+xlswrite(fileName,data,1,sprintf('A2:R%d',size(data,1)+1));
 n = 0;
 disp('Complete!');
 props = {'FontSize',12,'ForegroundColor','r'};
@@ -1552,6 +1710,10 @@ if ~strcmp(get(handles.text_fileName,'String'),sprintf('File: %s',handles.d.file
     displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r'},3);
     return;
 end
+ok = checkStatusOfSteps(handles);
+if ~ok
+    return;
+end
 framesToProcess = get(handles.uibuttongroup_framesToProcess,'userdata');
 objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
 props = {'FontSize',9,'ForegroundColor','b'};
@@ -1563,7 +1725,7 @@ switch framesToProcess
         efn = sfn;
     case 2
         sfn = round(get(handles.slider1,'Value'));
-        efn = sfn + 19;
+        efn = sfn + handles.disp.numFrames - 1;
     case 3
         data = get(handles.epochs,'Data');
         currentSelection = get(handles.epochs,'userdata');
@@ -1586,15 +1748,21 @@ try
             find_masks_KNN(handles,'body',sfn,efn);
         case 2
             find_masks_KNN(handles,'ears',sfn,efn);
+%             find_masks_KNN(handles,'left ear',sfn,efn);
         case 3
             find_masks_KNN(handles,'hands',sfn,efn);
         case 4
+            find_masks_KNN(handles,'nose',sfn,efn);
+        case 5
+            find_masks_KNN(handles,'string',sfn,efn);
+        case 6
             find_masks_KNN(handles,'all',sfn,efn);
     end
 catch
     fn = get(handles.pushbutton_stop_processing,'userdata');
     props = {'FontSize',12,'ForegroundColor','r'};
     displayMessage(handles,sprintf('Sorry :-( ... error occurred in frame %d',fn),props);
+    rethrow(lasterror);
 end
 enable_disable(handles,1);
 set(handles.pushbutton_stop_processing,'visible','off');
@@ -1651,20 +1819,37 @@ thisTimes = times(fns);
 % gg = 1;
 % set(gcf,'color','w');
 figure(22);clf;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
+scale = getParameter(handles,'Scale');
 % zw = zw1 + [150 150 -300 0];
 aC = out.body.body_fit;
 xrs = out.right_hand.centroid(:,1);
 yrs = out.right_hand.centroid(:,2);
 xls = out.left_hand.centroid(:,1);
 yls = out.left_hand.centroid(:,2);
+totalFrames = length(xrs);
+
+figure(22);clf;
+pv = axes('Position',[-0.03 0.25 0.3 0.55]);
+pheight = 0.09;
+spBetRows = 0.06+pheight;
+ypos = 0.1:spBetRows:1;
+% ypos = fliplr(ypos);
+for ii = 1:6
+    pls(ii) = axes('Position',[0.29 ypos(ii) 0.69 pheight]);
+end
+
+nans = NaN(1,length(fns));
 
 fileName = [pwd '\video.avi'];
 v = VideoWriter(fileName,'Motion JPEG AVI');
 open(v);
+indF = find(fns == 412);
+
 for ii = 1:length(fns)
     fn = fns(ii);
     frame = frames{fn};
+    axes(pv);
     cla
     imagesc(frame);
     axis equal;
@@ -1679,6 +1864,9 @@ for ii = 1:length(fns)
     
     point = out.left_hand.centroid(ii,:);
     plot(point(1),point(2),'.m','MarkerSize',20);
+    
+    point = out.nose.centroid(ii,:);
+    plot(point(1),point(2),'*w','MarkerSize',15);
     
     point = out.right_ear.centroid(ii,:);
     plot(point(1),point(2),'.c','MarkerSize',20);
@@ -1704,10 +1892,73 @@ for ii = 1:length(fns)
     plot(cc,rr,'m','linewidth',2);
     xlim([zw(1)-50 zw(3)+50]);
     ylim([zw(2)-50 zw(4)]);
-    text(zw(1) + 5,zw(2) + 5,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',10,'color','w','FontWeight','Normal');
+    text(zw(1) + 15,zw(2) + 15,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',11,'color','w','FontWeight','Normal');
+    
+    var = nans; tvar = out.body.body_length*scale; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
+    mtvar = mtvar - dV; Mtvar = Mtvar + dV;
+    var(1:ii) = out.body.body_length(1:ii)*scale;
+    axes(pls(6));cla;
+    plot(var,'g');
+    ylim([mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+    ylabel('mm');title('Body Length');box off;
+%     ylims = ylim;text(10,ylims(2),'Body Length');
+    
+    var = nans; tvar = out.body.body_angle; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
+    mtvar = mtvar - dV; Mtvar = Mtvar + dV;
+    var(1:ii) = out.body.body_angle(1:ii);
+    axes(pls(5));cla;
+    plot(var,'g');
+    ylim([mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+    ylabel('Deg');title('Body Angle');box off;
+%     ylims = ylim;text(10,ylims(2),'Body Angle');
+    
+    var = nans; tvar = out.head.head_roll; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
+    mtvar = mtvar - dV; Mtvar = Mtvar + dV;
+    var(1:ii) = out.head.head_roll(1:ii);
+    axes(pls(4));cla;
+    plot(var,'b');
+    ylim([mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+    ylabel('Deg');title('Head Roll Angle');box off;
+%     ylims = ylim;text(10,ylims(2),'Head Roll Angle');
+
+    
+    var = nans; tvar = out.head.head_yaw; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
+    mtvar = mtvar - dV; Mtvar = Mtvar + dV;
+    var(1:ii) = out.head.head_yaw(1:ii);
+    axes(pls(3));cla;
+    plot(var,'b');
+    ylim([-Mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+    ylabel('Arb.');title('Head Yaw');box off;
+%     ylims = ylim;text(10,ylims(2),'Head Yaw');
+    
+    var = nans; tvar = (xls - min(xls))*scale; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
+    mtvar = mtvar - dV; Mtvar = Mtvar + dV;
+    var(1:ii) = (xls(1:ii) - min(xls))*scale;
+    axes(pls(2));cla;
+    plot(var,'m');hold on;
+    var(1:ii) = (xrs(1:ii) - min(xrs))*scale;
+    plot(var,'c');
+    ylim([mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+    ylabel('mm');title('Hands X');box off;
+%     ylims = ylim;text(10,ylims(2),'Hands X');
+    
+    var = nans; tvar = (yls - min(yls))*scale; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
+    mtvar = mtvar - dV; Mtvar = Mtvar + dV;
+    var(1:ii) = (yls(1:ii) - min(yls))*scale;
+    axes(pls(1));cla;
+    plot(var,'m');hold on;
+    var(1:ii) = (yrs(1:ii) - min(yrs))*scale;
+    plot(var,'c');
+    ylim([mtvar Mtvar]);xlim([1 totalFrames]);
+    ylabel('mm');title('Hands Y');xlabel('Frames');box off;
+    set(gca,'FontSize',11,'FontWeight','Bold','TickDir','out');
+%     ylims = ylim;text(10,ylims(2),'Hands Y');
+    
     Fr = getframe(gcf);
     writeVideo(v,Fr);
     pause(0.1);
+
+    n = 0;
 end
 close(v);
 display('Done making video');
@@ -1723,8 +1974,9 @@ try
     sarea = setTouchingHandsThreshold(handles,fn);
     % sarea = sarea - (sarea/3);
     setParameter(handles,'Touching Hands Area',sarea);
+    set(handles.text_touchingHandsArea,'String',{'Touching Hands Area',sprintf('%d Pixels',sarea)});
 catch
-    displayMessageBlinking(handles,'An unknown error has occured',{'ForegroundColor','r'},3);
+    displayMessageBlinking(handles,'Error ... please see matlab window for detailed message',{'ForegroundColor','r'},3);
 end
 
 
@@ -1744,6 +1996,10 @@ function pushbutton_autoFind_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 if ~strcmp(get(handles.text_fileName,'String'),sprintf('File: %s',handles.d.file_name))
     displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r'},3);
+    return;
+end
+ok = checkStatusOfSteps(handles);
+if ~ok
     return;
 end
 props = {'FontSize',9,'ForegroundColor','b'};
@@ -1776,14 +2032,23 @@ try
         case 3
             findHands(handles,sfn,efn);
         case 4
+            findNose(handles,sfn,efn);
+        case 5
+            findString(handles,sfn,efn);
+        case 6
             findBody(handles,sfn,efn);
             findEars(handles,sfn,efn);
             findHands(handles,sfn,efn);
+            findNose(handles,sfn,efn);
+            findString(handles,sfn,efn);
     end
 catch
     fn = get(handles.pushbutton_stop_processing,'userdata');
     props = {'FontSize',12,'ForegroundColor','r'};
-    displayMessage(handles,sprintf('Sorry ... :-( ... error occurred in frame %d',fn),props);
+    displayMessage(handles,sprintf('Sorry ... :-( ... error occurred in frame %d ... use manual tagging',fn),props);
+    enable_disable(handles,1);
+    set(handles.pushbutton_stop_processing,'visible','off');
+    rethrow(lasterror);
 end
 enable_disable(handles,1);
 set(handles.pushbutton_stop_processing,'visible','off');
@@ -1794,6 +2059,10 @@ function pushbutton_erase_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_erase (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+ok = checkStatusOfSteps(handles);
+if ~ok
+    return;
+end
 framesToProcess = get(handles.uibuttongroup_framesToProcess,'userdata');
 objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
 global frames;
@@ -1803,7 +2072,7 @@ switch framesToProcess
         efn = sfn;
     case 2
         sfn = round(get(handles.slider1,'Value'));
-        efn = sfn + 19;
+        efn = sfn + handles.disp.numFrames - 1;
     case 3
         data = get(handles.epochs,'Data');
         currentSelection = get(handles.epochs,'userdata');
@@ -1829,9 +2098,15 @@ try
         case 3
             findHands(handles,sfn,efn,1);
         case 4
+            findNose(handles,sfn,efn,1);
+        case 5
+            findString(handles,sfn,efn,1);
+        case 6
             findBody(handles,sfn,efn,1);
             findEars(handles,sfn,efn,1);
             findHands(handles,sfn,efn,1);
+            findNose(handles,sfn,efn,1);
+            findString(handles,sfn,efn,1);
     end
 catch
     displayMessage(handles,sprintf('Sorry :-( ... error occurred in frame %d',get(handles.pushbutton_stop_processing,'userdata')));
@@ -1872,33 +2147,23 @@ function pushbutton_manual_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_manual (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+ok = checkStatusOfSteps(handles);
+if ~ok
+    return;
+end
 sfn = get(handles.figure1,'userdata');
 efn = sfn;
-manuallyTagHands(handles,sfn);
-
-% 
-% framesToProcess = get(handles.uibuttongroup_framesToProcess,'userdata');
-% objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
-% switch framesToProcess
-%     case 1
-%         sfn = get(handles.figure1,'userdata');
-%         efn = sfn;
-%     otherwise
-%         disp('Can only execute for selected frame');
-% end
-% if ~exist('sfn','var')
-%     return;
-% end
-% switch objectToProcess
-%     case 1
-% %         findBody(handles,sfn,efn,1);
-%     case 2
-% %         findEars(handles,sfn,efn,1);
-%     case 3
-%         manuallyTagHands(handles,sfn);
-%     case 4
-% end
+objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
+switch objectToProcess
+    case 1
+        manuallyTagBody(handles,sfn);
+    case 2
+        manuallyTagEars(handles,sfn);
+    case 3
+        manuallyTagHands(handles,sfn);
+    case 4
+        manuallyTagNose(handles,sfn);
+end
 
 
 % --- Executes when selected object is changed in uibuttongroup_framesToProcess.
@@ -1918,7 +2183,7 @@ function uibuttongroup_objectToProcess_SelectionChangedFcn(hObject, eventdata, h
 % hObject    handle to the selected object in uibuttongroup_objectToProcess 
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-values = {'Body','Ears','Hands','All'};
+values = {'Body','Ears','Hands','Nose/Mouth','String','All'};
 thisVal = get(hObject,'String');
 indexC = strfind(values,thisVal);
 tag = find(not(cellfun('isempty', indexC)));
@@ -1932,8 +2197,12 @@ function checkbox_over_write_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_over_write
-get(hObject,'Value')
-
+% get(hObject,'Value')
+if get(hObject,'Value')
+    set(hObject,'ForegroundColor','r');
+else
+    set(hObject,'ForegroundColor','b');
+end
 
 % --- Executes on button press in pushbutton_epoch_add_row.
 function pushbutton_epoch_add_row_Callback(hObject, eventdata, handles)
@@ -1995,6 +2264,7 @@ function pushbutton_stop_processing_Callback(hObject, eventdata, handles)
 set(handles.text_processing,'userdata',0);
 enable_disable(handles,1);
 set(handles.pushbutton_stop_processing,'visible','off');
+
 
 
 % --- Executes on slider movement.
@@ -2113,11 +2383,6 @@ function slider_MM_Callback(hObject, eventdata, handles)
 %        get(hObject,'Min') and get(hObject,'Max') to determine range of slider
 val = get(hObject,'Value');
 set(handles.edit_mouseMaskTol,'String',num2str(val));
-if ~get(handles.text_fur,'userdata')
-    handles.md.resultsMF.colorTol(1,2) = val;
-else
-    handles.md.resultsMF.colorTol(2,2) = val;
-end
 fn = get(handles.figure1,'userdata');
 displayMaskFur(handles,fn);
 
@@ -2193,13 +2458,13 @@ function checkbox_useSimpleMasks_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_useSimpleMasks
-if get(handles.checkbox_useSimpleMasks,'Value')
-    set(handles.uipanel_view_and_refine_masks,'Visible','On');
-    set(handles.pushbutton_findAndSaveKnnMasks,'Visible','Off');
-else
-    set(handles.uipanel_view_and_refine_masks,'Visible','Off');
-    set(handles.pushbutton_findAndSaveKnnMasks,'Visible','On');
-end
+% if get(handles.checkbox_useSimpleMasks,'Value')
+%     set(handles.uipanel_view_and_refine_masks,'Visible','On');
+%     set(handles.pushbutton_findAndSaveKnnMasks,'Visible','Off');
+% else
+%     set(handles.uipanel_view_and_refine_masks,'Visible','Off');
+%     set(handles.pushbutton_findAndSaveKnnMasks,'Visible','On');
+% end
 
 
 % --- Executes on button press in pushbutton_exit.
@@ -2243,6 +2508,7 @@ try
     handles = load_file(handles);
     guidata(handles.figure1, handles);
 catch
+    rethrow(lasterror);
     return;
 end
 if ~isempty(handles.d)
@@ -2328,19 +2594,30 @@ function pushbutton_findMouse_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 if ~strcmp(get(handles.text_fileName,'String'),sprintf('File: %s',handles.d.file_name))
-    displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r'},3);
+    displayMessageBlinking(handles,'Please wait for completion of file loading',{'ForegroundColor','r','FontSize',12},3);
     return;
 end
 props = {'FontSize',9,'ForegroundColor','b'};
 displayMessage(handles,'',props);
 [sfn,efn] = getFrameNums(handles);
+if sfn == efn
+    displayMessageBlinking(handles,'Please choose multiple frames',{'ForegroundColor','r','FontSize',12},3);
+    return;
+end
+% sfn = 1;
+% global frames;
+
 enable_disable(handles,0);
-findBody_Coarse(handles,sfn,efn);
+try
+    findBody_Coarse(handles,sfn,efn);
+catch
+    displayMessageBlinking(handles,'Window closed or error occurred ... repeat process',{'ForegroundColor','r','FontSize',12},3);
+end
 enable_disable(handles,1);
 % global frames;
 % totalFrames = length(frames);
 % frameNums = 1:totalFrames;
-% zw = handles.md.resultsMF.zoomWindow;
+% zw = getParameter(handles,'Zoom Window');
 % Rb = [];
 % for ii = 1:length(frameNums)
 %     fn = frameNums(ii);
@@ -2370,3 +2647,186 @@ function checkbox_updateDisplay_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_updateDisplay
+
+
+% --- Executes on button press in pushbutton_selectLtEarColor.
+function pushbutton_selectLtEarColor_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_selectLtEarColor (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+[sfn,efn] = getFrameNums(handles);
+fns = randi([sfn efn],1,5);
+global frames;
+colorVals = [];
+for ii = 1:length(fns)
+    fn = fns(ii);
+    thisFrame = frames{fn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Left Ear')];
+end
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'Left Ear Color',uColorVals);
+checkStatusOfColors(handles);
+
+
+% --- Executes on button press in pushbutton_refreshDisplay.
+function pushbutton_refreshDisplay_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_refreshDisplay (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+value = round(get(handles.slider1,'Value'));
+displayFrames(handles,value);
+
+
+
+function edit_MSER_Threshold_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_MSER_Threshold (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_MSER_Threshold as text
+%        str2double(get(hObject,'String')) returns contents of edit_MSER_Threshold as a double
+val = str2double(get(hObject,'String'));
+setParameter(handles,'MSER Threshold',val);
+
+% --- Executes during object creation, after setting all properties.
+function edit_MSER_Threshold_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_MSER_Threshold (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+
+function edit_EucledianDistance_Callback(hObject, eventdata, handles)
+% hObject    handle to edit_EucledianDistance (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of edit_EucledianDistance as text
+%        str2double(get(hObject,'String')) returns contents of edit_EucledianDistance as a double
+val = str2double(get(hObject,'String'));
+setParameter(handles,'Eucledian Distance Threshold',val);
+
+% --- Executes during object creation, after setting all properties.
+function edit_EucledianDistance_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to edit_EucledianDistance (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkbox_userMSERMethod.
+function checkbox_userMSERMethod_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_userMSERMethod (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_userMSERMethod
+
+
+% --- Executes on button press in checkbox_useHandsColorMask.
+function checkbox_useHandsColorMask_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_useHandsColorMask (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_useHandsColorMask
+
+
+% --- Executes on button press in pushbutton_ears.
+function pushbutton_ears_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_ears (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+global frames;
+colorVals = getParameter(handles,'Ears Color');
+if ~isempty(colorVals)
+    opts.Interpreter = 'tex';opts.Default = 'Yes';
+    quest = 'Add to existing colors?';
+    answer = questdlg(quest,'Please select',...
+                      'Yes','No',opts);
+    if strcmp(answer,'Yes')
+        existCols = 1;
+    else
+        existCols = 0;
+    end
+else
+    existCols = 0;
+end
+if existCols
+    [sfn,efn] = getFrameNums(handles);
+    thisFrame = frames{sfn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Right or Left Ear')];
+else    
+    [sfn,efn] = getFrameNums(handles);
+    fns = randi([sfn efn],1,3)
+    colorVals = [];
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Right Ear')];
+    end
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Left Ear')];
+    end
+end
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'Ears Color',uColorVals);
+checkStatusOfColors(handles);
+figure(10);close(gcf);
+
+
+% --- Executes on button press in pushbutton_selectNoseColors.
+function pushbutton_selectNoseColors_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_selectNoseColors (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+global frames;
+colorVals = getParameter(handles,'Nose Color');
+if ~isempty(colorVals)
+    opts.Interpreter = 'tex';opts.Default = 'Yes';
+    quest = 'Add to existing colors?';
+    answer = questdlg(quest,'Please select',...
+                      'Yes','No',opts);
+    if strcmp(answer,'Yes')
+        existCols = 1;
+    else
+        existCols = 0;
+    end
+else
+    existCols = 0;
+end
+if existCols
+    [sfn,efn] = getFrameNums(handles);
+    thisFrame = frames{sfn};
+    colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Nose')];
+else    
+    [sfn,efn] = getFrameNums(handles);
+    fns = randi([sfn efn],1,5);
+    colorVals = [];
+    for ii = 1:length(fns)
+        fn = fns(ii);
+        thisFrame = frames{fn};
+        colorVals = [colorVals;selectPixelsAndGetHSV_1(thisFrame,20,handles,'Nose')];
+    end
+end
+uColorVals = unique(colorVals,'rows');
+% uCV = findValsAroundMean(uColorVals(:,1:3),[3 100]);
+setParameter(handles,'Nose Color',uColorVals);
+checkStatusOfColors(handles);
+figure(10);close(gcf);

@@ -24,7 +24,7 @@ figure(10);clf;
 imagesc(frame);
 axis equal;
 axis off;
-zw = handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Zoom Window');
 hold on;
 plot(xrs,yrs,'m');
 plot(xls,yls,'c');
