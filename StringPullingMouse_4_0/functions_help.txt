@@ -1,0 +1,2 @@
+load_data function populates three global variabls; frames, frame_times, video_object
+

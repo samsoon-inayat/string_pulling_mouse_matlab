@@ -1,0 +1,8 @@
+Number of Color Clusters = 3
+Touching Hands Area = 3000
+Hands Color Tolerance = 3
+Fur Color Tolerance = 3
+String Color Tolerance = 3
+Ears Color Tolerance = 3
+MSER Threshold = 0.1
+Eucledian Distance Threshold = 15
