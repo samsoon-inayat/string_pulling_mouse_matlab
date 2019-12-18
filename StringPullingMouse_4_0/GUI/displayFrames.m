@@ -19,11 +19,13 @@ objectToProcess = get(handles.uibuttongroup_objectToProcess,'userdata');
 if ~isempty(zw)
     set(handles.pushbutton_zoom_window,'ForegroundColor',[0 0.6 0.2],'FontWeight','Bold');
     set(handles.text_zoomWindowSize,'String',sprintf('[%d %d %d %d]',zw),'ForegroundColor','b');
+    set(handles.text_zoom_window,'String',sprintf('[%d %d %d %d]',zw));
     tdx = zw(1)+20;
     tdy = zw(2)+50;
 else
     set(handles.pushbutton_zoom_window,'ForegroundColor','r');
     set(handles.text_zoomWindowSize,'String','Not Set','ForegroundColor','r');
+    set(handles.text_zoom_window,'String','Not Set');
     tdx = 50;
     tdy = 70;
 end
@@ -31,7 +33,6 @@ if ~isempty(azw)
     set(handles.text_autoZoomWindow,'String',sprintf('[%d %d %d %d]',azw),'ForegroundColor','b');
 else
     set(handles.text_autoZoomWindow,'String','Not Set','ForegroundColor','r');
-
 end
 if ~isempty(getParameter(handles,'Scale'))
     set(handles.pushbutton_setScale,'ForegroundColor',[0 0.6 0.2],'FontWeight','Bold');

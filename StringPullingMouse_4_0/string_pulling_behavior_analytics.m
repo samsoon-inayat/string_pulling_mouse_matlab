@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 16-Dec-2019 16:37:14
+% Last Modified by GUIDE v2.5 18-Dec-2019 10:51:01
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -213,6 +213,8 @@ if bottom > data.video_object.Height
 end
 setParameter(handles,'Zoom Window',[left top right bottom]);
 % handles.md.resultsMF.zoomWindow = [left top right bottom];
+zw1 = [left top right bottom];
+set(handles.text_zoom_window,'String',sprintf('[%d %d %d %d]',zw1(1),zw1(2),zw1(4),zw1(3)),'userdata',zw1);
 zw = [left top right-left+1 bottom-top+1];
 set(handles.text_zoomWindowSize,'String',sprintf('[%d %d %d %d]',zw(1),zw(2),zw(4),zw(3)),'userdata',zw);
 displayFrames(handles,fn);
@@ -3211,9 +3213,54 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
 end
 
 
-% --- Executes on button press in pushbutton_auto_zoom_change.
+% --- Executes on button press in pushbutton_auto_zoom_set_manually.
+function pushbutton_auto_zoom_set_manually_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_auto_zoom_set_manually (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fn = get(handles.figure1,'userdata');
+data = get_data(handles);
+hf = figure(10);
+set(hf,'WindowStyle','modal');
+imshow(data.frames{fn});
+axis equal; axis off;
+try
+    hrect = imrect(gca);
+    set(hf,'WindowStyle','normal');
+catch
+    return;
+end
+if isempty(hrect)
+    displayFrames(handles,fn);
+    return;
+end
+pos = round(hrect.getPosition);
+close(hf);
+left = pos(1);
+if left <= 0
+    left = 1;
+end
+top = pos(2);
+if top <= 0
+    top = 1;
+end
+right = pos(1)+pos(3);
+if right > data.video_object.Width
+    right = data.video_object.Width;
+end
+bottom = pos(2) + pos(4);
+if bottom > data.video_object.Height
+    bottom = data.video_object.Height;
+end
+setParameter(handles,'Auto Zoom Window',[left top right bottom]);
+% handles.md.resultsMF.zoomWindow = [left top right bottom];
+displayFrames(handles,fn);
+
+
+
+% --- Executes on button press in pushbutton_auto_zoom_set_manually.
 function pushbutton_auto_zoom_change_Callback(hObject, eventdata, handles)
-% hObject    handle to pushbutton_auto_zoom_change (see GCBO)
+% hObject    handle to pushbutton_auto_zoom_set_manually (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 zw = getParameter(handles,'Auto Zoom Window');
