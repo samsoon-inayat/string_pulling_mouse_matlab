@@ -146,6 +146,7 @@ hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1]
 hold on;
 [h,p,ci,t_stat] = ttest2(meanb,meanw)
 hmean = h; pmean = p;
+effect_size = computeCohen_d(meanb,meanw);
 mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
 maxY = max(mVar + semVar); maxY = maxY + maxY/5;
 minY = max(mVar - semVar); minY = minY - minY/1.65;
@@ -161,6 +162,7 @@ changePosition(gca,[0.1 0 -0.3 0]);
 save_pdf(hf,pdfFolder,sprintf('Mean_m %s',varName),600);
 [hk hmean]
 [pk pmean]
+effect_size
 return;
 end
 
@@ -258,6 +260,7 @@ hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1]
 hold on;
 [h,p,ci,t_stat] = ttest2(meanb,meanw)
 hmean = h; pmean = p;
+effect_size = computeCohen_d(meanb,meanw);
 mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
 maxY = max(mVar + semVar); maxY = maxY + maxY/5;
 minY = max(mVar - semVar); minY = minY - minY/3;
@@ -273,6 +276,7 @@ changePosition(gca,[0.1 0 -0.3 0]);
 save_pdf(hf,pdfFolder,sprintf('Mean_m %s',varNameT),600);
 [hk hmean]
 [pk pmean]
+effect_size
 return;
 end
 
@@ -313,6 +317,7 @@ hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1]
 hold on;
 [h,p,ci,t_stat] = ttest2(meanb,meanw)
 hmean = h; pmean = p;
+effect_size = computeCohen_d(meanb,meanw);
 mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
 maxY = max(mVar + semVar); maxY = maxY + maxY/5;
 minY = max(mVar - semVar); minY = minY - minY/2;
@@ -328,6 +333,7 @@ changePosition(gca,[0.1 0 -0.3 0]);
 save_pdf(hf,pdfFolder,sprintf('Mean_m %s',varNameT),600);
 [hk hmean]
 [pk pmean]
+effect_size
 return;
 end
 
@@ -368,6 +374,7 @@ hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1]
 hold on;
 [h,p,ci,t_stat] = ttest2(meanb,meanw)
 hmean = h; pmean = p;
+effect_size = computeCohen_d(meanb,meanw);
 mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
 maxY = max(mVar + semVar); maxY = maxY + maxY/20;
 minY = max(mVar - semVar); minY = minY - minY/20;
@@ -383,5 +390,6 @@ changePosition(gca,[0.1 0 -0.3 0]);
 save_pdf(hf,pdfFolder,sprintf('Mean_m %s',varNameT),600);
 [hk hmean]
 [pk pmean]
+effect_size
 return;
 end

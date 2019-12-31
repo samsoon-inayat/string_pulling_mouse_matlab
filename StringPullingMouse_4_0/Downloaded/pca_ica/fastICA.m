@@ -48,7 +48,7 @@ function [Zica, W, T, mu] = fastICA(Z,r,type,flag)
 
 % Constants
 TOL = 5e-5;         % Convergence criteria
-MAX_ITERS = 500;    % Max # iterations
+MAX_ITERS = 1000;    % Max # iterations
 
 % Parse inputs
 if ~exist('flag','var') || isempty(flag)

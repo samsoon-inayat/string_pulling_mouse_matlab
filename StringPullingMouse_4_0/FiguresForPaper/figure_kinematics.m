@@ -1,15 +1,21 @@
 function figure_kinematics(handles)
 
 if ~exist('handles','var')
-    fh = findall(0, 'Type', 'Figure', 'Name', 'String Pulling Behavior Analytics');
-    handles = guidata(fh);
+    try
+        fh = findall(0, 'Type', 'Figure', 'Name', 'String Pulling Behavior Analytics');
+        handles = guidata(fh);
+    catch
+        handles = evalin('base','config_b{1}');
+    end
 end
 handles.md = get_meta_data(handles);
-frames = get_frames(handles);
-thisFrame = frames{1};
-M = populateM(handles,thisFrame,1);
-thisFrame = M.thisFrame;
-
+% frames = get_frames(handles);
+% thisFrame = frames{1};
+% M = populateM(handles,thisFrame,1);
+% thisFrame = M.thisFrame;
+M.scale = getParameter(handles,'Scale');
+M.FrameRate = getParameter(handles,'Frame Rate');
+M.frame_size = [1920 1080];
 sfn = 1;
 efn = 477;
 out = get_all_params(handles,sfn,efn,10);
@@ -20,7 +26,7 @@ yrs = out.right_hand.centroid(:,2)';
 xls = out.left_hand.centroid(:,1)';
 yls = out.left_hand.centroid(:,2)';
 aC = out.body.fit;
-frame = frames{1};
+% frame = frames{1};
 zw = getParameter(handles,'Auto Zoom Window');
 zw1 = getParameter(handles,'Zoom Window');
 zw2 = zw1 + [150 50 -300 0];
@@ -70,7 +76,7 @@ mouse_rise_fall_ParmsX(handles,M,out,xrs,xls)
 hf = figure(1001);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 9 2.25 1],'color','w');
 ts = times(fns)-times(fns(1));
 % distR = M.scale;*sqrt((xrs-oxr).^2 + (yrs-oyr).^2);
-maxY = handles.md.frame_size(1);
+maxY = M.frame_size(1);
 distR = yrs; distR = maxY - distR;
 distR = distR * M.scale;
 % distL = M.scale;*sqrt((xls-oxl).^2 + (yls-oyl).^2);

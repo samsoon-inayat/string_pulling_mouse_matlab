@@ -9,7 +9,7 @@ end
 %%
 
 allProcessingFunctions = {'descriptive_statistics','find_temporal_xics','find_PCs','find_ICs','find_fractal_dimensions_and_entropy'};
-sel = [4 5]; sel_bw = [1 1]; animal_numbers = [1:5];
+sel = [4 5]; sel_bw = [0 1]; animal_numbers = [5];
 selectProcessingFunctions = allProcessingFunctions(sel);
 tic
 for iii = 1:length(animal_numbers)

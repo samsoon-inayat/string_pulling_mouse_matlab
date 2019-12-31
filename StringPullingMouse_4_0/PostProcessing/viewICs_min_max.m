@@ -16,7 +16,7 @@ end
 function plot_ics_min_max(handles,fn,ypos,ics,saveFileName)
 ic = ics.ics;
 icm = ics.ics_motion;
-mouse_color = getParameter(handles,'Mouse Color');
+% mouse_color = getParameter(handles,'Mouse Color');
 comps = ic.Z';
 compsm = icm.Z';
 nIms = 4;
@@ -35,17 +35,17 @@ for ii = 1:4
     axes(ff.h_axes(1,ii));
     switch ii
         case 1
-            if strcmp(mouse_color,'Black')
-                thisFrame = -min(comps,[],2);
-            else
+%             if strcmp(mouse_color,'Black')
+%                 thisFrame = -min(comps,[],2);
+%             else
                 thisFrame = max(comps,[],2);
-            end
+%             end
         case 2
-            if strcmp(mouse_color,'Black')
-                thisFrame = -max(comps,[],2);
-            else
+%             if strcmp(mouse_color,'Black')
+%                 thisFrame = -max(comps,[],2);
+%             else
                 thisFrame = min(comps,[],2);
-            end
+%             end
         case 3
             thisFrame = max(compsm,[],2);
         case 4

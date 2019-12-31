@@ -9,7 +9,7 @@ n = 0;
 %%
 runthis = 0;
 if runthis
-an_b = 1; an_w = 1;
+an_b = 5; an_w = 5;
 view_descriptive_statistics_CT(config_b{an_b},ds_b{an_b},{pdfFolder,'Descriptive Statistics_b'});
 view_descriptive_statistics_CT(config_w{an_w},ds_w{an_w},{pdfFolder,'Descriptive Statistics_w'});
 return;
@@ -131,7 +131,7 @@ return;
 end
 
 %%
-runthis = 1;
+runthis = 0;
 if runthis == 1
 ds_types_vars = {'standard_deviation','skewness','kurtosis'};
 ds_types = {'Std. Dev.','Skewness','Kurtosis'};

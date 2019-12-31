@@ -22,7 +22,7 @@ return;
 end
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis == 1
 ds_types_vars = {'Img','Motion'};
 ds_types = {'Max-IC-Position','Max-IC-Speed'};
@@ -93,7 +93,7 @@ save_pdf(hf,pdfFolder,'PC SN',600);
 return;
 end
 %%
-runthis = 1;
+runthis = 0;
 if runthis == 1
 ds_types_vars = {'Img','Motion'};
 ds_types = {'Max-IC-Position','Max-IC-Speed'};

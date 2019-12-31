@@ -5,6 +5,7 @@ function [fd_b,ent_b,fd_w,ent_w,sn_b,sn_w,sp_b,sp_w] =  get_fd_ent (str1,fd_ent_
 % str1 = {'Descriptive';'Motion';'mean'};
 % str1 = {'PC1';'Motion'};
 % str1 = {'Max IC';'Motion'};
+str1
 for ii = 1:5
     thisVal = fd_ent_b{ii}.fd_ent;
     C = thisVal(:,1);

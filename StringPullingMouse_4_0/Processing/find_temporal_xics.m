@@ -38,9 +38,8 @@ end
 f = convertToGrayScale(handles,fn);
 
 ds = load_entropy(handles);
-
+options = {'Entropy','Higuchi Fractal Dimension','Fano Factor','P-values of Variance Ratio Test'};
 if isfield(handles,'figure1')
-    options = {'Entropy','Higuchi Fractal Dimension','Fano Factor','P-values of Variance Ratio Test'};
     answer = generalGUIForSelection(options);
     if isequal(answer,0)
         return;
@@ -48,7 +47,7 @@ if isfield(handles,'figure1')
 else
     answer = evalin('base','find_temporal_xics_options');
 end
-
+% display(options{answer});
 displayMessage(handles,'Finding values for image sequence',{'foregroundcolor','b'});
 if any(ismember(answer,1))
     ds = find_entropy(f);

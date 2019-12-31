@@ -293,7 +293,7 @@ return;
 end
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 varNameT = 'Right Hand Vertical Speed';
 for ii = 1:5

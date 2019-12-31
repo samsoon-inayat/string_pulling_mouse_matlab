@@ -4,6 +4,7 @@ if ~isfield(handles,'figure1')
     % in case one passes a config file to this function 
     epochs = getParameter(handles,'Epochs');         
     sfn = epochs{1,1};    efn = epochs{1,2};
+    sfn = sfn(1); efn = efn(1);
     return;
 end
 

@@ -36,7 +36,7 @@ fn = get_zoomed_frames(handles,frameNums,selfRun);
 if isfield(handles,'figure1')
     num_comps = str2double(get(handles.edit_num_components,'String'));
 else
-    num_comps = 0.75;
+    num_comps = 0.5;
 end
 if num_comps < 1
     num_comps = floor(num_comps * length(fn));

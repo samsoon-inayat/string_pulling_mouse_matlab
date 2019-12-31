@@ -15,7 +15,7 @@ return;
 end
 
 %%
-runthis = 1;
+runthis = 0;
 if runthis == 1
 ds_types_vars = {'Img','Motion'};
 ds_types = {'PC1-Position','PC1-Speed'};
@@ -79,6 +79,8 @@ if runthis
 mean_ev_b = [mean(ev_b) mean(evm_b)]; sem_ev_b = [std(ev_b)/sqrt(5) std(evm_b)/sqrt(5)];
 mean_ev_w = [mean(ev_w) mean(evm_w)]; sem_ev_w = [std(ev_w)/sqrt(5) std(evm_w)/sqrt(5)];
 [hev(1),pev(1),ci,stats] = ttest2(ev_b,ev_w);[hev(2),pev(2),ci,stats] = ttest2(evm_b,evm_w);
+effect_size = computeCohen_d(ev_b,ev_w)
+effect_sizeM = computeCohen_d(evm_b,evm_w)
 hf = figure(1000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[10 7 1.5 1],'color','w');
 hold on;
 xs1 = 1:3:35; xs1 = xs1(1:length([1 2])); xs2 = 2:3:35; xs2 = xs2(1:length([1 2]));

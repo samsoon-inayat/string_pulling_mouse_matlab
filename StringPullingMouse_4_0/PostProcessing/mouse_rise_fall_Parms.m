@@ -7,10 +7,9 @@ function mouse_rise_fall_Parms(handles,M,out,yR,yL)
 % second bout 330:430
 % bout = 330:430;
 bout= [{140:265} {360:455}];
-d = get_data(handles);
-v = d.video_object;
-
-f_rate = v.FrameRate; % fps
+% d = get_data(handles);
+% v = d.video_object;
+f_rate = M.FrameRate; % fps
 scale_dist = M.scale; %mm
 RT_R = [];
 FT_R = [];
@@ -20,7 +19,8 @@ RT_L = [];
 FT_L = [];
 H_L = [];
 figure(10000);clf;
-maxY = handles.md.frame_size(1);
+% maxY = handles.md.frame_size(1);
+maxY = M.frame_size(1);
 dT = out.times(2)-out.times(1);
 lengthR = 12;
 lengthL = 12;
@@ -194,6 +194,7 @@ hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 7 1 1],'c
 [mVals(1),semVals(1)] = findMeanAndStandardError(RT);
 [mVals(2),semVals(2)] = findMeanAndStandardError(FT);
 [hrT,prT,ci,stats] = ttest2(RT,FT,'Tail','both')
+effect_size = computeCohen_d(RT,FT)
 thisCols_all = {[0 0 0],'b','m','r',[0 0.7 0.3],[0 0 0],'b','m','r'};
 plotBarsWithSigLines(mVals,semVals,[1 2],[hrT prT],'colors',{[0.7 0.3 0],[0 0.7 0.3]},'BaseValue',0,'maxY',0.3,'ySpacing',0.1,'sigAsteriskFontSize',12);
 xlim([0.5 2.5]);

@@ -1,4 +1,4 @@
-function figure_right_hand_speed
+function right_hand_speed
 variablesToGetFromBase = {'ds_b','ds_w','motion_b','motion_w','pdfFolder','fd_ent_b','fd_ent_w','config_b','config_w','all_params_w','all_params_b'};
 for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',variablesToGetFromBase{ii},variablesToGetFromBase{ii});
