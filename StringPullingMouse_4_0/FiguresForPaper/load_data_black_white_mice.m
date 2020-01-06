@@ -45,7 +45,7 @@ end
 
 allLoadingFunctions = {'load_motion','load_ds','load_dsm','load_entropy','load_pcs','load_ics','load_fractal_dim_and_entropy'};
 allVarNames = {'motion','ds','dsm','ent','pcs','ics','fd_ent'};
-sel = [3]; sel_bw = [1 1]; animal_numbers = [1:5];
+sel = [1:7]; sel_bw = [1 1]; animal_numbers = [1:5];
 selectedLoadingFunctions = allLoadingFunctions(sel); selectedVarNames = allVarNames(sel);
 for iii = 1:length(animal_numbers)
     ii = animal_numbers(iii);
