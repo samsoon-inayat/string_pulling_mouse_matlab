@@ -61,6 +61,11 @@ enable_disable_1(handles,2,0);
 set(handles.pushbutton_fileOpen,'visible','on');
 displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12});
 screenSize = get(0,'ScreenSize');
+if screenSize(3) < 1920 || screenSize(4) < 1080
+    msgbox('Graphical User Interface requires 1920x1080 screen resolution','Please change screen resolution','error');
+    closereq;
+    return;
+end
 set(handles.figure1,'Units','Pixels');
 mainWindowSize = get(handles.figure1,'Position');
 left = 1;
@@ -1485,11 +1490,14 @@ function text_processing_ButtonDownFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 md = get_meta_data(handles);
 if isempty(md)
-    filename = pwd;
-    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.);
-    saveas(handles.figure1,'gui.png');
+    set(handles.figure1, 'PaperPositionMode', 'auto')
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.png');
+    saveas(handles.figure1,filename);
 else
-    saveas(handles.figure1,'gui.png');
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.png');
+    saveas(handles.figure1,filename);
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','dispw.png');
+    saveas(md.disp.ff.hf,filename);
 end
 if get(hObject,'userdata') == 0
     enable_disable(handles,1);

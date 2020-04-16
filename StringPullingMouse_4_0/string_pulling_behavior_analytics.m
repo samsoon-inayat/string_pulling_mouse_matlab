@@ -61,6 +61,11 @@ enable_disable_1(handles,2,0);
 set(handles.pushbutton_fileOpen,'visible','on');
 displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12});
 screenSize = get(0,'ScreenSize');
+if screenSize(3) < 1920 || screenSize(4) < 1080
+    msgbox('Graphical User Interface requires 1920x1080 screen resolution','Please change screen resolution','error');
+    closereq;
+    return;
+end
 set(handles.figure1,'Units','Pixels');
 mainWindowSize = get(handles.figure1,'Position');
 left = 1;
