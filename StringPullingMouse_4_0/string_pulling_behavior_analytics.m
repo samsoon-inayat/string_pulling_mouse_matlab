@@ -1483,6 +1483,17 @@ function text_processing_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to text_processing (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+md = get_meta_data(handles);
+if isempty(md)
+    set(handles.figure1, 'PaperPositionMode', 'auto')
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.jpg');
+    saveas(handles.figure1,filename);
+else
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.jpg');
+    saveas(handles.figure1,filename);
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','dispw.jpg');
+    saveas(md.disp.ff.hf,filename);
+end
 if get(hObject,'userdata') == 0
     enable_disable(handles,1);
 end

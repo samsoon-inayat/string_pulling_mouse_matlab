@@ -1483,6 +1483,14 @@ function text_processing_ButtonDownFcn(hObject, eventdata, handles)
 % hObject    handle to text_processing (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+md = get_meta_data(handles);
+if isempty(md)
+    filename = pwd;
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.);
+    saveas(handles.figure1,'gui.png');
+else
+    saveas(handles.figure1,'gui.png');
+end
 if get(hObject,'userdata') == 0
     enable_disable(handles,1);
 end
@@ -1931,8 +1939,8 @@ function pushbutton_refreshDisplay_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_refreshDisplay (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% value = round(get(handles.slider1,'Value'));
-% displayFrames(handles,value);
+value = round(get(handles.slider1,'Value'));
+displayFrames(handles,value);
 % pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles);
 
 function edit_MSER_Threshold_Callback(hObject, eventdata, handles)
