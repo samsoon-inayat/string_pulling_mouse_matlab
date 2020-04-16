@@ -118,6 +118,10 @@ menuFigH=figure('Units', 'normalized', 'Position', [.5, .5, .1, .1], 'MenuBar', 
 % 'CloseRequestFcn' override figure closing
 % make sure figure form allows good text representation Get screen resolution in
 % characters
+screenSize = get(0,'ScreenSize');
+set(menuFigH, 'Units', 'Pixels');
+FigPos = get(menuFigH, 'Position');
+set(menuFigH,'Position',[FigPos(1) 280-FigPos(4) screenSize(3)-100 FigPos(4)],'units','Pixels');
 getRootUnits= get(0, 'Units');
 set(0, 'Units', 'characters');
 ScreenSize=get(0, 'ScreenSize'); % In characters

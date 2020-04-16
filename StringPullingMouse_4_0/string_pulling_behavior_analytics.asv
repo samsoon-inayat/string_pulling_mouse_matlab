@@ -1931,8 +1931,8 @@ function pushbutton_refreshDisplay_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_refreshDisplay (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-value = round(get(handles.slider1,'Value'));
-displayFrames(handles,value);
+% value = round(get(handles.slider1,'Value'));
+% displayFrames(handles,value);
 % pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles);
 
 function edit_MSER_Threshold_Callback(hObject, eventdata, handles)

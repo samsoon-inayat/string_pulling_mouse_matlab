@@ -141,9 +141,10 @@ for oo = 1:length(os)
         end
         save_mask(handles,fn,object,mask);
         if get(handles.checkbox_updateDisplay,'Value')
-            axes(handles.axes_main);cla
+%             axes(handles.axes_main);cla
             Im = imoverlay(thisFrame,mask);
-            imagesc(Im);axis equal;axis off;
+            imagesc(handles.axes_main,Im);axis equal;axis off;
+            xlim([1 size(Im,2)]);ylim([1 size(Im,1)]);
             title(fn);
         end
 %         bpMask(:,ind) = reshape(mask,numel(mask),1);

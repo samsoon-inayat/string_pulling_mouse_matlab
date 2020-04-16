@@ -48,8 +48,8 @@ if ~isempty(C)
 end
 set_R_P_RDLC(handles,globalR,globalP,'',1);
 if get(handles.checkbox_updateDisplay,'Value') && manual == 0
-    axes(handles.axes_main);cla;
-    imagesc(M.thisFrame);axis equal;axis off;
+%     axes(handles.axes_main);cla;
+    imagesc(handles.axes_main,M.thisFrame);axis equal;axis off;
     hold on;
     if ~isempty(CL)
         plot(CL.xb,CL.yb,'r');

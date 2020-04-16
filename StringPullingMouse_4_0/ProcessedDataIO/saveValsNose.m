@@ -31,8 +31,8 @@ save_object_mask(handles,fn,4,make_mask_from_region_pixels(C));
 % save_cmasks(handles,C,fn,4);
 set_R_P_RDLC(handles,globalR,globalP,'',1);
 if get(handles.checkbox_updateDisplay,'Value') && manual == 0
-    axes(handles.axes_main);cla
-    imagesc(M.thisFrame);axis equal;axis off;
+%     axes(handles.axes_main);cla
+    imagesc(handles.axes_main,M.thisFrame);axis equal;axis off;
     hold on;
     plot(C.Ellipse_xs,C.Ellipse_ys,'g');
     plot(C.xb,C.yb,'r');
