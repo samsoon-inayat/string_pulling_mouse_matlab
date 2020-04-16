@@ -8,6 +8,8 @@ In the string pulling task for rodents (rats or mice), they pull a vertical stri
 Clone the github repository and then run the following file in the main folder to start the software
 string_pulling_behavior_analytics.m
 
+Important Note: Use a minimum screen resolution of 1920x1080 for optimal viewing of the GUI window
+
 # Usage
 Please visit the wiki page
 [https://github.com/samsoon-inayat/string_pulling_mouse_matlab/wiki/Home](https://github.com/samsoon-inayat/string_pulling_mouse_matlab/wiki/Home)
