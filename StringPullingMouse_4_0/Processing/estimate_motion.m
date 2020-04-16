@@ -85,7 +85,7 @@ add_window_handle(handles,hf);
             displayMessage(handles,sprintf('Estimating %s ... Processing frame %d - %d/%d ... time remaining %s','motion',fn+1,ii+1,length(frameNums),timeRemaining),{'foregroundcolor','b'});
         end
         if get(handles.checkbox_updateDisplay,'Value')
-            figure(hf);clf
+            figure(hf);
             plot_optical_flow(handles,hf,fn,frame1,frame2,vx+i*vy,5,1,[])
             title(fn);
             pause(0.05);

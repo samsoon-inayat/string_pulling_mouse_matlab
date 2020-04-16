@@ -4,6 +4,10 @@ frames = get_frames(handles);
 numRs = str2double(get(handles.edit_dispRows,'String'));
 numCs = str2double(get(handles.edit_dispCols,'String'));
 zw = getParameter(handles,'Zoom Window');
+azw = getParameter(handles,'Auto Zoom Window');
+if ~isempty(azw) & get(handles.checkbox_select_auto_zoom_window,'Value')
+    zw = azw;
+end
 if ~isempty(zw)
     set(handles.pushbutton_zoom_window,'Foregroundcolor',[0 0.6 0.2],'FontWeight','Bold');
     tdx = zw(1)+20;

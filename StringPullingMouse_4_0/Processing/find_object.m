@@ -103,3 +103,4 @@ else
     end
 end
 displayMessage(handles,sprintf('Done processing frames from %d to %d - Total Time Taken = %.3f s',sfn,sfn+ii-1,processingTime),{'foregroundcolor','b'});
+set(handles.axes_main,'Visible','Off');
