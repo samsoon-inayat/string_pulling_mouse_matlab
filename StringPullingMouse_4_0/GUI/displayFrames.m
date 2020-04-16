@@ -59,8 +59,7 @@ for rr = 1:disp.numRs
                 continue;
             end
         end
-%         axes(disp.ff.h_axes(rr,cc));
-%         cla
+        axes(disp.ff.h_axes(rr,cc));
         set(disp.ff.h_axes(rr,cc),'userdata',frns(rr,cc));
         h_children = get(disp.ff.h_axes(rr,cc),'Children');
         for ii = 1:length(h_children)
@@ -175,27 +174,27 @@ for rr = 1:disp.numRs
 %             thisFrame = imgradient(thisFrame);
             set(disp.hims(rr,cc),'CData',thisFrame);
         end
-%         axis equal; axis off;
+        axis equal; axis off;
         if [rr,cc] == [srr,scc]
             if ~isempty(zw)
                 thrects = findobj(gca,'Type','Rectangle');
                 if ~isempty(thrects)
                     delete(thrects);
                 end
-                rectangle(disp.ff.h_axes(rr,cc),'Position',[zw(1),zw(2),zw(3)-zw(1),zw(4)-zw(2)],'linewidth',5);
+                rectangle('Position',[zw(1),zw(2),zw(3)-zw(1),zw(4)-zw(2)],'linewidth',5);
             else
-                rectangle(disp.ff.h_axes(rr,cc),'Position',[1,1,sz(2)-1,sz(1)-1],'linewidth',3);
+                rectangle('Position',[1,1,sz(2)-1,sz(1)-1],'linewidth',3);
             end
             set(handles.figure1,'userdata',frns(rr,cc));
         end
         if get(handles.checkbox_framesDifference,'Value')
-            text(disp.ff.h_axes(rr,cc),tdx,tdy,sprintf('%d',frns(rr,cc)),'fontsize',9,'Color','w');
+            text(tdx,tdy,sprintf('%d',frns(rr,cc)),'fontsize',9,'Color','w');
         else
             if get(handles.checkbox_display_DLC_results,'Value') & get(handles.checkbox_displayTags,'Value')
-                text(disp.ff.h_axes(rr,cc),tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color','w','fontweight','Bold');
-                text(disp.ff.h_axes(rr,cc),tdx,tdy+100,sprintf('DLC'),'fontsize',12,'Color','w','fontweight','Bold');
+                text(tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color','w','fontweight','Bold');
+                text(tdx,tdy+100,sprintf('DLC'),'fontsize',12,'Color','w','fontweight','Bold');
             else
-                text(disp.ff.h_axes(rr,cc),tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color','w','fontweight','Bold');
+                text(tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color','w','fontweight','Bold');
             end
         end
         if dispTags
@@ -205,11 +204,11 @@ for rr = 1:disp.numRs
             
         end
         if ~isempty(zw)
-            xlim(disp.ff.h_axes(rr,cc),[zw(1) zw(3)]);
-            ylim(disp.ff.h_axes(rr,cc),[zw(2) zw(4)]);
+            xlim([zw(1) zw(3)]);
+            ylim([zw(2) zw(4)]);
         else
-            xlim(disp.ff.h_axes(rr,cc),[1 sz(2)]);
-            ylim(disp.ff.h_axes(rr,cc),[1 sz(1)]);
+            xlim([1 sz(2)]);
+            ylim([1 sz(1)]);
         end
     end
 end
@@ -230,8 +229,3 @@ set(handles.text_selected_frame,'String',sprintf('(%d)',frns(srr,scc)));
 % if ~isempty(a)
 %     delete(a);
 % end
-figure(disp.ff.hf);
-if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off')
-    set(handles.axes_main,'Visible','Off');
-    cla(handles.axes_main);
-end

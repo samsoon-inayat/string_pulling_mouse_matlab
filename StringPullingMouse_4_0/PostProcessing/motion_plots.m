@@ -62,7 +62,7 @@ for ii = 1:size(uv,3)
         tuv = imresize(tuv,image_resize_factor,'OutputSize',[size(thisFrame,1) size(thisFrame,2)]);
     end
     try
-        figure(hf);%clf
+        figure(hf);clf
         fn = motion.frameNums(ii);
         plot_optical_flow(handles,hf,fn,thisFrame,[],tuv,5,1,[miuv mauv])
         title(motion.frameNums(ii));

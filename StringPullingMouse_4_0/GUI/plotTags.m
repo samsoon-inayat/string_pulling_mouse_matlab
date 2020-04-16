@@ -7,8 +7,7 @@ dispTags_nose = get(handles.checkbox_tags_nose,'Value');
 
 [globalR,globalP,globalRDLCS] = get_R_P_RDLC(handles);
 handles.md = get_meta_data(handles);
-% axes(ha);hold on;
-hold(ha,'on');
+axes(ha);hold on;
 if get(handles.checkbox_display_DLC_results,'Value')
     dlc = 1;
     R = globalRDLCS;
@@ -72,9 +71,9 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,'r','linewidth',1);
+                plot(cc,rr,'r','linewidth',1);
             else
-                plot(ha,R(iii,3),R(iii,4),'.m','MarkerSize',mSize);
+                plot(R(iii,3),R(iii,4),'.m','MarkerSize',mSize);
             end
 %             text(R(iii,3)+50,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -83,9 +82,9 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,'b','linewidth',1);
+                plot(cc,rr,'b','linewidth',1);
             else
-                plot(ha,R(iii,3),R(iii,4),'.c','MarkerSize',mSize);
+                plot(R(iii,3),R(iii,4),'.c','MarkerSize',mSize);
             end
 %             text(R(iii,3)-80,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -94,9 +93,9 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,'r','linewidth',1);
+                plot(cc,rr,'r','linewidth',1);
             else
-                plot(ha,R(iii,3),R(iii,4),'.m','MarkerSize',mSize);
+                plot(R(iii,3),R(iii,4),'.m','MarkerSize',mSize);
             end
 %             text(R(iii,3)+50,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -105,9 +104,9 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,'b','linewidth',1);
+                plot(cc,rr,'b','linewidth',1);
             else
-                plot(ha,R(iii,3),R(iii,4),'.c','MarkerSize',mSize);
+                plot(R(iii,3),R(iii,4),'.c','MarkerSize',mSize);
             end
 %             text(R(iii,3)-80,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -116,22 +115,22 @@ for ii = 1:length(inds)
         jj = find(R(inds,2) == 7);
         C = getSubjectFit(R(inds(jj),[3 4]),R(iii,3),R(iii,4),R(iii,5));
 %             plot(C.Centroid(1),C.Centroid(2),'*g','MarkerSize',5);
-        plot(ha,C.Major_axis_xs,C.Major_axis_ys,'g');
-        plot(ha,C.Minor_axis_xs,C.Minor_axis_ys,'g');
-        plot(ha,C.Ellipse_xs,C.Ellipse_ys,'g');
+        plot(C.Major_axis_xs,C.Major_axis_ys,'g');
+        plot(C.Minor_axis_xs,C.Minor_axis_ys,'g');
+        plot(C.Ellipse_xs,C.Ellipse_ys,'g');
     end
     if R(iii,2)==1 && dispTags_nose
         if da & objectToProcess == 4
             Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
             boundaryPixels = P(Lia,3);
             [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-            plot(ha,cc,rr,'y','linewidth',1);
+            plot(cc,rr,'y','linewidth',1);
         else
-            plot(ha,R(iii,3),R(iii,4),'.r','MarkerSize',mSizeN);
+            plot(R(iii,3),R(iii,4),'.r','MarkerSize',mSizeN);
         end
     end
     if dlc
-        text(ha,tdx,tdy+200,sprintf('%.2f',R(iii,5)),'fontsize',8,'Color','w','fontweight','Bold');
+        text(tdx,tdy+200,sprintf('%.2f',R(iii,5)),'fontsize',8,'Color','w','fontweight','Bold');
     else
         if R(iii,5) == 1
             ind = indsO(R(iii,2));
@@ -141,6 +140,6 @@ for ii = 1:length(inds)
         end
     end
 end
-text(ha,tdx,tdy,sprintf('%s',sort(mobj)),'fontsize',8,'Color','w','fontweight','Bold');
+text(tdx,tdy,sprintf('%s',sort(mobj)),'fontsize',8,'Color','w','fontweight','Bold');
 
 out = R(inds,:);

@@ -38,7 +38,7 @@ hf = figure(10);clf;
 add_window_handle(handles,hf);
 set(hf,'WindowStyle','modal');
 screenSize = get(0,'ScreenSize');
-set(hf,'Position',[50 200 screenSize(3)-100 screenSize(4)-300],'units','Pixels');
+set(hf,'Position',[50 50 screenSize(3)-100 screenSize(4)-100],'units','Pixels');
 % pause(1);
 % close(hf)
 % return;

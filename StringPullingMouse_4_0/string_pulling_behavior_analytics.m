@@ -217,8 +217,7 @@ zw1 = [left top right bottom];
 set(handles.text_zoom_window,'String',sprintf('[%d %d %d %d]',zw1(1),zw1(2),zw1(4),zw1(3)),'userdata',zw1);
 zw = [left top right-left+1 bottom-top+1];
 set(handles.text_zoomWindowSize,'String',sprintf('[%d %d %d %d]',zw(1),zw(2),zw(4),zw(3)),'userdata',zw);
-pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles)
-% displayFrames(handles,fn);
+displayFrames(handles,fn);
 
 % --- Executes when selected cell(s) is changed in epochs.
 function epochs_CellSelectionCallback(hObject, eventdata, handles)
@@ -517,8 +516,7 @@ function pushbutton_resetZoom_Callback(hObject, eventdata, handles)
 % stop(handles.timer_video_loader)
 setParameter(handles,'Zoom Window',[]);
 value = round(get(handles.slider1,'Value'));
-% displayFrames(handles,value);
-pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles)
+displayFrames(handles,value);
 
 % --- Executes on button press in pushbutton_manuallyTag.
 function pushbutton_manuallyTag_Callback(hObject, eventdata, handles)
@@ -1933,7 +1931,6 @@ function pushbutton_refreshDisplay_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 value = round(get(handles.slider1,'Value'));
 displayFrames(handles,value);
-% pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles);
 
 function edit_MSER_Threshold_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_MSER_Threshold (see GCBO)
@@ -2473,11 +2470,10 @@ function checkbox_select_auto_zoom_window_Callback(hObject, eventdata, handles)
 zw = getParameter(handles,'Auto Zoom Window');
 if ~isempty(zw)
     value = round(get(handles.slider1,'Value'));
-%     displayFrames(handles,value);
+    displayFrames(handles,value);
 else
     set(hObject,'Value',0);
 end
-pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles);
 
 
 % --- Executes on button press in pushbutton_setScale.

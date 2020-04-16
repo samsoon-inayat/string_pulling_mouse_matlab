@@ -17,15 +17,12 @@ else
 end
 set_R_P_RDLC(handles,globalR,'','',0);
 if get(handles.checkbox_updateDisplay,'Value') && manual == 0
-%     axes(handles.axes_main);cla
-    imagesc(handles.axes_main,M.thisFrame);
-    axis equal;axis off;
+    axes(handles.axes_main);cla
+    imagesc(M.thisFrame);axis equal;axis off;
     hold on;
     plot(C.Ellipse_xs,C.Ellipse_ys,'g');
     plot(C.xb,C.yb,'r');
     title(fn);
-    xlim([1 size(M.thisFrame,2)]);
-    ylim([1 size(M.thisFrame,1)]);
     displayFrames(handles,M.dfn,fn);
     pause(0.1);
 end

@@ -63,7 +63,6 @@ else
             ys = thisS.Centroid(2);
             plot(xs,ys,'.b');
             text(xs,thisS.PixelList(end,2)+5,num2str(ii),'color','w');%colors{jj});
-            text(xs,thisS.PixelList(end,2)-15,num2str(thisS.Area),'color','w');%colors{jj});
 %             xs = thisS.WeightedCentroid(1);
 %             ys = thisS.WeightedCentroid(2);
 %             plot(xs,ys,'*k');
