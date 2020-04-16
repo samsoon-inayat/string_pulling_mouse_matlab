@@ -1486,12 +1486,12 @@ function text_processing_ButtonDownFcn(hObject, eventdata, handles)
 md = get_meta_data(handles);
 if isempty(md)
     set(handles.figure1, 'PaperPositionMode', 'auto')
-    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.jpg');
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.png');
     saveas(handles.figure1,filename);
 else
-    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.jpg');
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','gui.png');
     saveas(handles.figure1,filename);
-    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','dispw.jpg');
+    filename = fullfile(pwd,'Help','GitHub_Wiki_Resources','dispw.png');
     saveas(md.disp.ff.hf,filename);
 end
 if get(hObject,'userdata') == 0
