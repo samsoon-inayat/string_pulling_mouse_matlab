@@ -14,6 +14,10 @@ Important Note: Use a minimum screen resolution of 1920x1080 for optimal viewing
 Please visit the wiki page
 [https://github.com/samsoon-inayat/string_pulling_mouse_matlab/wiki/Home](https://github.com/samsoon-inayat/string_pulling_mouse_matlab/wiki/Home)
 
+# Data Availability
+Please visit the following page on Open Science Framework to download video files and processed data for 5 C57BL6 and 5 Swiss Webster Albino mice.
+https://osf.io/gmk9y/
+
 # Credits
 Developed by Samsoon Inayat (Imaging Scientist), Labs of Drs. Majid Mohajerani and Ian Whishaw at the University of Lethbridge, Alberta, Canada
 
