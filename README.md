@@ -1,6 +1,8 @@
 # String Pulling Behavioral Analytics
 A Matlab based software for analysis of video data of rodents (rats or mice) engaged in string pulling
 
+<iframe src="https://mfr.osf.io/render?url=https://osf.io/gu6ca/?direct%26mode=render%26action=download%26mode=render" width="100%" scrolling="yes" height="0px" marginheight="0" frameborder="0" allowfullscreen webkitallowfullscreen>
+
 # Description
 In the string pulling task for rodents (rats or mice), they pull a vertical string to obtain food reward attached to the end of the string. This task is elegant because rodents require little training and it lends to kinematic analysis of body, head, arm, and hand movements. Using this task with control and experimental animals such as animal models of neurological or spinal cord diseases, one can investigate sensorimotor physiology and pathophysiology as well as test the efficacy of therapeutic drugs in the recovery of sensorimotor function. This software facilitates the analysis of video data of rodents pulling strings and provide kinematic measures of body, head, and hand movements as well as allows whole-body analysis of string pulling motion sequence.
 
