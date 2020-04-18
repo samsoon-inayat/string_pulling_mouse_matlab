@@ -200,7 +200,7 @@ while ~quit
             nColors = getParameter(handles,'Number of Color Clusters');
             buttonName = sprintf('Edit Number of Clusters (%d)',nColors);
             answers = {'Add colors','Remove colors','Next frame','Skip Frame','Exit','Save colors','Undo',buttonName};
-            choice = bttnChoiceDialog(answers, 'Please select', 1, quest, [1 2 3 4;5 6 7 8]);
+            [choice] = bttnChoiceDialog(answers, 'Please select', 1, quest, [1 2 3 4;5 6 7 8],NaN);
 %         else
 %             answers = {'Add colors','Remove colors','Next frame','Skip Frame','Exit','Save colors'};
 %             choice = bttnChoiceDialog(answers, 'Please select', 4, quest, [1 2 3;4 5 6]);

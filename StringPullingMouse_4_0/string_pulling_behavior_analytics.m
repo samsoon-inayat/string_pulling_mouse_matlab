@@ -60,11 +60,16 @@ addpath(genpath(pwd));
 enable_disable_1(handles,2,0);
 set(handles.pushbutton_fileOpen,'visible','on');
 displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12});
-screenSize = get(0,'ScreenSize');
+screenSizeJ = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+screenSize = [1 1 screenSizeJ.getWidth screenSizeJ.getHeight];
 if screenSize(3) < 1920 || screenSize(4) < 1080
-    msgbox('Graphical User Interface requires 1920x1080 screen resolution','Please change screen resolution','error');
-    closereq;
-    return;
+    answers = {'Proceed Anyways','Quit'};
+    [choice] = bttnChoiceDialog(answers,'Please Select', 1, 'Graphical User Interface requires 1920x1080 screen resolution. Buttons might not be visible', [1 2],[round(screenSize(3)/2) round(screenSize(4)/2) screenSize(3)-100 200]);
+    if choice == 2
+%     uiwait(msgbox('Graphical User Interface requires 1920x1080 screen resolution','Please change screen resolution','error','modal'));
+        closereq;
+        return;
+    end
 end
 set(handles.figure1,'Units','Pixels');
 mainWindowSize = get(handles.figure1,'Position');
