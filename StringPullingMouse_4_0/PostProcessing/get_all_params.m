@@ -170,12 +170,16 @@ for ii = 1:length(frameNums)
         if any(indR)
             ind = ismember(M.P(:,[1 2]),[fn tagRE],'rows');
             boundaryPixelsRE(ii).ps = M.P(ind,3);
+        else
+            boundaryPixelsRE(ii).ps = NaN;
         end
         
         indL = ismember(M.R(:,[1 2]),[fn tagLE],'rows');
         if any(indL)
             ind = ismember(M.P(:,[1 2]),[fn tagLE],'rows');
             boundaryPixelsLE(ii).ps = M.P(ind,3);
+        else
+            boundaryPixelsLE(ii).ps = NaN;
         end
     end
     

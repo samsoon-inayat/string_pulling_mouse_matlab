@@ -21,6 +21,10 @@ if ~isempty(C)
     globalR = [globalR;RL];
 %             saveMR(handles,fn,tag(1),x,y,manual);
     pixels = [(C.xb + M.zw(1)) (C.yb + M.zw(2))];
+    inds_p = pixels(:,2) > handles.md.frame_size(1);
+    pixels(inds_p,2) = handles.md.frame_size(1);
+    inds_p = pixels(:,1) > handles.md.frame_size(2);
+    pixels(inds_p,1) = handles.md.frame_size(2);
     pixelsI = sub2ind(handles.md.frame_size,pixels(:,2),pixels(:,1));
     PL = [ones(size(pixelsI))*fn ones(size(pixelsI))*tag(1) pixelsI];
     globalP = [globalP;PL];
@@ -41,6 +45,10 @@ if ~isempty(C)
     globalR = [globalR;RR];
 %             saveMR(handles,fn,tag(2),x,y,manual);
     pixels = [(C.xb + M.zw(1)) (C.yb + M.zw(2))];
+    inds_p = pixels(:,2) > handles.md.frame_size(1);
+    pixels(inds_p,2) = handles.md.frame_size(1);
+    inds_p = pixels(:,1) > handles.md.frame_size(2);
+    pixels(inds_p,1) = handles.md.frame_size(2);
     pixelsI = sub2ind(handles.md.frame_size,pixels(:,2),pixels(:,1));
     PR = [ones(size(pixelsI))*fn ones(size(pixelsI))*tag(2) pixelsI];
     globalP = [globalP;PR];

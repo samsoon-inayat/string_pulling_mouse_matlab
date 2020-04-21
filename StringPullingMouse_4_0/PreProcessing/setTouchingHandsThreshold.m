@@ -30,7 +30,9 @@ while 1
     nrows = size(subFrame,1);
     ncols = size(subFrame,2);
     CVs = colorVals(:,4:6);
-    Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
+%     Ih = compute_mask(handles,subFrame,'hands',CVs);
+    Ih = compute_masks_range_search_select(handles,subFrame,'hands',CVs);
+%     Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
     Ih = imfill(Ih,'holes');
     Ih = bwareaopen(Ih,100,8);
     Ih = bwconvhull(Ih,'objects');

@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 18-Dec-2019 10:51:01
+% Last Modified by GUIDE v2.5 19-Apr-2020 14:17:28
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1181,25 +1181,29 @@ for ii = 1:length(fns)
     var = nans; tvar = out.head.roll; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
     mtvar = mtvar - dV; Mtvar = Mtvar + dV;
     var(1:ii) = out.head.roll(1:ii);
-    axes(pls(4));cla;
-    plot(var,'b');
-    ylim([mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
-    ylabel('Deg');title('Head Roll Angle');box off;
+    if sum(isnan(var)) < length(var)
+        axes(pls(4));cla;
+        plot(var,'b');
+        ylim([mtvar Mtvar]);xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+        ylabel('Deg');title('Head Roll Angle');box off;
+    end
 %     ylims = ylim;text(10,ylims(2),'Head Roll Angle');
 
     
     var = nans; tvar = out.head.yaw; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
     mtvar = mtvar - dV; Mtvar = Mtvar + dV;
     var(1:ii) = out.head.yaw(1:ii);
-    axes(pls(3));cla;
-    plot(var,'b');
-    if Mtvar > 0
-        ylim([-Mtvar Mtvar]);
-    else
-        ylim([Mtvar -Mtvar]);
+    if sum(isnan(var)) < length(var)
+        axes(pls(3));cla;
+        plot(var,'b');
+        if Mtvar > 0
+            ylim([-Mtvar Mtvar]);
+        else
+            ylim([Mtvar -Mtvar]);
+        end
+        xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
+        ylabel('Arb.');title('Head Yaw');box off;
     end
-    xlim([1 totalFrames]);set(gca,'XTickLabel',[],'FontSize',11,'FontWeight','Bold','TickDir','out');
-    ylabel('Arb.');title('Head Yaw');box off;
 %     ylims = ylim;text(10,ylims(2),'Head Yaw');
     
     var = nans; tvar = (xls)*scale; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
@@ -3278,8 +3282,14 @@ if bottom > data.video_object.Height
     bottom = data.video_object.Height;
 end
 setParameter(handles,'Auto Zoom Window',[left top right bottom]);
+zw = getParameter(handles,'Auto Zoom Window');
 % handles.md.resultsMF.zoomWindow = [left top right bottom];
-displayFrames(handles,fn);
+set(handles.text_autoZoomWindow,'String',sprintf('[%d %d %d %d]',zw(1),zw(2),zw(3),zw(4)),'userdata',zw,'ForegroundColor','b');
+frames = get_frames(handles);
+thisFrame = frames{1}(zw(2):zw(4),zw(1):zw(3),:);
+setParameter(handles,'Auto Zoom Window Size',[size(thisFrame,1) size(thisFrame,2)]);
+sfn = round(get(handles.slider1,'Value'));
+displayFrames(handles,sfn);
 
 
 
@@ -3910,3 +3920,12 @@ function pushbutton_view_ICs_minmax_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 ics = load_ics(handles);
 viewICs_min_max(handles,ics,'');
+
+
+% --- Executes on button press in checkbox_check_intersection_of_regions.
+function checkbox_check_intersection_of_regions_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_check_intersection_of_regions (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_check_intersection_of_regions

@@ -42,6 +42,7 @@ set(hf,'Position',[50 200 screenSize(3)-100 screenSize(4)-300],'units','Pixels')
 % pause(1);
 % close(hf)
 % return;
+object = lower(type);
 quit = 0;
 while ~quit
     figure(hf);clf;
@@ -53,7 +54,8 @@ while ~quit
             title('Please wait ... calculating mask');
             ht = text(tdx,tdy,sprintf('Please wait ... calculating mask'),'Color','r','FontWeight','Bold');
             pause(0.1);
-            Im = getThisMask(iRGB,mc,size(RGB,1),size(RGB,2),1.5);
+%             Im = getThisMask(iRGB,mc,size(RGB,1),size(RGB,2),radius);
+            Im = compute_mask(handles,iRGB,object,mc);
             oRGB = imoverlay(RGB,Im);
         else
             oRGB = RGB;
@@ -185,7 +187,8 @@ while ~quit
         imagesc(RGB);axis equal;
         title('Please wait ... calculating mask');
         pause(0.1);
-        Im = getThisMask(iRGB,mc,size(RGB,1),size(RGB,2),1.5);
+%         Im = getThisMask(iRGB,mc,size(RGB,1),size(RGB,2),radius);
+        Im = compute_mask(handles,iRGB,object,mc);
         oRGB = imoverlay(RGB,Im);
         imagesc(oRGB);axis equal;
         if ~isempty(zw)
@@ -228,7 +231,8 @@ while ~quit
             hsvMean = phsvMean;
             if ~isempty(hsvMean)
                 mc = hsvMean(:,4:6);
-                Im = getThisMask(iRGB,mc,size(RGB,1),size(RGB,2),1.5);
+%                 Im = getThisMask(iRGB,mc,size(RGB,1),size(RGB,2),radius);
+                Im = compute_mask(handles,iRGB,object,mc);
                 oRGB = imoverlay(iRGB,Im);
                 figure(10);clf;
                 imagesc(oRGB);
@@ -276,13 +280,13 @@ while ~quit
         end 
         if strcmp(answer,'Remove colors')
             addColors = 0;
-            s_threshold = 1.5;
+%             s_threshold = 1.5;
+            prompt = 'Enter matching color threshold (value between 1-5)';
+            titlestr = 'Color Closeness Threshold Value';
+            dims = 1;
+            answer = inputdlg(prompt,titlestr,dims,{'1.5'});
+            s_threshold = sscanf(answer{1},'%f');
             break;
-    %         prompt = 'Enter matching color threshold (value between 1-5)';
-    %         title = 'Color Closeness Threshold Value';
-    %         dims = 1;
-    %         answer = inputdlg(prompt,title,dims,{'1.5'});
-    %         s_threshold = sscanf(answer{1},'%f');
         end 
     end
 end
@@ -301,3 +305,5 @@ for ii = 1:3
     vals = temp(inds);
     colVals(:,ii+3) = vals';
 end
+
+

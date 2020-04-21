@@ -21,8 +21,8 @@ ent.f6 = ads.skewness; entm.f6 = ads.motion.skewness;
 ent.f7 = ads.kurtosis; entm.f7 = ads.motion.kurtosis;
 
 if ~iscell(saveFileName)
-    display_desc_stats(handles,ent,[saveFileName '_all'],101,9); set(gcf,'Name','Temporal Analysis Image Sequence');
-    display_desc_stats(handles,entm,[saveFileName '_all'],102,7); set(gcf,'Name','Temporal Analysis Motion');
+    display_desc_stats(handles,ent,[saveFileName 'ImgSeq'],101,9); set(gcf,'Name','Temporal Analysis Image Sequence');
+    display_desc_stats(handles,entm,[saveFileName 'Motion'],102,7); set(gcf,'Name','Temporal Analysis Motion');
 else
     display_desc_stats(handles,ent,{saveFileName{1},[saveFileName{2} 'Img Seq']},101,9); set(gcf,'Name','Temporal Analysis Image Sequence');
     display_desc_stats(handles,entm,{saveFileName{1},[saveFileName{2} 'Motion']},102,7); set(gcf,'Name','Temporal Analysis Motion');

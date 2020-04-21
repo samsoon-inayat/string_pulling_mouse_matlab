@@ -105,7 +105,9 @@ pause(0.15);
 % s = removeBackgroundRegions(M,s);
 % plotStringAndRegions(100,thisFrame,[],M,{s},Cs);
 % pause(0.15);
-s = selectAppropriateRegions(M,Cs,s);
+if get(handles.checkbox_check_intersection_of_regions,'Value')
+        s = selectAppropriateRegions(M,Cs,s);
+end
 plotStringAndRegions(100,thisFrame,[],M,{s},Cs);
 pause(0.15);
 s = selectRegionsSC(M,s,Cs);
