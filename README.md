@@ -21,7 +21,7 @@ https://osf.io/gmk9y/
 # Credits
 Developed by Samsoon Inayat (Imaging Scientist), Labs of Drs. Majid Mohajerani and Ian Whishaw at the University of Lethbridge, Alberta, Canada
 
-Contributors: Surjeet Singh and Arashk Ghasroddasti
+Contributors: Surjeet Singh and Arashk Ghasroddashti
 
 # License
 Please see license file
