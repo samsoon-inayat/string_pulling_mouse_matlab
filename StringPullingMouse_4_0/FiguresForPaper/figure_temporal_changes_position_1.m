@@ -1,4 +1,4 @@
-function figure_temporal_changes_position
+function figure_temporal_changes_position_1
 
 variablesToGetFromBase = {'config_b','config_w','ent_b','ent_w','fd_ent_b','fd_ent_w','pdfFolder','ds_b','ds_w'};
 for ii = 1:length(variablesToGetFromBase)
@@ -18,8 +18,8 @@ return;
 end
 
 %% image sequence
-runthis = 1;
-if runthis == 1
+runthis = 0;
+if runthis
 ds_types_vars = {'standard_deviation','skewness','kurtosis','Fano Factor','Entropy','Higuchi'};
 ds_types = {'Std. Dev.','Skewness','Kurtosis','Fano Factor','Entropy','Higuchi FD'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types_vars,{'Img'});
@@ -117,7 +117,7 @@ end
 
 
 %% skewness image sequence
-runthis = 1;
+runthis = 0;
 if runthis
 % out = get_masked_values(ent_b,ent_w,'motion.s',ds_b,ds_w,0.05)
 varName = 'skewness'; varNameT = 'Skewness';
@@ -176,7 +176,7 @@ end
 
 
 %% Kurtosis image sequence
-runthis = 1;
+runthis = 0;
 if runthis
 % out = get_masked_values(ent_b,ent_w,'motion.s',ds_b,ds_w,0.05)
 varName = 'kurtosis'; varNameT = 'Kurtosis';

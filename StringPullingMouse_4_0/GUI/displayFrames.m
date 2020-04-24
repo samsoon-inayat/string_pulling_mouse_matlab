@@ -1,4 +1,5 @@
 function displayFrames(handles,fn,ofn)
+dispProps = get(handles.pushbutton_select_annotation_colors,'userdata');
 md = get_meta_data(handles);
 disp = md.disp;
 data = get_data(handles);
@@ -182,9 +183,9 @@ for rr = 1:disp.numRs
                 if ~isempty(thrects)
                     delete(thrects);
                 end
-                rectangle(disp.ff.h_axes(rr,cc),'Position',[zw(1),zw(2),zw(3)-zw(1),zw(4)-zw(2)],'linewidth',5);
+                rectangle(disp.ff.h_axes(rr,cc),'Position',[zw(1),zw(2),zw(3)-zw(1),zw(4)-zw(2)],'linewidth',dispProps.selectRectangle_linewidth,'EdgeColor',dispProps.selectRectangle_color);
             else
-                rectangle(disp.ff.h_axes(rr,cc),'Position',[1,1,sz(2)-1,sz(1)-1],'linewidth',3);
+                rectangle(disp.ff.h_axes(rr,cc),'Position',[1,1,sz(2)-1,sz(1)-1],'linewidth',dispProps.selectRectangle_linewidth,'EdgeColor',dispProps.selectRectangle_color);
             end
             set(handles.figure1,'userdata',frns(rr,cc));
         end

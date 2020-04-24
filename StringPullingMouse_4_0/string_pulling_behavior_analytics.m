@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 19-Apr-2020 14:17:28
+% Last Modified by GUIDE v2.5 23-Apr-2020 17:46:00
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -3929,3 +3929,10 @@ function checkbox_check_intersection_of_regions_Callback(hObject, eventdata, han
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_check_intersection_of_regions
+
+
+% --- Executes on button press in pushbutton_select_annotation_colors.
+function pushbutton_select_annotation_colors_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_select_annotation_colors (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)

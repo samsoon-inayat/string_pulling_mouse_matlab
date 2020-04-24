@@ -88,3 +88,21 @@ try
     end
 catch
 end
+
+dispProps.selectRectangle_color = 'k';
+dispProps.selectRectangle_linewidth = 3;
+dispProps.bodyEllipse_color = 'g';
+dispProps.rightHand_line_color = 'r';
+dispProps.leftHand_line_color = 'b';
+dispProps.rightHand_dot_color = 'm';
+dispProps.leftHand_dot_color = 'c';
+dispProps.rightEar_line_color = 'r';
+dispProps.leftEar_line_color = 'b';
+dispProps.rightEar_dot_color = 'm';
+dispProps.leftEar_dot_color = 'c';
+dispProps.nose_line_color = 'r';
+dispProps.nose_dot_color = 'r';
+dispProps.frameNumber_Text_Color = 'w';
+
+set(handles.pushbutton_select_annotation_colors,'userdata',dispProps);
+

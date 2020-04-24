@@ -1,6 +1,4 @@
-
-function figure_hands(handles)
-
+function figure_hands_NN(handles)
 
 if ~exist('handles','var')
     fh = findall(0, 'Type', 'Figure', 'Name', 'String Pulling Behavior Analytics');
@@ -24,7 +22,7 @@ ff = makeFigureRowsCols(101,[7 5.5 6.9 2],'RowsCols',[1 6],...
     [-25 -40]);
 gg = 1;
 set(gcf,'color','w');
-% delete(ff.h_axes(1,5));
+
 mSize = 5;
 mSizep = 2;
 for ii = 1:length(fns)
@@ -83,6 +81,8 @@ for ii = 1:length(fns)
     
 end
 
+delete(ff.h_axes(1,5));
+delete(ff.h_axes(1,6));
 pdfFileName = sprintf('%s_1.pdf',mfilename);
 pdfFileName = [pwd '\FiguresForPaper\pdfs\' pdfFileName]
 save2pdf(pdfFileName,gcf,600);

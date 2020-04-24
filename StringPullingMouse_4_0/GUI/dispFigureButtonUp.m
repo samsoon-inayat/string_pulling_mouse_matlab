@@ -1,5 +1,6 @@
 function dispFigureButtonUp(event,handles)
 handles1 = guidata(handles.figure1);
+dispProps = get(handles1.pushbutton_select_annotation_colors,'userdata');
 md = get_meta_data(handles);
 disp = md.disp;
 uda = get(gcf,'userdata');
@@ -105,10 +106,10 @@ axes(disp.ff.h_axes(rr,cc));
 
 if ~isempty(zw)
     thrects = findobj(gca,'Type','Rectangle');
-    if ~isempty(thrects)
+    if ~isempty(thrects)gui
         delete(thrects);
     end
-    rectangle('Position',[zw(1),zw(2),zw(3)-zw(1),zw(4)-zw(2)],'linewidth',5);
+    rectangle('Position',[zw(1),zw(2),zw(3)-zw(1),zw(4)-zw(2)],'linewidth',dispProps.selectRectangle_linewidth,'EdgeColor',dispProps.selectRectangle_color);
 else
     sz = md.frame_size;
     rectangle('Position',[1,1,sz(2)-1,sz(1)-1],'linewidth',3);

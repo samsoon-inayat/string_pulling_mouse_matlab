@@ -25,7 +25,7 @@ return;
 end
 %%
 runthis = 0;
-if runthis == 1
+if runthis
 ds_types = {'mean','median','mode'};%,'standard_deviation','skewness','kurtosis'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types,{'Img'});
 n = 0;
@@ -60,8 +60,8 @@ end
 
 
 %%
-runthis = 1;
-if runthis == 1
+runthis = 0;
+if runthis
 ds_types = {'mean','median','mode'};%,'standard_deviation','skewness','kurtosis'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types,{'Motion'});
 n = 0;
@@ -96,7 +96,7 @@ end
 
 %%
 runthis = 0;
-if runthis == 1
+if runthis
 ds_types_vars = {'standard_deviation','skewness','kurtosis'};
 ds_types = {'Std. Dev.','Skewness','Kurtosis'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types_vars,{'Img'});
@@ -132,7 +132,7 @@ end
 
 %%
 runthis = 0;
-if runthis == 1
+if runthis
 ds_types_vars = {'standard_deviation','skewness','kurtosis'};
 ds_types = {'Std. Dev.','Skewness','Kurtosis'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types_vars,{'Descriptive','Motion'});

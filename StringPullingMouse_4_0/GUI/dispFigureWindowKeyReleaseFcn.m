@@ -1,7 +1,6 @@
 function dispFigureWindowKeyReleaseFcn(event,handles)
 [globalR,globalP,~] = get_R_P_RDLC(handles);
 handles1 = guidata(handles.figure1);
-
 md = get_meta_data(handles1);
 disp = md.disp;
 uda = get(gcf,'userdata');
