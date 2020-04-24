@@ -15,6 +15,10 @@ for ee = 1:length(C)
     tag = find(not(cellfun('isempty', indexC)));
     globalR = [globalR;[fn tag x y manual]];
     pixels = [(tC.xb + M.zw(1)) (tC.yb + M.zw(2))];
+    inds_p = pixels(:,2) > handles.md.frame_size(1);
+    pixels(inds_p,2) = handles.md.frame_size(1);
+    inds_p = pixels(:,1) > handles.md.frame_size(2);
+    pixels(inds_p,1) = handles.md.frame_size(2);
     pixelsI = sub2ind(handles.md.frame_size,pixels(:,2),pixels(:,1));
     globalP = [globalP;[ones(size(pixelsI))*fn ones(size(pixelsI))*tag pixelsI]];
     if strcmp(tC.ear,'Left Ear')

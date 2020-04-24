@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 23-Apr-2020 17:46:00
+% Last Modified by GUIDE v2.5 24-Apr-2020 02:00:19
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -900,7 +900,7 @@ for ii = 3:length(fieldNames)
             dataT(:,colNum) = thisField1(:,1);
             colNum = colNum + 1;
             headings{colNum} = sprintf('%s_%s_Y',fieldNames{ii},subFieldNames{jj});
-            dataT(:,colNum) = thisField1(:,1);
+            dataT(:,colNum) = thisField1(:,2);
         end
     end
 end
@@ -1096,70 +1096,81 @@ xls = out.left_hand.centroid(:,1);
 yls = out.left_hand.centroid(:,2);
 totalFrames = length(xrs);
 
-figure(22);clf;
-pv = axes('Position',[0.01 0.25 0.2 0.55]);
-pheight = 0.09;
-spBetRows = 0.06+pheight;
-ypos = 0.1:spBetRows:1;
-% ypos = fliplr(ypos);
-for ii = 1:6
-    pls(ii) = axes('Position',[0.29 ypos(ii) 0.69 pheight]);
+if ~get(handles.checkbox_labeled_video_only_frames,'Value')
+    figure(22);clf;
+    pv = axes('Position',[0.01 0.25 0.2 0.55]);
+    pheight = 0.09;
+    spBetRows = 0.06+pheight;
+    ypos = 0.1:spBetRows:1;
+    % ypos = fliplr(ypos);
+    for ii = 1:6
+        pls(ii) = axes('Position',[0.29 ypos(ii) 0.69 pheight]);
+    end
+else
+    figure(22);clf;
 end
-
 nans = NaN(1,length(fns));
 
 v = VideoWriter(fileName,'Motion JPEG AVI');
 open(v);
 indF = find(fns == 412);
-
+dispProps = get(handles.pushbutton_select_annotation_colors,'userdata');
 for ii = 1:length(fns)
     fn = fns(ii);
     frame = frames{fn};
-    axes(pv);
+    if ~get(handles.checkbox_labeled_video_only_frames,'Value')
+        axes(pv);
+    end
     cla
     imagesc(frame);
     axis equal;
     axis off;
     hold on;
     C = aC(ii);
-    plot(C.Major_axis_xs,C.Major_axis_ys,'g');
-    plot(C.Minor_axis_xs,C.Minor_axis_ys,'g');
-    plot(C.Ellipse_xs,C.Ellipse_ys,'g');
+    plot(C.Major_axis_xs,C.Major_axis_ys,dispProps.bodyEllipse_color);
+    plot(C.Minor_axis_xs,C.Minor_axis_ys,dispProps.bodyEllipse_color);
+    plot(C.Ellipse_xs,C.Ellipse_ys,dispProps.bodyEllipse_color);
     point = out.right_hand.centroid(ii,:);
-    plot(point(1),point(2),'.c','MarkerSize',20);
+    plot(point(1),point(2),sprintf('.%s',dispProps.rightHand_dot_color),'MarkerSize',20);
     
     point = out.left_hand.centroid(ii,:);
-    plot(point(1),point(2),'.m','MarkerSize',20);
+    plot(point(1),point(2),sprintf('.%s',dispProps.leftHand_dot_color),'MarkerSize',20);
     
     point = out.nose.centroid(ii,:);
-    plot(point(1),point(2),'*w','MarkerSize',10);
+    plot(point(1),point(2),sprintf('*%s',dispProps.nose_dot_color),'MarkerSize',10);
     
     point = out.right_ear.centroid(ii,:);
-    plot(point(1),point(2),'.c','MarkerSize',20);
+    plot(point(1),point(2),sprintf('.%s',dispProps.rightEar_dot_color),'MarkerSize',20);
     point1 = point;
     
     point = out.left_ear.centroid(ii,:);
-    plot(point(1),point(2),'.m','MarkerSize',20);
+    plot(point(1),point(2),sprintf('.%s',dispProps.leftEar_dot_color),'MarkerSize',20);
     point2 = point;
     
-    plot([point1(1) point2(1)],[point1(2) point2(2)],'r','linewidth',2);
+%     plot([point1(1) point2(1)],[point1(2) point2(2)],'r','linewidth',2);
     
     pxls = out.right_hand.boundary_pixels(ii).ps;
     [rr,cc] = ind2sub(handles.md.frame_size,pxls);
-    plot(cc,rr,'c','linewidth',2);
+    plot(cc,rr,dispProps.rightHand_line_color,'linewidth',2);
     pxls = out.left_hand.boundary_pixels(ii).ps;
     [rr,cc] = ind2sub(handles.md.frame_size,pxls);
-    plot(cc,rr,'m','linewidth',2);
+    plot(cc,rr,dispProps.leftHand_line_color,'linewidth',2);
     pxls = out.right_ear.boundary_pixels(ii).ps;
     [rr,cc] = ind2sub(handles.md.frame_size,pxls);
-    plot(cc,rr,'c','linewidth',2);
+    plot(cc,rr,dispProps.rightEar_line_color,'linewidth',2);
     pxls = out.left_ear.boundary_pixels(ii).ps;
     [rr,cc] = ind2sub(handles.md.frame_size,pxls);
-    plot(cc,rr,'m','linewidth',2);
+    plot(cc,rr,dispProps.leftEar_line_color,'linewidth',2);
     xlim([zw(1)-50 zw(3)+50]);
     ylim([zw(2)-50 zw(4)]);
     text(zw(1) + 15,zw(2) + 15,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',11,'color','w','FontWeight','Normal');
     
+    if get(handles.checkbox_labeled_video_only_frames,'Value')
+        Fr = getframe(gcf);
+        writeVideo(v,Fr);
+        pause(0.1);
+        continue;
+    end
     var = nans; tvar = out.body.length*scale; mtvar = min(tvar); Mtvar = max(tvar); dV = (Mtvar - mtvar)/10;
     mtvar = mtvar - dV; Mtvar = Mtvar + dV;
     var(1:ii) = out.body.length(1:ii)*scale;
@@ -3936,3 +3947,39 @@ function pushbutton_select_annotation_colors_Callback(hObject, eventdata, handle
 % hObject    handle to pushbutton_select_annotation_colors (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
+dispProps = get(handles.pushbutton_select_annotation_colors,'userdata');
+dispProps = genericGUIForChangingPropValues(dispProps);
+if isstruct(dispProps)
+    set(handles.pushbutton_select_annotation_colors,'userdata',dispProps);
+    md = get_meta_data(handles);
+    fileName = fullfile(md.processed_data_folder,'dispProps.mat');
+    save(fileName,'-struct','dispProps');
+    refreshDisplay(handles);
+end
+
+
+% --- Executes on button press in checkbox_check_relationship_regions_ears.
+function checkbox_check_relationship_regions_ears_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_check_relationship_regions_ears (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_check_relationship_regions_ears
+
+
+% --- Executes on button press in checkbox_check_relationship_regions_nose.
+function checkbox_check_relationship_regions_nose_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_check_relationship_regions_nose (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_check_relationship_regions_nose
+
+
+% --- Executes on button press in checkbox_labeled_video_only_frames.
+function checkbox_labeled_video_only_frames_Callback(hObject, eventdata, handles)
+% hObject    handle to checkbox_labeled_video_only_frames (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkbox_labeled_video_only_frames

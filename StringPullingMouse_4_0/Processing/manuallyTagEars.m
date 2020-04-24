@@ -45,14 +45,15 @@ while 1
         ncols = size(subFrame,2);
         colorVals = getParameter(handles,'Ears Color');
         CVs = colorVals(:,4:6);
-        Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
+%         Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
+        Ih = compute_mask(handles,subFrame,'ears',CVs);
         Ih = imfill(Ih,'holes');
-        Ih = bwareaopen(Ih,100,8);
+        Ih = bwareaopen(Ih,str2double(get(handles.edit_smallest_area_to_neglect_ears,'String')),8);
         Ih = bwconvhull(Ih,'objects');
         Ih = bwconvhull(Ih);
         Ihm = zeros(size(thisFrame(:,:,1)));
         Ihm(top:bottom,left:right) = Ih;
-        Cs = findRegions(Ihm);
+        Cs = findRegions(Ihm,1);
     end
     figure(100);clf;imagesc(thisFrame);axis equal;
     title(sprintf('Frame %d',fn));
@@ -103,14 +104,15 @@ while 1
         ncols = size(subFrame,2);
         colorVals = getParameter(handles,'Ears Color');
         CVs = colorVals(:,4:6);
-        Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
+%         Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
+        Ih = compute_mask(handles,subFrame,'ears',CVs);
         Ih = imfill(Ih,'holes');
-        Ih = bwareaopen(Ih,100,8);
+        Ih = bwareaopen(Ih,str2double(get(handles.edit_smallest_area_to_neglect_ears,'String')),8);
         Ih = bwconvhull(Ih,'objects');
         Ih = bwconvhull(Ih);
         Ihm = zeros(size(thisFrame(:,:,1)));
         Ihm(top:bottom,left:right) = Ih;
-        Cs = findRegions(Ihm);
+        Cs = findRegions(Ihm,1);
     end
     if ~isempty(Cs)
         CsR = Cs;

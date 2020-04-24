@@ -5,6 +5,13 @@ if nargin == 1
     temp = bwareaopen(temp,100);
     temp = bwconvhull(temp,'objects');
 end
+
+if nargin == 2
+    temp = imfill(temp,'holes');
+    temp = bwareaopen(temp,varargin{1});
+    temp = bwconvhull(temp,'objects');
+end
+
 mask = temp;
 
 CC_mask_r1 = bwconncomp(mask);

@@ -48,7 +48,7 @@ end
 Ih = imfill(Ie1,'holes');
 Ih = bwareaopen(Ih,str2double(get(handles.edit_smallest_area_to_neglect_ears,'String')),8);
 Ih = bwconvhull(Ih,'objects');
-s_r1 = findRegions(Ih,str2double(get(handles.edit_smallest_area_to_neglect_ears,'String')));
+s_r1 = findRegions(Ih);
 plotStringAndRegions(100,thisFrame,[],M,{s_r1},[]);
 pause(0.15);
 
@@ -60,19 +60,16 @@ else
     x = Cm.Major_axis_xs(2);
     y = Cm.Major_axis_ys(2);
 end
-if get(handles.checkbox_check_relationship_regions_ears,'Value')
+if get(handles.checkbox_check_intersection_of_regions,'Value')
     centroids = getRegionValues(s_r1,'Centroid');
     inds = centroids(:,2) > (Cm.Centroid(2) - abs((y-Cm.Centroid(2))/4)) | centroids(:,2) < (y-abs((y-Cm.Centroid(2))/4));
     s_r1(inds) = [];
-    plotStringAndRegions(100,thisFrame,[],M,{s_r1},[]);
-    pause(0.15);
+    
 end
 
-try
+
 if length(s_r1) > 1
     s_r1 = reduceRegionsBySpatialClusteringEars(M,s_r1);
-end
-catch
 end
 plotStringAndRegions(100,thisFrame,[],M,{s_r1},[]);
 pause(0.15);
@@ -114,7 +111,6 @@ if ~firstFrame
         disp('Error during spatial clustering of ear regions in find_centroids function ... continuing without it');
     end
 end
-
 s = s_r1;
 for ii = 1:length(s)
     distances(ii) = sqrt((s(ii).Centroid(1)-x)^2+(s(ii).Centroid(2)-y)^2);

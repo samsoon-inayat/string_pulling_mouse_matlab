@@ -5,9 +5,11 @@ if isfield(handles,'figure1')
     end
     if adv == 10
         fileName = fullfile(handles.md.processed_data_folder,'all_parameters.mat');
-        if exist(fileName,'file')
+        if exist(fileName,'file') && ~get(handles.checkbox_over_write,'Value')
             out = load(fileName);
             return;
+        else
+            adv = 0;
         end
     end
 else
@@ -16,7 +18,7 @@ end
 
 if adv == 2
     fileName = fullfile(handles.md.processed_data_folder,'all_parameters_adv.mat');
-    if exist(fileName,'file')
+    if exist(fileName,'file') && ~get(handles.checkbox_over_write,'Value')
         out = load(fileName);
         return;
     else
@@ -224,14 +226,19 @@ for ii = 1:size(m,1)
             dist_nose_B(ii) = (sqrt(sum(([xi yi] - [xns(ii) yns(ii)]).^2,2)));
         end
     else
-        if ~isnan(centroidLE(ii,1))
-            yi = centroidLE(ii,2);
-            dist_nose_B(ii) = yi - yns(ii);
+        if ~isnan(centroidLE(ii,1)) || ~isnan(centroidRE(ii,1))
+            if ~isnan(centroidLE(ii,1))
+                yi = centroidLE(ii,2);
+                dist_nose_B(ii) = yi - yns(ii);
+            end
+            if ~isnan(centroidRE(ii,1))
+                yi = centroidRE(ii,2);
+                dist_nose_B(ii) = yi - yns(ii);
+            end
+        else
+            dist_nose_B(ii) = NaN;
         end
-        if ~isnan(centroidRE(ii,1))
-            yi = centroidRE(ii,2);
-            dist_nose_B(ii) = yi - yns(ii);
-        end
+            
     end
 end
 
