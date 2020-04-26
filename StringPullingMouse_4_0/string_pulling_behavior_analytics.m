@@ -561,7 +561,6 @@ function checkbox_displayBodyAxis_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_displayBodyAxis
 
-
 % --- Executes on button press in checkbox_displayEarTags.
 function checkbox_displayEarTags_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_displayEarTags (see GCBO)
@@ -570,7 +569,6 @@ function checkbox_displayEarTags_Callback(hObject, eventdata, handles)
 
 % Hint: get(hObject,'Value') returns toggle state of checkbox_displayEarTags
 
-
 % --- Executes on button press in pushbutton_plotSelectedEpoch.
 function pushbutton_plotSelectedEpoch_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_plotSelectedEpoch (see GCBO)
@@ -578,15 +576,12 @@ function pushbutton_plotSelectedEpoch_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 plotSelectedEpoch(handles);
 
-
-
 % --- Executes on button press in pushbutton_userPlot.
 function pushbutton_userPlot_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_userPlot (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 userPlot(handles);
-
 
 % --- Executes on button press in pushbutton_userProcess.
 function pushbutton_userProcess_Callback(hObject, eventdata, handles)
@@ -627,7 +622,6 @@ userProcess(handles);
 %     guidata(handles.figure1,handles);
 % end
 
-
 % --- Executes on button press in pushbutton_selectRtEarColor.
 function pushbutton_selectRtEarColor_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_selectRtEarColor (see GCBO)
@@ -652,7 +646,6 @@ uColorVals = unique(colorVals,'rows');
 setParameter(handles,'Right Ear Color',uColorVals);
 checkStatusOfColors(handles);
 
-
 function edit_earMaskTol_Callback(hObject, eventdata, handles)
 % hObject    handle to edit_earMaskTol (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -660,7 +653,6 @@ function edit_earMaskTol_Callback(hObject, eventdata, handles)
 
 % Hints: get(hObject,'String') returns contents of edit_earMaskTol as text
 %        str2double(get(hObject,'String')) returns contents of edit_earMaskTol as a double
-
 
 % --- Executes during object creation, after setting all properties.
 function edit_earMaskTol_CreateFcn(hObject, eventdata, handles)
@@ -674,7 +666,6 @@ if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgr
     set(hObject,'BackgroundColor','white');
 end
 
-
 % --- Executes on button press in checkbox_displayTags.
 function checkbox_displayTags_Callback(hObject, eventdata, handles)
 % hObject    handle to checkbox_displayTags (see GCBO)
@@ -685,8 +676,6 @@ function checkbox_displayTags_Callback(hObject, eventdata, handles)
 
 fn = round(get(handles.slider1,'Value'));
 displayFrames(handles,fn);
-
-
 
 % --- Executes on button press in checkbox_scaleBar.
 function checkbox_scaleBar_Callback(hObject, eventdata, handles)
@@ -735,9 +724,6 @@ display([numPixels scale * numPixels]);
 displayFrames(handles,fn);
 set(handles.figure1,'userdata',fn);
 
-
-
-
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over text_hand.
 function text_hand_ButtonDownFcn(hObject, eventdata, handles)
@@ -753,7 +739,6 @@ function text_hand_ButtonDownFcn(hObject, eventdata, handles)
 % end
 % fn = get(handles.figure1,'userdata');
 % displayMasks(handles,fn);
-
 
 % --- If Enable == 'on', executes on mouse press in 5 pixel border.
 % --- Otherwise, executes on mouse press in 5 pixel border or over text_ear.
@@ -803,7 +788,6 @@ function text_fur_ButtonDownFcn(hObject, eventdata, handles)
 % fn = get(handles.figure1,'userdata');
 % displayMasks(handles,fn);
 
-
 % --- Executes on button press in pushbutton_fastPlay.
 function pushbutton_fastPlay_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_fastPlay (see GCBO)
@@ -831,7 +815,6 @@ end
 set(handles.pushbutton_stopPlay,'Visible','Off');
 set(hObject,'Visible','On');
 close(h);
-
 
 % --- Executes on button press in pushbutton_exportToExcel.
 function pushbutton_exportToExcel_Callback(hObject, eventdata, handles)
@@ -926,10 +909,8 @@ function text_folderName_ButtonDownFcn(hObject, eventdata, handles)
 handles.d = get_meta_data(handles);
 winopen(handles.d.file_path);
 
-
 function uipanel4_ButtonDownFcn(event,handles)
 n = 0;
-
 
 % --- Executes on button press in checkbox_framesDifference.
 function checkbox_framesDifference_Callback(hObject, eventdata, handles)
@@ -1115,6 +1096,7 @@ v = VideoWriter(fileName,'Motion JPEG AVI');
 open(v);
 indF = find(fns == 412);
 dispProps = get(handles.pushbutton_select_annotation_colors,'userdata');
+autoManualCharacters = 'BEHN';
 for ii = 1:length(fns)
     fn = fns(ii);
     frame = frames{fn};
@@ -1163,7 +1145,13 @@ for ii = 1:length(fns)
     plot(cc,rr,dispProps.leftEar_line_color,'linewidth',2);
     xlim([zw(1)-50 zw(3)+50]);
     ylim([zw(2)-50 zw(4)]);
-    text(zw(1) + 15,zw(2) + 15,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',11,'color','w','FontWeight','Normal');
+    text(zw(1) + 15,zw(2) + 15,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',11,'color',...
+        dispProps.TaggedVideo_Frame_Text_Color,'FontWeight','Normal');
+ 
+    amcInds = [out.body.manual(ii),out.right_ear.manual(ii),out.right_hand.manual(ii),out.nose.manual(ii)];
+    amcInds(isnan(amcInds)) = 0;
+    autoManualText = autoManualCharacters(logical(amcInds));
+    text(zw(1) + 15,zw(2) + 35,autoManualText,'FontSize',11,'color',dispProps.TaggedVideo_AutoManual_Text_Color,'FontWeight','Normal');
     
     if get(handles.checkbox_labeled_video_only_frames,'Value')
         Fr = getframe(gcf);

@@ -109,6 +109,8 @@ else
     dispProps.nose_line_color = 'r';
     dispProps.nose_dot_color = 'r';
     dispProps.frameNumber_Text_Color = 'w';
+    dispProps.TaggedVideo_Frame_Text_Color = 'w';
+    dispProps.TaggedVideo_AutoManual_Text_Color = 'w';
 end
 set(handles.pushbutton_select_annotation_colors,'userdata',dispProps);
 
