@@ -1,10 +1,11 @@
 function out = get_all_params(handles,sfn,efn,adv)
+md = get_meta_data(handles);
 if isfield(handles,'figure1')
     if ~exist('adv','var')
         adv = 0;
     end
     if adv == 10
-        fileName = fullfile(handles.md.processed_data_folder,'all_parameters.mat');
+        fileName = fullfile(md.processed_data_folder,'all_parameters.mat');
         if exist(fileName,'file') && ~get(handles.checkbox_over_write,'Value')
             out = load(fileName);
             return;
@@ -17,7 +18,7 @@ else
 end
 
 if adv == 2
-    fileName = fullfile(handles.md.processed_data_folder,'all_parameters_adv.mat');
+    fileName = fullfile(md.processed_data_folder,'all_parameters_adv.mat');
     if exist(fileName,'file') && ~get(handles.checkbox_over_write,'Value')
         out = load(fileName);
         return;

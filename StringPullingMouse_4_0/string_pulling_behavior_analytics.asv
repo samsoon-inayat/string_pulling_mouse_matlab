@@ -855,7 +855,7 @@ colNum = 1;headings = []; dataT = [];
 headings{colNum} = 'Frame Number';
 dataT(:,colNum) = out.fns;
 colNum = colNum + 1;
-headings{colNum} = 'Frame Time';
+headings{colNum} = 'Frame Times';
 dataT(:,colNum) = out.times;
 for ii = 3:length(fieldNames)
     cmdTxt = sprintf('thisField = out.%s;',fieldNames{ii});
@@ -3936,7 +3936,7 @@ function pushbutton_performance_accuracy_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 try
 [sfn,efn] = getFrameNums(handles);
-out = get_all_params(handles,sfn,efn,0);
+out = get_all_params(handles,sfn,efn,10);
 catch
     displayMessageBlinking(handles,'Couldn''t find ... please check analysis','',5);
     return;
@@ -3989,12 +3989,15 @@ catch
     rethrow(lasterror);
     return;
 end
+enable_disable(handles,0);
+set(handles.pushbutton_stop_processing,'visible','on');
+props = {'FontSize',11,'ForegroundColor','b'};displayMessage(handles,'Preparing data',props);
 fieldNames = fields(out);
 colNum = 1;headings = []; dataT = [];
 headings{colNum} = 'Frame Number';
 dataT(:,colNum) = out.fns;
 colNum = colNum + 1;
-headings{colNum} = 'Frame Time';
+headings{colNum} = 'Frame Times';
 dataT(:,colNum) = out.times;
 for ii = 3:length(fieldNames)
     cmdTxt = sprintf('thisField = out.%s;',fieldNames{ii});
@@ -4021,7 +4024,5 @@ for ii = 3:length(fieldNames)
         end
     end
 end
-dataT = array2table(dataT);
-dataT.Properties.VariableNames = headings;
-assignin('base','dataT',dataT)
-openvar('dataT');
+dataT = table(dataT,'VariableNames',headings);
+n = 0;
