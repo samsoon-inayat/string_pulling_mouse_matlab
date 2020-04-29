@@ -29,7 +29,7 @@ frameNums = sfn:efn;
 % zw = handles.md.resultsMF.zoomWindow;
 zw = getParameter(handles,'Auto Zoom Window');
 if isempty(zw)
-    displayMessageBlinking(handles,'No Zoom Window for Masks ... go to step 4',{'ForegroundColor','r'},3);
+    displayMessageBlinking(handles,'No Zoom Window for Masks ... go to step 3',{'ForegroundColor','r'},3);
     return;
 end
 

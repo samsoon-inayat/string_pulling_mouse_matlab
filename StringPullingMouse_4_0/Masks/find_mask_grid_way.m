@@ -36,11 +36,11 @@ for ii = 1:length(st)
 %     num_string = [];
 %     num_background = [];
     for jj = 1:length(sth)
-        if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off')
-            axes(handles.axes_main);cla;set(handles.axes_main,'visible','off');
-            success = 0;temp = [];
-            return;
-        end
+%         if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off')
+%             axes(handles.axes_main);cla;set(handles.axes_main,'visible','off');
+%             success = 0;temp = [];
+%             return;
+%         end
         sub_subFrame = subFrame(:,sth(jj):eth(jj),:);
         temp = getThisMask(sub_subFrame,cF,size(sub_subFrame(:,:,1),1),size(sub_subFrame(:,:,1),2),radius);
         num_fur(ii,jj) = sum(temp(:));
