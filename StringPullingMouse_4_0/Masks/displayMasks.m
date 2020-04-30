@@ -1,7 +1,7 @@
 
 function displayMasks(handles,fn,allCs)
 frames = get_frames(handles);
-zw = getParameter(handles,'Zoom Window');%handles.md.resultsMF.zoomWindow;
+zw = getParameter(handles,'Auto Zoom Window');%handles.md.resultsMF.zoomWindow;
 thisFrame = frames{fn};
 if isempty(thisFrame)
     return;
@@ -31,10 +31,10 @@ subplot(rows,cols,3);
 imagesc(tMasks(:,:,2));axis equal;
 title('Ears');
 subplot(rows,cols,4);
-imagesc(tMasks(:,:,3));axis equal;
+imagesc(imoverlay(thisFrame,tMasks(:,:,3)));axis equal;
 title('Hands');
 subplot(rows,cols,5);
-imagesc(tMasks(:,:,4));axis equal;
+imagesc(imoverlay(thisFrame,tMasks(:,:,4)));axis equal;
 title('Nose');
 subplot(rows,cols,6);
 imagesc(tMasks(:,:,5));axis equal;

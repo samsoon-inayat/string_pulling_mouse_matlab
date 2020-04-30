@@ -288,12 +288,6 @@ end
 if strcmp(eventdata.Key,'page-up')
     
 end
-dispFigureWindowKeyReleaseFcn(eventdata,handles);
-% 
-% if strcmp(eventdata.Key,'escape') && isempty(eventdata.Modifier)
-%     set(handles.text_processing,'userdata',0);
-%     set_processing_mode_gui(handles,0);
-% end
 
 % --- Executes on key press with focus on figure1 or any of its controls.
 function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
@@ -303,8 +297,6 @@ function figure1_WindowKeyPressFcn(hObject, eventdata, handles)
 %	Character: character interpretation of the key(s) that was pressed
 %	Modifier: name(s) of the modifier key(s) (i.e., control, shift) pressed
 % handles    structure with handles and user data (see GUIDATA)
-
-
 
 % --- Executes on button press in pushbutton_selectHandColor.
 function pushbutton_selectHandColor_Callback(hObject, eventdata, handles)
@@ -1322,7 +1314,7 @@ find_object(handles,sfn,efn,objectMap{objectToProcess});
 %     rethrow(lasterror);
 % end
 set_processing_mode_gui(handles,0);
-set_focus_display_window(handles);
+
 
 % --- Executes on button press in pushbutton_erase.
 function pushbutton_erase_Callback(hObject, eventdata, handles)

@@ -196,7 +196,7 @@ for rr = 1:disp.numRs
                 text(disp.ff.h_axes(rr,cc),tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color','w','fontweight','Bold');
                 text(disp.ff.h_axes(rr,cc),tdx,tdy+100,sprintf('DLC'),'fontsize',12,'Color','w','fontweight','Bold');
             else
-                text(disp.ff.h_axes(rr,cc),tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color','w','fontweight','Bold');
+                text(disp.ff.h_axes(rr,cc),tdx,tdy+3,sprintf('%d',frns(rr,cc)),'fontsize',12,'Color',dispProps.frameNumber_Text_Color,'fontweight','Bold');
             end
         end
         if dispTags

@@ -72,10 +72,10 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.rightEar_line_color,'linewidth',1);
+                plot(ha,cc,rr,dispProps.leftEar_line_color,'linewidth',1);
             else
                 plot(ha,R(iii,3),R(iii,4),...
-                    sprintf('.%s',dispProps.rightEar_dot_color),'MarkerSize',mSize);
+                    sprintf('.%s',dispProps.leftEar_dot_color),'MarkerSize',mSize);
             end
 %             text(R(iii,3)+50,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -84,10 +84,10 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.leftEar_line_color,'linewidth',1);
+                plot(ha,cc,rr,dispProps.rightEar_line_color,'linewidth',1);
             else
                 plot(ha,R(iii,3),R(iii,4),...
-                    sprintf('.%s',dispProps.leftEar_dot_color),'MarkerSize',mSize);
+                    sprintf('.%s',dispProps.rightEar_dot_color),'MarkerSize',mSize);
             end
 %             text(R(iii,3)-80,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -96,10 +96,10 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.rightHand_line_color,'linewidth',1);
+                plot(ha,cc,rr,dispProps.leftHand_line_color,'linewidth',1);
             else
                 plot(ha,R(iii,3),R(iii,4),...
-                    sprintf('.%s',dispProps.rightHand_dot_color),'MarkerSize',mSize);
+                    sprintf('.%s',dispProps.leftHand_dot_color),'MarkerSize',mSize);
             end
 %             text(R(iii,3)+50,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -108,10 +108,10 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.leftHand_line_color,'linewidth',1);
+                plot(ha,cc,rr,dispProps.rightHand_line_color,'linewidth',1);
             else
                 plot(ha,R(iii,3),R(iii,4),...
-                    sprintf('.%s',dispProps.leftHand_dot_color),'MarkerSize',mSize);
+                    sprintf('.%s',dispProps.rightHand_dot_color),'MarkerSize',mSize);
             end
 %             text(R(iii,3)-80,R(iii,4)-10,handles.md.tag_labels{R(iii,2)},'FontSize',7,'Color','w');
         end
@@ -146,6 +146,6 @@ for ii = 1:length(inds)
         end
     end
 end
-text(ha,tdx,tdy,sprintf('%s',sort(mobj)),'fontsize',8,'Color','w','fontweight','Bold');
+text(ha,tdx,tdy,sprintf('%s',sort(mobj)),'fontsize',8,'Color',dispProps.manual_detection_identifier,'fontweight','Bold');
 
 out = R(inds,:);
