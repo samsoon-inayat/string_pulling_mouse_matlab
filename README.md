@@ -10,6 +10,12 @@ string_pulling_behavior_analytics.m
 
 Important Note: Use a minimum screen resolution of 1920x1080 for optimal viewing of the GUI window
 
+Matlab Toolbox dependencies
+1)	Signal processing 
+2)	Image processing
+3)	Statistics and Machine Learning 
+4)	Computer vision system
+
 # Usage
 Please visit the wiki page
 [https://github.com/samsoon-inayat/string_pulling_mouse_matlab/wiki/Home](https://github.com/samsoon-inayat/string_pulling_mouse_matlab/wiki/Home)
