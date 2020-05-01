@@ -55,12 +55,12 @@ else
     xlab = 'Frames';
 end
 
-hf = figure(21);clf;
-add_window_handle(handles,hf);
-imagesc(thisFrame);axis equal;
-hold on;
-plot(out.body.ellipse_top(fn,1),out.body.ellipse_top(fn,2),'*r');
-plot(out.nose.centroid(fn,1),out.nose.centroid(fn,2),'*y');
+% hf = figure(21);clf;
+% add_window_handle(handles,hf);
+% imagesc(thisFrame);axis equal;
+% hold on;
+% plot(out.body.ellipse_top(fn,1),out.body.ellipse_top(fn,2),'*r');
+% plot(out.nose.centroid(fn,1),out.nose.centroid(fn,2),'*y');
 
 
 hf1 = figure(22);clf;
