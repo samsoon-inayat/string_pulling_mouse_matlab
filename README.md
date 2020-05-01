@@ -31,3 +31,10 @@ Contributors: Surjeet Singh and Arashk Ghasroddashti
 
 # License
 Please see license file
+
+[https://github.com/samsoon-inayat/string_pulling_mouse_matlab/blob/master/LICENSE]
+
+# Support and Maintenance
+Please report any issues here
+
+https://github.com/samsoon-inayat/string_pulling_mouse_matlab/issues
