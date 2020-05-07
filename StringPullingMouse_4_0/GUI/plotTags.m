@@ -147,5 +147,4 @@ for ii = 1:length(inds)
     end
 end
 text(ha,tdx,tdy,sprintf('%s',sort(mobj)),'fontsize',8,'Color',dispProps.manual_detection_identifier,'fontweight','Bold');
-
 out = R(inds,:);

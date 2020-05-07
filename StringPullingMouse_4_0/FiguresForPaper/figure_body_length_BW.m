@@ -256,7 +256,7 @@ return;
 end
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 varNameT = 'Left Hand Vertical Speed';
 for ii = 1:5
@@ -273,6 +273,7 @@ hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1]
 hold on;
 [h,p,ci,t_stat] = ttest2(meanb,meanw)
 hmean = h; pmean = p;
+effect_size = computeCohen_d(meanw,meanb)
 mVar = [mean(meanb) mean(meanw)]
 semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
 maxY = max(mVar + semVar); maxY = maxY + maxY/5;
@@ -283,11 +284,11 @@ plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
 xlim([0.25 2.5]); ylim([minY maxY]);
 set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','bold','TickDir','out');
-hy = ylabel({'Max Left Hand','Vert. Speed (cm/s)'});%changePosition(hy,[-0.3 -0.5 0]);
+hy = ylabel({'Peak Left Hand','Vert. Speed (cm/s)'});%changePosition(hy,[-0.3 -0.5 0]);
 set(hy,'FontSize',6.5)
 % text(1,-1.85,{'***'},'FontSize',12,'FontWeight','Normal');
 changePosition(gca,[0.1 -0.01 -0.3 -0.05]);
-save_pdf(hf,pdfFolder,sprintf('Mean %s',varNameT),600);
+save_pdf(hf,pdfFolder,sprintf('%s',varNameT),600);
 [hmean pmean]
 return;
 end
@@ -320,11 +321,11 @@ plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
 xlim([0.25 2.5]); ylim([minY maxY]);
 set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','bold','TickDir','out');
-hy = ylabel({'Max Right Hand','Vert. Speed (cm/s)'});%changePosition(hy,[-0.3 -0.5 0]);
+hy = ylabel({'Right Hand','Vert. Speed (cm/s)'});%changePosition(hy,[-0.3 -0.5 0]);
 set(hy,'FontSize',6.5)
 % text(1,-1.85,{'***'},'FontSize',12,'FontWeight','Normal');
 changePosition(gca,[0.1 -0.01 -0.3 -0.05]);
-save_pdf(hf,pdfFolder,sprintf('Mean %s',varNameT),600);
+save_pdf(hf,pdfFolder,sprintf('%s',varNameT),600);
 [hmean pmean]
 return;
 end
@@ -433,7 +434,8 @@ set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','bold','TickDir','out');
 hy = ylabel({'Right Hand','Amplitude (mm)'});%changePosition(hy,[-0.3 -0.5 0]);set(hy,'FontSize',6)
 % text(1,-1.85,{'***'},'FontSize',12,'FontWeight','Normal');
-changePosition(gca,[0.1 0 -0.3 0]);
+ylim([20 30]);
+changePosition(gca,[0.1 -0.02 -0.3 0]);
 save_pdf(hf,pdfFolder,sprintf('Mean %s',varNameT),600);
 [hmean pmean]
 return;
@@ -442,8 +444,8 @@ end
 
 
 
-%%
-runThis = 1;
+%% values surjeet provided
+runThis = 0;
 if runThis
     amplitude_w = [
 23.68
@@ -570,7 +572,7 @@ putLegend(gca,legs,'colors',{'k','b'},'sigR',{[],'','k',6},'lineWidth',1);
 text(30,10,{getNumberOfAsterisks(pk)},'FontSize',12,'FontWeight','normal'); text(30,8,{'(ks-test)'},'FontSize',7,'FontWeight','normal');
 save_pdf(hf,pdfFolder,sprintf('Distribution %s','Amplitude'),600);
 
-return;
+% return;
 meanb = amplitude_b; meanw = amplitude_w;
 hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1],'color','w');
 hold on;
