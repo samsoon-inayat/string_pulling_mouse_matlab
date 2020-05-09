@@ -146,5 +146,12 @@ for ii = 1:length(inds)
         end
     end
 end
+if ~isfield(dispProps,'manual_detection_identifier')
+    dispProps.manual_detection_identifier = 'w';
+    set(handles.pushbutton_select_annotation_colors,'userdata',dispProps);
+    md = get_meta_data(handles);
+    fileName = fullfile(md.processed_data_folder,'dispProps.mat');
+    save(fileName,'-struct','dispProps');
+end
 text(ha,tdx,tdy,sprintf('%s',sort(mobj)),'fontsize',8,'Color',dispProps.manual_detection_identifier,'fontweight','Bold');
 out = R(inds,:);

@@ -4042,43 +4042,15 @@ function pushbutton_import_colors_Callback(hObject, eventdata, handles)
 % hObject    handle to pushbutton_import_colors (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-all_colorVar = {'All','String Color','Fur Color','Mouse Color','Ears Color','Nose Color','Hands Color'};
-choices = generalGUIForSelection(all_colorVar,1);
-if choices == 1
-    colorVar = all_colorVar(2:end);
-else
-    colorVar = all_colorVar(choices);
-end
-found = 0;
-for ii = 1:length(colorVar)
-    tC = getParameter(handles,colorVar{ii});
-    if ~isempty(tC)
-        found = 1;
-        break;
-    end
-end
-if found
-    answer = questdlg('This will override existing colors for all objects. Are you sure?', ...
-        'Please Confirm', ...
-        'Yes please','No thank you','No thank you');
-    % Handle response
-    switch answer
-        case 'No thank you'
-            return;
-    end
-end
 md = get_meta_data(handles);
 fileName = fullfile(md.processed_data_folder,'config.mat');
-[~,path] = uigetfile(fileName,'Select Config File from another Processed_Data_Folder');
-try
-    config = get_config_file(path);
-    for ii = 1:length(colorVar)
-        tC = getParameter(config,colorVar{ii});
-        setParameter(handles,colorVar{ii},tC);
-    end
-    displayMessage(handles,'Success importing colors!');
-    refreshDisplay(handles);
-catch
-    displayMessage(handles,'Error importing colors ... see Matlab command window for details');
-    rethrow(lasterror);
+[file,path] = uigetfile(fileName,'Select Config File from another Processed_Data_Folder');
+fileName = fullfile(path,file);
+config = get_config_file(path);
+colorVar = {'String Color','Fur Color','Mouse Color','Ears Color','Nose Color','Hands Color'};
+for ii = 1:length(colorVar)
+    tC = getParameter(config,colorVar{ii});
+    setParam
 end
+
+n = 0;
