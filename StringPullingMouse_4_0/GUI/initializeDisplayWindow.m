@@ -29,7 +29,7 @@ set(ff.hf,'userdata',[0 1 1]);
 for rr = 1:numRs
     for cc = 1:numCs
         axes(ff.h_axes(rr,cc));
-        hims(rr,cc) = imagesc(frames{frns(rr,cc)});
+        hims(rr,cc) = imagesc(zeros(size(frames{frns(rr,cc)},1),size(frames{frns(rr,cc)},2)));
         axis equal; axis off;
         set(gca,'XTickLabel',[],'YTickLabel',[],'box','off','XTick',[],'YTick',[]);
         text(tdx,tdy,sprintf('%d',frns(rr,cc)),'fontsize',9);
@@ -37,6 +37,7 @@ for rr = 1:numRs
             xlim([zw(1) zw(3)]);
             ylim([zw(2) zw(4)]);
         end
+        set(gca,'visible','off');
     end
 end
 disp.numRs = numRs; 

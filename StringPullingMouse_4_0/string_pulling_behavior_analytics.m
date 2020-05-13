@@ -528,7 +528,8 @@ function pushbutton_resetZoom_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 % stop(handles.timer_video_loader)
-setParameter(handles,'Zoom Window',[]);
+md = get_meta_data(handles);
+setParameter(handles,'Zoom Window',[1 1 md.frame_size(2) md.frame_size(1)]);
 value = round(get(handles.slider1,'Value'));
 % displayFrames(handles,value);
 pushbutton_disp_update_Callback(handles.pushbutton_disp_update, eventdata, handles)
@@ -1061,7 +1062,7 @@ frames = get_frames(handles);
 handles.d = get_data(handles);
 times = handles.d.frame_times;
 handles.md = get_meta_data(handles);
-fileName = [handles.md.processed_data_folder sprintf('/video_%d_%d.avi',sfn,efn)];
+fileName = [handles.md.processed_data_folder sprintf('/video_%d_%d',sfn,efn)];
 out = get_all_params(handles,sfn,efn,2);
 fns = sfn:efn;
 thisTimes = times(fns);
@@ -1097,7 +1098,7 @@ else
 end
 nans = NaN(1,length(fns));
 
-v = VideoWriter(fileName,'Motion JPEG AVI');
+v = VideoWriter(fileName,'MPEG-4');
 open(v);
 indF = find(fns == 412);
 dispProps = get(handles.pushbutton_select_annotation_colors,'userdata');
@@ -1150,8 +1151,8 @@ for ii = 1:length(fns)
     plot(cc,rr,dispProps.leftEar_line_color,'linewidth',2);
     xlim([zw(1)-50 zw(3)+50]);
     ylim([zw(2)-50 zw(4)]);
-    text(zw(1) + 15,zw(2) + 15,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',11,'color',...
-        dispProps.TaggedVideo_Frame_Text_Color,'FontWeight','Normal');
+%     text(zw(1) + 15,zw(2) + 15,sprintf('Frame - %d, Time - %.3f secs',fn,thisTimes(ii)),'FontSize',11,'color',...
+%         dispProps.TaggedVideo_Frame_Text_Color,'FontWeight','Normal');
  
     amcInds = [out.body.manual(ii),out.right_ear.manual(ii),out.nose.manual(ii),out.right_hand.manual(ii)];
     amcInds(isnan(amcInds)) = 0;
