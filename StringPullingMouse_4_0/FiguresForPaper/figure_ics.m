@@ -14,10 +14,10 @@ viewFrames_ICs(config_w{an_w},ics_w{an_w},{pdfFolder,'ics_w_frames'});
 return;
 end
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 viewICs_min_max(config_b{1},ics_b{1},{pdfFolder,'ics_b'});
-% viewICs_min_max(config_w{1},ics_w{1},{pdfFolder,'ics_w'});
+viewICs_min_max(config_w{1},ics_w{1},{pdfFolder,'ics_w'});
 return;
 end
 

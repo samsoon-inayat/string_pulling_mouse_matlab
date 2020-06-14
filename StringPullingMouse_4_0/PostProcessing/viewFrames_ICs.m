@@ -70,7 +70,7 @@ axes(ff.h_axes(1,ii+1));
 axis off;
 % if isempty(strfind(handles.md.file_name,'Sim_Data'))
 hc = colorbar;
-changePosition(ha_hc,[-0.2 0.3 0 -0.65]);
+changePosition(ha_hc,[-0.19 0.3 0 -0.65]);
 colormap jet;
 % caxis([minpcs maxpcs]);
 % set(hc,'Ticks',[minpcs maxpcs],'TickLabels',{sprintf('%.1f',minpcs),sprintf('%.1f',maxpcs)},'FontSize',6)
@@ -79,8 +79,8 @@ try
     caxis([minpcs maxpcs]);
     set(hc,'Ticks',[minpcs maxpcs],'TickLabels',[],'FontSize',6);
     poshc = get(hc,'Position');
-    text(1.3,-0.1,sprintf('%.1f',(minpcs)),'FontSize',7);
-    text(1.3,1.1,sprintf('%.1f',(maxpcs)),'FontSize',7);
+    text(1.3,-0.015,sprintf('%.1f',(minpcs)),'FontSize',7);
+    text(1.3,1.05,sprintf('%.1f',(maxpcs)),'FontSize',7);
 catch
 end
 

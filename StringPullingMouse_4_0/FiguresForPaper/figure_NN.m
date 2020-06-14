@@ -53,9 +53,9 @@ for ii = 1:length(varN)
     hyl = ylabel({sprintf('%s',ylabels{ii}),'(pix)'});
     cumV = reshape(vals1-vals2,1,numel(vals1));
     ylim([min(cumV) max(cumV)]);
-    changePosition(gca,[-0.08 0 0.15 0]);
+    changePosition(gca,[-0.02 0 0.05 0]);
     box off
-    set(gca,'TickDir','out','linewidth',0.1,'FontSize',7,'FontWeight','bold');
+    set(gca,'TickDir','out','linewidth',1,'FontSize',7,'FontWeight','bold');
     pdfFileName = sprintf('%s_%d.pdf',mfilename,ii);
     pdfFileName = [pwd '\FiguresForPaper\pdfs\' pdfFileName]
     save2pdf(pdfFileName,gcf,600);

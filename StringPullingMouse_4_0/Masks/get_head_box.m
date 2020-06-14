@@ -33,6 +33,7 @@ margin = floor(margin/imrf);
 binsh = floor(size(thisFrame,2)/2); binsv = floor(size(thisFrame,1)/10);Im = thisFrame(:,:,1);
 fgb = find_feature_grid(handles,thisFrame,{cF,cE},[1 size(Im,1)],[1 size(Im,2)],[binsv binsh],[0.1 0.1 0.1]);
 gF = fgb.xs{1} | fgb.xs{2};
+rrs = 1;
 for ii = 1:size(gF,1)
     thisRow = gF(ii,:);
     if (sum(thisRow == 1)/length(thisRow)) > 0.1
