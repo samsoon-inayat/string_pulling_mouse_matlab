@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 08-May-2020 20:50:10
+% Last Modified by GUIDE v2.5 14-Jun-2020 15:09:45
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -1912,7 +1912,10 @@ if isempty(frameNums)
 end
 enable_disable(handles,0);
 try
-    if ~get(handles.checkbox_find_zoom_auto,'Value')
+    choices = {'Fully Automatic','Semi-automatic Blob Method'};
+    choice = generalGUIForSelection(choices,1);
+%     if ~get(handles.checkbox_find_zoom_auto,'Value')
+    if choice == 2
         findBody_Coarse(handles,frameNums);
     else
         find_auto_zoom(handles,frameNums);
@@ -4083,3 +4086,107 @@ catch
     displayMessage(handles,'Error importing colors ... see Matlab command window for details');
     rethrow(lasterror);
 end
+
+
+% --- Executes on button press in pushbutton_set_head_box_manually.
+function pushbutton_set_head_box_manually_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_set_head_box_manually (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fn = get(handles.figure1,'userdata');
+data = get_data(handles);
+hf = figure(10);
+set(hf,'WindowStyle','modal');
+imshow(data.frames{fn});
+axis equal; axis off;
+zw = getParameter(handles,'Zoom Window');
+azw = getParameter(handles,'Auto Zoom Window');
+if ~isempty(azw) & get(handles.checkbox_select_auto_zoom_window,'Value')
+    zw = azw;
+end
+if ~isempty(zw)
+    xlim(gca,[zw(1) zw(3)]);
+    ylim(gca,[zw(2) zw(4)]);
+else
+    xlim(gca,[1 sz(2)]);
+    ylim(gca,[1 sz(1)]);
+end
+try
+    hrect = imrect(gca);
+    set(hf,'WindowStyle','normal');
+catch
+    return;
+end
+if isempty(hrect)
+    displayFrames(handles,fn);
+    return;
+end
+pos = round(hrect.getPosition);
+close(hf);
+left = pos(1);
+if left <= 0
+    left = 1;
+end
+top = pos(2);
+if top <= 0
+    top = 1;
+end
+right = pos(1)+pos(3);
+if right > data.video_object.Width
+    right = data.video_object.Width;
+end
+bottom = pos(2) + pos(4);
+if bottom > data.video_object.Height
+    bottom = data.video_object.Height;
+end
+
+boxes = getParameter(handles,'Head Boxes');
+indHeadBox = boxes(:,1) == fn;
+
+headBox = [left,top,right,bottom];
+
+if sum(indHeadBox) > 0
+    boxes(indHeadBox,:) = [fn headBox];
+else
+    boxes = [boxes;[fn headBox]];
+end
+setParameter(handles,'Head Boxes',boxes);
+
+
+% --- Executes on button press in pushbutton_plot_body_box.
+function pushbutton_plot_body_box_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_plot_body_box (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+zw = getParameter(handles,'Auto Zoom Window');
+if isempty(zw)
+    return;
+end
+fn = get(handles.figure1,'userdata');
+data = get_data(handles);
+hf = figure(10);
+set(hf,'WindowStyle','modal');
+imshow(data.frames{fn});
+axis equal; axis off;
+xlim(gca,[zw(1) zw(3)]);
+ylim(gca,[zw(2) zw(4)]);
+
+% --- Executes on button press in pushbutton_head_box.
+function pushbutton_head_box_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_head_box (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+fn = get(handles.figure1,'userdata');
+boxes = getParameter(handles,'Head Boxes');
+indHeadBox = boxes(:,1) == fn;
+if sum(indHeadBox) == 0
+    return;
+end
+zw = boxes(indHeadBox,2:5);
+data = get_data(handles);
+hf = figure(10);
+set(hf,'WindowStyle','modal');
+imshow(data.frames{fn});
+axis equal; axis off;
+xlim(gca,[zw(1) zw(3)]);
+ylim(gca,[zw(2) zw(4)]);

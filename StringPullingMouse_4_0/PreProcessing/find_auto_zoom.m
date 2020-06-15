@@ -1,6 +1,6 @@
 function find_auto_zoom(handles,frameNums)
 
-zw = getParameter(handles,'Zoom Window');
+% zw = getParameter(handles,'Zoom Window');
 
 if get(handles.checkbox_Reduce_Image_Size,'Value')
     try
