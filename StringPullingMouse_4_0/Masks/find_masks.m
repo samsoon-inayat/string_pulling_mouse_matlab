@@ -73,7 +73,8 @@ for oo = 1:length(os)
                         delete(fileName);
                     end
                 end
-                n = 0;
+                displayMessage(handles,sprintf('All files deleted ... find masks again'));
+                return;
             end
         end
         if sum(mask(:))>0 && ~get(handles.checkbox_over_write,'Value')

@@ -53,8 +53,18 @@ function genericGUIForChangingPropValues_OpeningFcn(hObject, eventdata, handles,
 % varargin   command line arguments to genericGUIForChangingPropValues (see VARARGIN)
 
 props = varargin{1};
-data = propsToData(props)
+Name_of_Figure = varargin{2};
+set(handles.figure1,'Name',Name_of_Figure);
+if nargin > 5
+    set(handles.pushbutton_save,'Enable','Off');
+end
+data = propsToData(props);
 set(handles.uitable_main,'data',data);
+pause(0.5);
+jscroll = findjobj(handles.uitable_main);
+jTable = jscroll.getViewport.getView;
+jTable.setAutoResizeMode(jTable.AUTO_RESIZE_SUBSEQUENT_COLUMNS)
+jTable.repaint()
 set(handles.figure1,'WindowStyle','modal');
 set(handles.figure1,'CloseRequestFcn',@my_closereq);
 

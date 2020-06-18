@@ -22,7 +22,7 @@ function varargout = string_pulling_behavior_analytics(varargin)
 
 % Edit the above text to modify the response to help string_pulling_behavior_analytics
 
-% Last Modified by GUIDE v2.5 14-Jun-2020 15:09:45
+% Last Modified by GUIDE v2.5 18-Jun-2020 12:23:58
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -3909,7 +3909,7 @@ function pushbutton_select_annotation_colors_Callback(hObject, eventdata, handle
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 dispProps = get(handles.pushbutton_select_annotation_colors,'userdata');
-dispProps = genericGUIForChangingPropValues(dispProps);
+dispProps = genericGUIForChangingPropValues(dispProps,'Change Property Values');
 if isstruct(dispProps)
     set(handles.pushbutton_select_annotation_colors,'userdata',dispProps);
     md = get_meta_data(handles);
@@ -4180,6 +4180,7 @@ fn = get(handles.figure1,'userdata');
 boxes = getParameter(handles,'Head Boxes');
 indHeadBox = boxes(:,1) == fn;
 if sum(indHeadBox) == 0
+    displayMessage(handles,'No head box found');
     return;
 end
 zw = boxes(indHeadBox,2:5);
@@ -4190,3 +4191,28 @@ imshow(data.frames{fn});
 axis equal; axis off;
 xlim(gca,[zw(1) zw(3)]);
 ylim(gca,[zw(2) zw(4)]);
+
+
+% --- Executes on button press in pushbutton_keyboard_shortcuts.
+function pushbutton_keyboard_shortcuts_Callback(hObject, eventdata, handles)
+% hObject    handle to pushbutton_keyboard_shortcuts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+dispProps.Right_Arrow = 'Move selection of frame right';
+dispProps.Left_Arrow = 'Move selection of frame left';
+dispProps.Up_Arrow = 'Move selection of frame up';
+dispProps.Down_Arrow = 'Move selection of frame down';
+
+dispProps.Page_Up = 'Display previous frames';
+dispProps.Page_Up = 'Display next frames';
+
+dispProps.s_or_S = 'Select String Object for processing';
+dispProps.b_or_B = 'Select Body Object for processing';
+dispProps.e_or_E = 'Select Ears Object for processing';
+dispProps.n_or_N = 'Select Nose Object for processing';
+dispProps.h_or_H = 'Select Hands Object for processing';
+
+dispProps.m_or_M = 'Find Masks';
+dispProps.o_or_O = 'Find Objects';
+
+genericGUIForChangingPropValues(dispProps,'Keyboard Shortcuts',0);

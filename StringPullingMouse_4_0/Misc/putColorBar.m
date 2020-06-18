@@ -6,6 +6,9 @@ hc = colorbar('location','eastoutside');
 set(hc,'EdgeColor','none');
 changePosition(ha,positionShift);
 colormap jet;
+if any(isnan(minmax))
+    return;
+end
 caxis(minmax);
 xlims = xlim;
 xincr = 0.3; yincr = 0.125;
