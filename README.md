@@ -5,7 +5,7 @@ A Matlab based software for analysis of video data of rodents (rats or mice) eng
 In the string pulling task for rodents (rats or mice), they pull a vertical string to obtain food reward attached to the end of the string. This task is elegant because rodents require little training and it lends to kinematic analysis of body, head, arm, and hand movements. Using this task with control and experimental animals such as animal models of neurological or spinal cord diseases, one can investigate sensorimotor physiology and pathophysiology as well as test the efficacy of therapeutic drugs in the recovery of sensorimotor function. This software facilitates the analysis of video data of rodents pulling strings and provide kinematic measures of body, head, and hand movements as well as allows whole-body analysis of string pulling motion sequence.
 
 ![](https://github.com/samsoon-inayat/string_pulling_mouse_matlab/blob/master/StringPullingMouse_4_0/striking_image.gif)
-Representative bout of string pulling sequence of a mouse and examples of a subset of analysis. From left to right, 1) tracked hands, ears, nose, and body of the mouse, 2) path of hands, 3) instantaneous speed determined using optical flow, and 4) and 5) show running standard deviation and average of the image sequence respectively
+Representative bout of string pulling sequence of a mouse and examples of a subset of analysis. From left to right, 1) tracked hands, ears, nose, and body of the mouse, 2) paths of hands, 3) instantaneous speed determined using optical flow, and 4) and 5) show running standard deviation and average of the image sequence respectively
 
 
 # Installation
@@ -44,6 +44,8 @@ Please report any issues here
 https://github.com/samsoon-inayat/string_pulling_mouse_matlab/issues
 
 # References
+
+eLife, Preprint, https://elifesciences.org/articles/54540
 
 Inayat, S., S. Singh, A. Ghasroddashti, Qandeel, P. Egodage, I. Q. Whishaw and M. H. Mohajerani (2019). "A toolbox for automated video analysis of rodents engaged in string-pulling: Phenotyping motor behavior of mice for sensory, whole-body and bimanual skilled hand function." bioRxiv: 2019.2012.2018.881342. https://doi.org/10.1101/2019.12.18.881342
 
