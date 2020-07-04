@@ -44,7 +44,7 @@ else
     inds = find(R(:,1) == fn);
 end
 mSize = 12;
-mSizeN = 22;
+mSizeN = 33;
 
 % objects are 1 body 2 ears 3 hands --> corresponding tags are 7,8 for
 % body, 2,3 for ears, 4 and 5 for hands
@@ -72,7 +72,7 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.leftEar_dot_color,'linewidth',3);
+                plot(ha,cc,rr,dispProps.leftEar_dot_color,'linewidth',4);
             else
                 plot(ha,R(iii,3),R(iii,4),...
                     sprintf('.%s',dispProps.leftEar_dot_color),'MarkerSize',mSize);
@@ -84,7 +84,7 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.rightEar_dot_color,'linewidth',3);
+                plot(ha,cc,rr,dispProps.rightEar_dot_color,'linewidth',4);
             else
                 plot(ha,R(iii,3),R(iii,4),...
                     sprintf('.%s',dispProps.rightEar_dot_color),'MarkerSize',mSize);
@@ -96,7 +96,7 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.leftHand_dot_color,'linewidth',3);
+                plot(ha,cc,rr,dispProps.leftHand_dot_color,'linewidth',4);
             else
                 plot(ha,R(iii,3),R(iii,4),...
                     sprintf('.%s',dispProps.leftHand_dot_color),'MarkerSize',mSize);
@@ -108,7 +108,7 @@ for ii = 1:length(inds)
                 Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
                 boundaryPixels = P(Lia,3);
                 [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-                plot(ha,cc,rr,dispProps.rightHand_dot_color,'linewidth',3);
+                plot(ha,cc,rr,dispProps.rightHand_dot_color,'linewidth',4);
             else
                 plot(ha,R(iii,3),R(iii,4),...
                     sprintf('.%s',dispProps.rightHand_dot_color),'MarkerSize',mSize);
@@ -120,16 +120,16 @@ for ii = 1:length(inds)
         jj = find(R(inds,2) == 7);
         C = getSubjectFit(R(inds(jj),[3 4]),R(iii,3),R(iii,4),R(iii,5));
 %             plot(C.Centroid(1),C.Centroid(2),'*g','MarkerSize',5);
-        plot(ha,C.Major_axis_xs,C.Major_axis_ys,dispProps.bodyEllipse_color,'linewidth',3);
-        plot(ha,C.Minor_axis_xs,C.Minor_axis_ys,dispProps.bodyEllipse_color,'linewidth',3);
-        plot(ha,C.Ellipse_xs,C.Ellipse_ys,dispProps.bodyEllipse_color,'linewidth',3);
+        plot(ha,C.Major_axis_xs,C.Major_axis_ys,dispProps.bodyEllipse_color);
+        plot(ha,C.Minor_axis_xs,C.Minor_axis_ys,dispProps.bodyEllipse_color);
+        plot(ha,C.Ellipse_xs,C.Ellipse_ys,dispProps.bodyEllipse_color);
     end
     if R(iii,2)==1 && dispTags_nose
         if da & objectToProcess == 4
             Lia = ismember(P(:,[1 2]),[fn R(iii,2)],'rows');
             boundaryPixels = P(Lia,3);
             [rr,cc] = ind2sub(handles.md.frame_size,boundaryPixels);
-            plot(ha,cc,rr,dispProps.nose_line_color,'linewidth',3);
+            plot(ha,cc,rr,dispProps.nose_line_color,'linewidth',4);
         else
             plot(ha,R(iii,3),R(iii,4),...
                 sprintf('.%s',dispProps.nose_dot_color),'MarkerSize',mSizeN);

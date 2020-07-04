@@ -8,7 +8,6 @@ addOptional(p,'spaceRowsCols',[0 0],@isnumeric);
 addOptional(p,'rightUpShifts',[0 0],@isnumeric);
 addOptional(p,'widthHeightAdjustment',[0 0],@isnumeric);
 addOptional(p,'reposition',0,@isnumeric);
-addOptional(p,'visibility',1,@isnumeric);
 parse(p,figNum,figPos,varargin{:});
 
 magFac = 1;
@@ -30,15 +29,11 @@ end
 nRows = p.Results.RowsCols(1);
 nCols = p.Results.RowsCols(2);
 sprc = p.Results.spaceRowsCols; whUnits = p.Results.widthHeightAdjustment; rtup = p.Results.rightUpShifts;
-visibility = p.Results.visibility;
 [pL pB pW pH] = getPanelPropsThis(nRows,nCols,sprc,whUnits,rtup);
 for rr = 1:nRows
     for cc = 1:nCols
         ff.axesPos{rr,cc} = [pL(cc) pB(rr) pW pH];
         ff.h_axes(rr,cc) = axes('Position',ff.axesPos{rr,cc});
-        if ~visibility 
-            set(ff.h_axes(rr,cc),'visible','off');
-        end
     end
 end
 n = 0;
