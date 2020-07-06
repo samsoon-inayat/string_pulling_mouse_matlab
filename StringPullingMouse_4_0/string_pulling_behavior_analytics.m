@@ -3253,11 +3253,22 @@ function pushbutton_auto_zoom_set_manually_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 fn = get(handles.figure1,'userdata');
+% md = get_meta_data(handles);
 data = get_data(handles);
-hf = figure(10);
+hf = figure(10);clf;
+imagesc(data.frames{fn});
+grid on;
+[nX,nY,~]=size(data.frames{fn});
+nSeg=30;
+set(gca,'xtick',linspace(0,nY,nSeg+1),'xticklabel',[],...
+    'xgrid','on','xcolor','w',...
+    'ytick',linspace(0,nX,nSeg+1),'ytickLabel',[],...
+    'ygrid','on','ycolor','w',...
+    'gridLineStyle','-','linewidth',2);
+axis equal;
+set(hf,'Position',get(0,'ScreenSize'));
 set(hf,'WindowStyle','modal');
-imshow(data.frames{fn});
-axis equal; axis off;
+% axis equal; axis off;
 try
     hrect = imrect(gca);
     set(hf,'WindowStyle','normal');

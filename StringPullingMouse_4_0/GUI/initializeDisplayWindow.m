@@ -46,3 +46,4 @@ disp.numFrames = numRs * numCs;
 disp.ff = ff;
 disp.hims = hims;
 disp.frns = frns;
+pause(0.1);

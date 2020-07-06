@@ -1,6 +1,7 @@
 function [fn,imrf] = get_zoomed_frames(handles,frameNums,selfRun)
 
 if ~isfield(handles,'figure1')
+    try
     imrf = selfRun;
     sfn = frameNums(1);
     efn = frameNums(end);
@@ -10,30 +11,39 @@ if ~isfield(handles,'figure1')
     fn = tud.fn;
     imrf = tud.image_resize_factor;
     return;
+    catch
+    end
 end
 
-if get(handles.checkbox_Reduce_Image_Size,'Value')
-    try
-        image_resize_factor = str2double(get(handles.edit_reduce_image_factor,'String'));
-    catch
-        displayMessageBlinking(handles,'Enter a valid number for image resize factor',{'ForegroundColor','r'},2);
-        return;
+if isfield(handles,'figure1')
+    if get(handles.checkbox_Reduce_Image_Size,'Value')
+        try
+            image_resize_factor = str2double(get(handles.edit_reduce_image_factor,'String'));
+        catch
+            displayMessageBlinking(handles,'Enter a valid number for image resize factor',{'ForegroundColor','r'},2);
+            return;
+        end
+    else
+        image_resize_factor = 1;
     end
 else
-    image_resize_factor = 1;
+    image_resize_factor = evalin('base','image_resize_factor');
 end
+
 handles.md = get_meta_data(handles);
 sfn = frameNums(1);
 efn = frameNums(end);
 
-ud = get(handles.pushbutton_findMouse,'userdata');
-if ~isempty(ud)
-    for ii = 1:length(ud)
-        tud = ud{ii};
-        if tud.sfn == sfn && tud.efn == efn && tud.image_resize_factor == image_resize_factor;
-           fn = tud.fn;
-           imrf = tud.image_resize_factor;
-           return;
+if isfield(handles,'figure1')
+    ud = get(handles.pushbutton_findMouse,'userdata');
+    if ~isempty(ud)
+        for ii = 1:length(ud)
+            tud = ud{ii};
+            if tud.sfn == sfn && tud.efn == efn && tud.image_resize_factor == image_resize_factor;
+               fn = tud.fn;
+               imrf = tud.image_resize_factor;
+               return;
+            end
         end
     end
 end
@@ -44,9 +54,11 @@ frames = get_frames(handles);
 zw = getParameter(handles,'Auto Zoom Window');
 
 for ii = 1:length(frameNums)
-    if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off') && selfRun == 0
-        axes(handles.axes_main);cla;set(handles.axes_main,'visible','off');
-        break;
+    if isfield(handles,'figure1')
+        if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off') && selfRun == 0
+            axes(handles.axes_main);cla;set(handles.axes_main,'visible','off');
+            break;
+        end
     end
     temp = frames{frameNums(ii)}; 
     temp = temp(zw(2):zw(4),zw(1):zw(3),:); 
@@ -61,8 +73,10 @@ tud.efn = efn;
 tud.image_resize_factor = image_resize_factor;
 tud.fn = fn;
 imrf = tud.image_resize_factor;
-ud{length(ud)+1} = tud;
-set(handles.pushbutton_findMouse,'userdata',ud);
+if isfield(handles,'figure1')
+    ud{length(ud)+1} = tud;
+    set(handles.pushbutton_findMouse,'userdata',ud);
+end
 
 fileName = sprintf('zoomed_frames_%d_%d_%d',sfn,efn,imrf);
 fileName = fullfile(handles.md.processed_data_folder,fileName);

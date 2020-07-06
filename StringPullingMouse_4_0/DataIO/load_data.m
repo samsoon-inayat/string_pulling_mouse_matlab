@@ -1,46 +1,57 @@
 function [success,data] = load_data(handles)
 % disp('Please wait ... I am loading data');
-displayMessage(handles,'Getting file info');
 
-[file_name,file_path] = getFileInfo;
-if ~ischar(file_name)
-    displayMessageBlinking(handles,'No file selected',{'ForegroundColor','r'},3);
-    displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12,'ForegroundColor','b'});
-    success = 0; data = [];
-    return;
-end
-fileName = fullfile(file_path,file_name);
-if ~exist(fileName,'file')
-    displayMessageBlinking(handles,'Non-existent File',{'ForegroundColor','r'},3);
-    displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12,'ForegroundColor','b'});
-    success = 0; data = [];
-    return;
-end
-displayMessage(handles,'Please wait ... I am loading data');
+if isfield(handles,'figure1')
+    displayMessage(handles,'Getting file info');
 
+    [file_name,file_path] = getFileInfo;
+    if ~ischar(file_name)
+        displayMessageBlinking(handles,'No file selected',{'ForegroundColor','r'},3);
+        displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12,'ForegroundColor','b'});
+        success = 0; data = [];
+        return;
+    end
+    fileName = fullfile(file_path,file_name);
+    if ~exist(fileName,'file')
+        displayMessageBlinking(handles,'Non-existent File',{'ForegroundColor','r'},3);
+        displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12,'ForegroundColor','b'});
+        success = 0; data = [];
+        return;
+    end
+
+    displayMessage(handles,'Please wait ... I am loading data');
+    save('file_path.mat','file_path');
+else
+    file_name = handles.file_name; file_path = handles.file_path;
+end
 try
     [success,frames,frame_times,video_object] = load_file(handles,file_name,file_path);
 catch
     success = 0; data = [];
 end
-if ~success
-    displayMessageBlinking(handles,'Loading stopped or loading error !!!',{'ForegroundColor','r'},3);
-    displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12,'ForegroundColor','b'});
-    data = [];
-    return;
+if isfield(handles,'figure1')
+    if ~success
+        displayMessageBlinking(handles,'Loading stopped or loading error !!!',{'ForegroundColor','r'},3);
+        displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'FontSize',12,'ForegroundColor','b'});
+        data = [];
+        return;
+    end
 end
 data.file_name  = file_name;
 data.file_path = file_path;
 data.frames = frames;
 data.frame_times  = frame_times;
-data.video_object = video_object;
+if isfield(handles,'figure1')
+    data.video_object = video_object;
+end
 data.number_of_frames = length(frames);
 data.frame_size = size(frames{1});
 
 
 function [success,frames,frame_times,video_object] = load_file(handles,file_name,file_path)
-
-set(handles.pushbutton_fileOpen,'userdata',0,'String','Stop Loading');
+if isfield(handles,'figure1')
+    set(handles.pushbutton_fileOpen,'userdata',0,'String','Stop Loading');
+end
 success = 1;
 video_object = VideoReader(fullfile(file_path,file_name));
 number_of_frames = (ceil(video_object.FrameRate*video_object.Duration)-1);
@@ -51,12 +62,17 @@ while hasFrame(video_object)
     frameNumber = frameNumber + 1;
     str = sprintf('File: %s ... loading frame %d/%d',file_name,frameNumber,number_of_frames);
     displayMessage(handles,str);
-    if get(handles.pushbutton_fileOpen,'userdata')
-        success = 0;
-%         displayMessageBlinking(handles,'Loading Stopped',{'ForegroundColor','r'},2);
-%         displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'ForegroundColor','b','FontSize',12});
-        break;
+    if isfield(handles,'figure1')
+        if get(handles.pushbutton_fileOpen,'userdata')
+            success = 0;
+    %         displayMessageBlinking(handles,'Loading Stopped',{'ForegroundColor','r'},2);
+    %         displayMessage(handles,sprintf('Welcome to String Pulling Behavioral Analytics'),{'ForegroundColor','b','FontSize',12});
+            break;
+        end
     end
+%     if frameNumber == number_of_frames
+%         break;
+%     end
 end
 if ~success
     frames = [];

@@ -4,6 +4,7 @@ if ~exist('handles','var')
     fh = findall(0, 'Type', 'Figure', 'Name', 'String Pulling Behavior Analytics');
     handles = guidata(fh);
 end
+
 % string_thickness = getParameter(handles,'String Thickness in Pixels');
 md = get_meta_data(handles);
 
@@ -15,9 +16,15 @@ if isempty(sfn) || length(frameNums) < 2
 end
 
 fileName = fullfile(md.processed_data_folder,sprintf('motion_%d_%d.mat',sfn,efn));
-if exist(fileName,'file') && ~get(handles.checkbox_over_write,'Value')
-    displayMessageBlinking(handles,'File already exists ... select overwrite to calculate again',{'ForegroundColor','r'},3);
-    return;
+if isfield(handles,'figure1')
+    if exist(fileName,'file') && ~get(handles.checkbox_over_write,'Value')
+        displayMessageBlinking(handles,'File already exists ... select overwrite to calculate again',{'ForegroundColor','r'},3);
+        return;
+    end
+else
+    if exist(fileName,'file')
+        return;
+    end
 end
 
 % out = get_all_params(handles,sfn,efn,0);
@@ -25,24 +32,31 @@ zw = getParameter(handles,'Auto Zoom Window');%handles.md.resultsMF.zoomWindow;
 
 frames = get_frames(handles);
 
-if get(handles.checkbox_Reduce_Image_Size,'Value')
-    try
-        image_resize_factor = str2double(get(handles.edit_reduce_image_factor,'String'));
-    catch
-        displayMessageBlinking(handles,'Enter a number for image resize factor',{'ForegroundColor','r'},2);
-        return;
+if isfield(handles,'figure1')
+    if get(handles.checkbox_Reduce_Image_Size,'Value')
+        try
+            image_resize_factor = str2double(get(handles.edit_reduce_image_factor,'String'));
+        catch
+            displayMessageBlinking(handles,'Enter a number for image resize factor',{'ForegroundColor','r'},2);
+            return;
+        end
     end
+else
+    image_resize_factor = evalin('base','image_resize_factor');
 end
-
 % ratio = 0.5;alpha = 0.01;minWidth = string_thickness;nOuterFPIterations = 15;nInnerFPIterations = 3;nSORIterations = 30;
 
 prompt = {'alpha','ratio','minWidth','nOuterFPIterations','nInnerFPIterations','nSORIterations'};
 dlgtitle = 'Enter CLG parameters';
 dims = [1 35];
 definput = {'0.01','0.5',sprintf('%d',20),'7','1','30'};
-answer = inputdlg(prompt,dlgtitle,dims,definput);
-if isempty(answer)
-    return;
+if isfield(handles,'figure1')
+    answer = inputdlg(prompt,dlgtitle,dims,definput);
+    if isempty(answer)
+        return;
+    end
+else
+    answer = definput;
 end
 
 for ii = 1:length(prompt)
@@ -54,13 +68,13 @@ para_CLG = [alpha_1,ratio_1,minWidth_1,nOuterFPIterations_1,nInnerFPIterations_1
 
 hf = figure(10);clf;
 add_window_handle(handles,hf);
-
-
     startTime = tic;
     for ii = 1:length(frameNums)
-        if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off')
-            axes(handles.axes_main);cla;set(handles.axes_main,'visible','off');
-            return;
+        if isfield(handles,'figure1')
+            if strcmp(get(handles.pushbutton_stop_processing,'visible'),'off')
+                axes(handles.axes_main);cla;set(handles.axes_main,'visible','off');
+                return;
+            end
         end
         fn = frameNums(ii);
         thisFrame = frames{fn};
@@ -69,10 +83,14 @@ add_window_handle(handles,hf);
         thisFramem1 = thisFramem1(zw(2):zw(4),zw(1):zw(3),:);
         tic
         shift(ii,:) = POCShift(rgb2gray(thisFramem1),rgb2gray(thisFrame));
-        if get(handles.checkbox_Reduce_Image_Size,'Value')
-            frame1 = imresize(thisFramem1,(1/image_resize_factor)); frame2 = imresize(thisFrame,(1/image_resize_factor));
+        if isfield(handles,'figure1')
+            if get(handles.checkbox_Reduce_Image_Size,'Value')
+                frame1 = imresize(thisFramem1,(1/image_resize_factor)); frame2 = imresize(thisFrame,(1/image_resize_factor));
+            else
+                frame1 = thisFramem1; frame2 = thisFrame;
+            end
         else
-            frame1 = thisFramem1; frame2 = thisFrame;
+            frame1 = imresize(thisFramem1,(1/image_resize_factor)); frame2 = imresize(thisFrame,(1/image_resize_factor));
         end
         [vx,vy,~] = Coarse2FineTwoFrames(frame1,frame2,para_CLG);
     %     if get(handles.checkbox_Reduce_Image_Size,'Value')
@@ -84,7 +102,14 @@ add_window_handle(handles,hf);
         if ii > 1 && ii < length(frameNums)
             displayMessage(handles,sprintf('Estimating %s ... Processing frame %d - %d/%d ... time remaining %s','motion',fn+1,ii+1,length(frameNums),timeRemaining),{'foregroundcolor','b'});
         end
-        if get(handles.checkbox_updateDisplay,'Value')
+        if isfield(handles,'figure1')
+            if get(handles.checkbox_updateDisplay,'Value')
+                figure(hf);
+                plot_optical_flow(handles,hf,fn,frame1,frame2,vx+i*vy,5,1,[])
+                title(fn);
+                pause(0.05);
+            end
+        else
             figure(hf);
             plot_optical_flow(handles,hf,fn,frame1,frame2,vx+i*vy,5,1,[])
             title(fn);
@@ -100,7 +125,9 @@ add_window_handle(handles,hf);
     motion.image_resize_factor = image_resize_factor;
     motion.thisFrame = thisFrame; motion.shift = shift;motion.frameNums = frameNums;
 %     motion.pc = pc;
-    set(handles.pushbutton_estimate_motion,'userdata',motion);
+    if isfield(handles,'figure1')
+        set(handles.pushbutton_estimate_motion,'userdata',motion);
+    end
     endTime = toc(startTime);
     displayMessage(handles,sprintf('Done processing frames from %d to %d - Total Time Taken = %.3f s',sfn,sfn+ii-1,endTime));
     close(hf);

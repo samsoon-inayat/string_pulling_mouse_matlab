@@ -24,7 +24,9 @@ end
 
 params.names = names;
 params.values = values;
-set(handles.text_params,'userdata',params);
+if isfield(handles,'figure1')
+    set(handles.text_params,'userdata',params);
+end
 for ii = 1:10
     try
         save(md.config_file_name,'names','values','-v7.3');

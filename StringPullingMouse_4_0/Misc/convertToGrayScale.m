@@ -2,7 +2,11 @@ function fng = convertToGrayScale(handles,fn,ic)
 
 
 if ~exist('ic','var')
-    mouse_color = getParameter(handles,'Mouse Color');
+    try
+        mouse_color = getParameter(handles,'Mouse Color');
+    catch
+        mouse_color = 'White';
+    end
     if strcmp(mouse_color,'Black')
         ic = 1;
     else

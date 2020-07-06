@@ -1,7 +1,7 @@
 function frames = get_frames(handles,fns)
 
 if ~isfield(handles,'figure1')
-    frames = [];
+    frames = handles.data.frames;
     return;
 end
 

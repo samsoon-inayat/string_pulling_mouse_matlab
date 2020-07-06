@@ -17,13 +17,22 @@ if ind == 0
     fn = 0;fp = 0;
     return;
 end
+
+try
+    file_path_stored = load('file_path.mat');
+catch
+    file_path_stored.file_path = pwd;
+end
+file_path1 = sprintf('%s*.*',file_path_stored.file_path);
+
 if ind == 1
-    [fn,fp,~] = uigetfile('*.*');
+%     [fn,fp,~] = uigetfile('*.*');
+    [fn,fp,~] = uigetfile(file_path1);
     if ~ischar(fn)
         return;
     end
     fnswp = [fp fn];
-    IndexC = strfind(fls.fnswp,fnswp)
+    IndexC = strfind(fls.fnswp,fnswp);
     Index = find(not(cellfun('isempty', IndexC)));
     if ~isempty(Index)
         return;

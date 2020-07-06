@@ -10,6 +10,7 @@ else
     if ~isfield(handles,'figure1')
         handles.md.processed_data_folder = handles.pd_folder;
         selfRun = evalin('base','imrf');
+        [sfn,efn] = getFrameNums(handles);frameNums = sfn:efn;
     else
         handles.md = get_meta_data(handles);
         selfRun = 0;
@@ -35,7 +36,11 @@ fn = get_zoomed_frames(handles,frameNums,selfRun);
 
 % fR = getColorComponent(fn,'R');
 % outR = get_ds_vals(fR);
-mouse_color = getParameter(handles,'Mouse Color');
+try
+    mouse_color = getParameter(handles,'Mouse Color');
+catch
+    mouse_color = 'White';
+end
 
 if strcmp(mouse_color,'Black')
     f = convertToGrayScale(handles,fn,1);

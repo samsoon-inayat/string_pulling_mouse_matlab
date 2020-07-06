@@ -10,6 +10,7 @@ else
     if ~isfield(handles,'figure1')
         handles.md.processed_data_folder = handles.pd_folder;
         selfRun = evalin('base','imrf');
+        [sfn,efn] = getFrameNums(handles);frameNums = sfn:efn;
     else
         selfRun = 0;
         handles.md = get_meta_data(handles);

@@ -87,7 +87,11 @@ set(ff.hf,'Position',[9 ypos 6.9 2],'MenuBar','None','ToolBar','None');
 set(gcf,'color','w');
 
 pcs = score(:,1:nPCs);
-mouse_color = getParameter(handles,'Mouse Color');
+try
+    mouse_color = getParameter(handles,'Mouse Color');
+catch
+    mouse_color = 'White';
+end
 if strcmp(mouse_color,'Black')
     minpcs = min(pcs(:))+0.2;
     maxpcs = max(pcs(:))+38.6;

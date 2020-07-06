@@ -5,7 +5,11 @@ if ~exist('ha','var')
     ha = axes;
 end
 frames = get_frames(handles);
-zw = getParameter(handles,'Zoom Window');
+try
+    zw = getParameter(handles,'Zoom Window');
+catch
+    zw = getParameter(handles,'Auto Zoom Window');
+end
 if ~isempty(zw)
     tdx = zw(1)+20;
     tdy = zw(2)+20;
@@ -16,7 +20,9 @@ end
 axes(ha)
 imagesc(frames{fn});
 axis equal; axis off;
-plotTags(handles,gca,fn);
+if isfield(handles,'figure1')
+    plotTags(handles,gca,fn);
+end
 text(tdx,tdy,num2str(fn));
 if ~isempty(zw)
     xlim([zw(1) zw(3)]);

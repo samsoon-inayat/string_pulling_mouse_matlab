@@ -21,8 +21,10 @@ efn = frameNums(end);
 fileName = sprintf('descriptive_statistics_%d_%d.mat',sfn,efn);fileName = fullfile(handles.md.processed_data_folder,fileName);
 ds = load(fileName);
 
-fileName = sprintf('descriptive_statistics_masks_%d_%d.mat',sfn,efn);fileName = fullfile(handles.md.processed_data_folder,fileName);
-dsm = load(fileName);
+if isfield(handles,'figure1')
+    fileName = sprintf('descriptive_statistics_masks_%d_%d.mat',sfn,efn);fileName = fullfile(handles.md.processed_data_folder,fileName);
+    dsm = load(fileName);
+end
 
 fileName = sprintf('entropy_%d_%d.mat',sfn,efn);fileName = fullfile(handles.md.processed_data_folder,fileName);
 ent = load(fileName);
@@ -31,15 +33,21 @@ pcs = load_pcs(handles);
 
 ics = load_ics(handles);
 
-mouse_color = getParameter(handles,'Mouse Color');
+try
+    mouse_color = getParameter(handles,'Mouse Color');
+catch
+    mouse_color = 'White';
+end
 
 displayMessage(handles,'Finding fractal dimensions and entropy - Descriptive Stats');
 temp = find_fd_ent_ds(ds);
 fd_ent = temp;
 
-displayMessage(handles,'Finding fractal dimensions and entropy - Descriptive Stats Masks');
-temp = find_fd_ent_dsm(dsm);
-fd_ent = [fd_ent;temp];
+if isfield(handles,'figure1')
+    displayMessage(handles,'Finding fractal dimensions and entropy - Descriptive Stats Masks');
+    temp = find_fd_ent_dsm(dsm);
+    fd_ent = [fd_ent;temp];
+end
 
 displayMessage(handles,'Finding fractal dimensions and entropy - Temporal Entropy');
 temp = find_fd_ent_ent(ent,{'Entropy',ds});
@@ -62,7 +70,6 @@ temp = find_fd_ent_pcs(pcs);
 fd_ent = [fd_ent;temp];
 
 
-mouse_color = getParameter(handles,'Mouse Color');
 displayMessage(handles,'Finding fractal dimensions and entropy - ICs');
 temp = find_fd_ent_ics(ics);
 fd_ent = [fd_ent;temp];

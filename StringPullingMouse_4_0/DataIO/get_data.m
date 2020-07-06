@@ -1,7 +1,7 @@
 function out = get_data(handles)
 
 if ~isfield(handles,'figure1')
-    out = [];
+    out = handles.data;
     return;
 end
 
