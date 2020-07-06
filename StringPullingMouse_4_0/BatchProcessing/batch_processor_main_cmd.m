@@ -47,10 +47,11 @@ end
 
 %% defining zoom windows
 if defineZoomWindows
-    for ii = 1:length(vid_files)
-         if ~ismember(files_to_process_indices,ii)
-            continue;
-        end
+%     for ii = 1:length(vid_files)
+%         if ~ismember(files_to_process_indices,ii)
+%             continue;
+%         end
+        ii =  1;
         config = config_info{ii};
         [success,config.data] = load_data(config);
         no_gui_set_zoom_window_manually(config,1);
@@ -60,7 +61,7 @@ if defineZoomWindows
         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
         playEpoch(config,1,10);
         n = 0;
-    end
+%     end
     return;
 end
 
@@ -85,7 +86,7 @@ for ii = 1:length(vid_files)
     end
     config = config_info{ii};
     [success,config.data] = load_data(config);
-%     estimate_motion(config);
+    estimate_motion(config);
     descriptive_statistics(config);
     find_temporal_xics(config);
     find_PCs(config);

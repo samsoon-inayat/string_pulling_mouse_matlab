@@ -13,6 +13,7 @@ zeroF = zeroFRGB(:,:,1);
 gifFlag = 1;
 f_start = 175;
 fns = f_start:(f_start+33);
+fns = fns(end);
 p = get_all_params(handles,fns(1),fns(end));
 
 
@@ -50,7 +51,7 @@ md = get_meta_data(handles);
 filename = fullfile(md.processed_data_folder,'striking_image.gif');
 
 % for jj = 1:2
-for ii = 1:length(fns)
+for ii = length(fns)
     fn = fns(ii);
     
     axes_num = 2;curr_axes = ff.h_axes(1,axes_num);
@@ -103,6 +104,9 @@ for ii = 1:length(fns)
         else 
           imwrite(imind,cm,filename,'gif','WriteMode','append'); 
         end 
+    end
+    if ii == length(fns)
+        imwrite(imind,cm,'striking_image.tif','tif');
     end
 end
 % end
