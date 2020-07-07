@@ -1,4 +1,3 @@
-% load data
 % clear all
 clc
 mainFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet';
@@ -6,7 +5,7 @@ pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
 
 dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat'};
-dii = 1;
+dii = 2;
 data_folder = fullfile(mainFolder,dataFolders{dii});
 filename = fullfile(data_folder,metaFiles{dii});
 
@@ -16,9 +15,9 @@ vid_files = file_list.vid_name_range;
 for ii = 1:length(vid_files)
     files_to_process{ii} = vid_files(ii).name;
 end
-files_to_process_indices = 8:length(files_to_process);
+files_to_process_indices = 1:length(files_to_process);
 image_resize_factor = 4; imrf = image_resize_factor; % define both variables because both are being used in different files
-readConfigs = 0; setEpochs = 0; defineZoomWindows = 0;
+readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; miscFunc = 0;
 %% Load Config Files
 if readConfigs
     for ii = 1:length(vid_files)
@@ -47,21 +46,24 @@ end
 
 %% defining zoom windows
 if defineZoomWindows
-%     for ii = 1:length(vid_files)
-%         if ~ismember(files_to_process_indices,ii)
-%             continue;
-%         end
-        ii =  1;
+    for ii = 1:length(vid_files)
+        if ~ismember(files_to_process_indices,ii)
+            continue;
+        end
+%         ii =  1;
         config = config_info{ii};
         [success,config.data] = load_data(config);
         no_gui_set_zoom_window_manually(config,1);
+        tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
         zw = getParameter(config,'Auto Zoom Window');
         zw = [zw(1)-100 zw(2)-200 zw(3)+100 zw(4)];
         setParameter(config,'Auto Zoom Window',zw);
         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
         playEpoch(config,1,10);
+        config = rmfield(config,'data');
+        config_info{ii} = config;
         n = 0;
-%     end
+    end
     return;
 end
 
@@ -75,6 +77,25 @@ for ii = 1:length(vid_files)
         disp(sprintf('%d = bad',ii));
         error
     end
+end
+
+
+%% checking zoom window and epochs
+if miscFunc
+    for ii = 1:length(vid_files)
+        if ~ismember(files_to_process_indices,ii)
+            continue;
+        end
+%         ii =  1;
+        config = config_info{ii};
+%         [success,config.data] = load_data(config);
+%         no_gui_set_scale(config);
+%         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
+        scale = getParameter(config,'Scale')
+%         zw = getParameter(config,'Auto Zoom Window')
+%         playEpoch(config,1,10);
+    end
+    return;
 end
 
 
