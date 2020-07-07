@@ -1,4 +1,4 @@
-function [success,data] = load_data(handles)
+function [success,data] = load_data(handles,varargin)
 % disp('Please wait ... I am loading data');
 
 if isfield(handles,'figure1')
@@ -25,7 +25,12 @@ else
     file_name = handles.file_name; file_path = handles.file_path;
 end
 try
-    [success,frames,frame_times,video_object] = load_file(handles,file_name,file_path);
+    if nargin == 1
+        [success,frames,frame_times,video_object] = load_file(handles,file_name,file_path);
+    else
+        [success,frames,frame_times,video_object] = load_file_frames(handles,file_name,file_path,varargin{1});
+    end
+    setParameter(handles,'Frame Rate',video_object.FrameRate);
 catch
     success = 0; data = [];
 end
@@ -80,6 +85,40 @@ if ~success
     return;
 end
 displayMessage(handles,'Loading complete !!!');
+
+
+function [success,frames,frame_times,video_object] = load_file_frames(handles,file_name,file_path,frameNums)
+
+success = 1;
+video_object = VideoReader(fullfile(file_path,file_name));
+number_of_frames = (ceil(video_object.FrameRate*video_object.Duration)-1);
+frameNumber = 1;
+for ii = 1:5
+    t_frames{ii} = readFrame(video_object);
+    t_frame_times(ii) = video_object.CurrentTime;
+end
+dt = t_frame_times(2)-t_frame_times(1);
+startTime = dt * frameNums(1);
+endTime = (dt * frameNums(end));
+video_object.CurrentTime = startTime;
+while video_object.CurrentTime <= endTime
+    try
+        frames{frameNumber} = readFrame(video_object);
+    catch
+        break;
+    end
+    frame_times(frameNumber) = video_object.CurrentTime;
+    frameNumber = frameNumber + 1;
+    str = sprintf('File: %s ... loading frame %d/%d',file_name,(frameNumber),length(frameNums));
+    displayMessage(handles,str);
+end
+if ~success
+    frames = [];
+    frame_times = [];
+    return;
+end
+displayMessage(handles,'Loading complete !!!');
+
 
 % azw = getParameter(handles,'Auto Zoom Window');
 % if ~isempty(azw)

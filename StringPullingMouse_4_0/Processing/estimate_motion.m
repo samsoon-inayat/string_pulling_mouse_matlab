@@ -22,7 +22,7 @@ if isfield(handles,'figure1')
         return;
     end
 else
-    if exist(fileName,'file')
+    if exist(fileName,'file') & handles.ow == 0
         return;
     end
 end

@@ -5,7 +5,7 @@ pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
 
 dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat'};
-dii = 2;
+dii = 3;
 data_folder = fullfile(mainFolder,dataFolders{dii});
 filename = fullfile(data_folder,metaFiles{dii});
 
@@ -17,7 +17,7 @@ for ii = 1:length(vid_files)
 end
 files_to_process_indices = 1:length(files_to_process);
 image_resize_factor = 4; imrf = image_resize_factor; % define both variables because both are being used in different files
-readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; miscFunc = 0;
+readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; miscFunc = 0; processData = 1;
 %% Load Config Files
 if readConfigs
     for ii = 1:length(vid_files)
@@ -51,15 +51,30 @@ if defineZoomWindows
             continue;
         end
 %         ii =  1;
-        config = config_info{ii};
-        [success,config.data] = load_data(config);
-        no_gui_set_zoom_window_manually(config,1);
+        config = config_info{ii}; config1 = config;
+        [sfn,efn] = getFrameNums(config);
+        [success,config.data] = load_data(config,sfn:efn);
+        [success,config1.data] = load_data(config,1:5);
+        no_gui_set_zoom_window_manually(config1,1);
         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
         zw = getParameter(config,'Auto Zoom Window');
         zw = [zw(1)-100 zw(2)-200 zw(3)+100 zw(4)];
+        if zw(1) < 0
+            zw(1) = 1;
+        end
+        if zw(2) < 0
+            zw(2) = 1;
+        end
+        if zw(3) > config1.data.frame_size(2)
+            zw(3) = config1.data.frame_size(2);
+        end
+        if zw(4) > config1.data.frame_size(1)
+            zw(4) = config1.data.frame_size(1);
+        end
         setParameter(config,'Auto Zoom Window',zw);
         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-        playEpoch(config,1,10);
+        playFrames(config,10);
+        no_gui_set_scale(config1,1);
         config = rmfield(config,'data');
         config_info{ii} = config;
         n = 0;
@@ -88,11 +103,14 @@ if miscFunc
         end
 %         ii =  1;
         config = config_info{ii};
-%         [success,config.data] = load_data(config);
-%         no_gui_set_scale(config);
+%         winopen(config.pd_folder);
+%         [sfn,efn] = getFrameNums(config);
+%         [success,temp] = load_data(config);
+%         [success,config.data] = load_data(config,sfn:efn);
 %         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-        scale = getParameter(config,'Scale')
-%         zw = getParameter(config,'Auto Zoom Window')
+        scale(ii) = getParameter(config,'Scale');
+        zw(ii,:) = getParameter(config,'Auto Zoom Window');
+        
 %         playEpoch(config,1,10);
     end
     return;
@@ -100,19 +118,21 @@ end
 
 
 %% Whole Body Analysis
-find_temporal_xics_options = [1 2 3];%{'Entropy','Higuchi Fractal Dimension','Fano Factor'};
-for ii = 1:length(vid_files)
-    if ~ismember(files_to_process_indices,ii)
-        continue;
+if processData
+    find_temporal_xics_options = [1 2 3];%{'Entropy','Higuchi Fractal Dimension','Fano Factor'};
+    for ii = 1:length(vid_files)
+        if ~ismember(files_to_process_indices,ii)
+            continue;
+        end
+        config = config_info{ii};
+        [success,config.data] = load_data(config);
+        tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
+        estimate_motion(config);
+        descriptive_statistics(config);
+        find_temporal_xics(config);
+        find_PCs(config);
+        find_ICs(config);
+        find_fractal_dimensions_and_entropy(config);
+        clear config;
     end
-    config = config_info{ii};
-    [success,config.data] = load_data(config);
-    estimate_motion(config);
-    descriptive_statistics(config);
-    find_temporal_xics(config);
-    find_PCs(config);
-    find_ICs(config);
-    find_fractal_dimensions_and_entropy(config);
-    clear config;
 end
-

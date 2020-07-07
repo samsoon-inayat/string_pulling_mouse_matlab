@@ -1,7 +1,12 @@
-function no_gui_set_scale(handles)
-[sfn,efn] = getFrameNums(handles);
-fn = sfn;%round(get(handles.slider1,'Value'));
+function no_gui_set_scale(handles,fn)
+% [sfn,efn] = getFrameNums(handles);
 frames = get_frames(handles);
+% if length(sfn:efn) == length(frames)
+%     fn = 1;
+% else
+%     fn = sfn;%round(get(handles.slider1,'Value'));
+% end
+
 hf = figure(10);
 set(hf,'WindowStyle','modal');
 imshow(frames{fn});
