@@ -30,7 +30,9 @@ try
     else
         [success,frames,frame_times,video_object] = load_file_frames(handles,file_name,file_path,varargin{1});
     end
-    setParameter(handles,'Frame Rate',video_object.FrameRate);
+    if ~isfield(handles,'figure1')
+        setParameter(handles,'Frame Rate',video_object.FrameRate);
+    end
 catch
     success = 0; data = [];
 end

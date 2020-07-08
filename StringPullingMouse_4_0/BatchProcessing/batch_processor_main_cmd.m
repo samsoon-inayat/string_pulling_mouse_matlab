@@ -5,7 +5,7 @@ pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
 
 dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat'};
-dii = 3;
+dii = 4;
 data_folder = fullfile(mainFolder,dataFolders{dii});
 filename = fullfile(data_folder,metaFiles{dii});
 
