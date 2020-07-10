@@ -1,21 +1,25 @@
-function viewPCs(handles,pc,saveFileName)
+function viewPCs(handles,pc,saveFileName,varargin)
+
+if nargin == 4
+    figNums = varargin{1};
+end
 
 if ~iscell(saveFileName)
     tpc = pc;
-    plot_pcs(handles,101,9,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName '_img_seq']);
+    plot_pcs(handles,figNums(1),9,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName '_img_seq']);
 
     if ~isempty(pc.motion)
     tpc = pc.motion;
-    plot_pcs(handles,102,6,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName 'motion']);
+    plot_pcs(handles,figNums(2),6,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName 'motion']);
     end
 else
     tpc = pc;
 %     plot_pcs(handles,101,9,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,{saveFileName{1},[saveFileName{2} '_img_seq']});
-    plot_pcs_R(handles,101,9,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,{saveFileName{1},[saveFileName{2} '_img_seq']});
+    plot_pcs_R(handles,figNums(1),9,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,{saveFileName{1},[saveFileName{2} '_img_seq']});
     if ~isempty(pc.motion)
     tpc = pc.motion;
 %     plot_pcs(handles,102,6,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,{saveFileName{1},[saveFileName{2} 'motion']});
-    plot_pcs_R(handles,102,6,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,{saveFileName{1},[saveFileName{2} 'motion']});
+    plot_pcs_R(handles,figNums(2),6,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,{saveFileName{1},[saveFileName{2} 'motion']});
     end
 end
 
@@ -31,7 +35,11 @@ set(ff.hf,'Position',[9 ypos 3.35 1.25],'MenuBar','None','ToolBar','None');
 set(gcf,'color','w');
 
 pcs = score(:,1:nPCs);
-mouse_color = getParameter(handles,'Mouse Color');
+try
+    mouse_color = getParameter(handles,'Mouse Color');
+catch
+    mouse_color = 'White';
+end
 if strcmp(mouse_color,'Black')
     minpcs = min(pcs(:))+0.2;
     maxpcs = max(pcs(:))+38.6;

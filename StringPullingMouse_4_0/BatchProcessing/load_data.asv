@@ -5,8 +5,7 @@ pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
 mainFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
 pdfFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
 if ~exist(pdfFolder,'dir')
-    mkdir(pdfFolder)
-end
+    mkdir(pdfFold
 
 dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat'};
@@ -48,3 +47,46 @@ end
 
 
 return
+imrf = 4;
+for ii = 1:5
+    ii
+    config = config_b{ii};
+    [sfn,efn] = getFrameNums(config);
+    frames_b{ii} = get_zoomed_frames(config,sfn:efn,imrf);
+    config = config_w{ii};
+    [sfn,efn] = getFrameNums(config);
+    frames_w{ii} = get_zoomed_frames(config,sfn:efn,imrf);
+end
+
+for ii = 1:5
+    ii
+    config = config_b{ii};
+    [~,p_data_b{ii}] = load_processed_data(config);
+    config = config_w{ii};
+    [~,p_data_w{ii}] = load_processed_data(config);
+end
+
+for ii = 1:5
+    ii
+    config = config_b{ii};
+    all_params_b{ii} = get_all_params(config);
+    config = config_w{ii};
+    all_params_w{ii} = get_all_params(config);
+end
+
+for ii = 1:5
+    ii
+    config = config_b{ii};
+    scale_b(ii) = getParameter(config,'Scale');
+    config = config_w{ii};
+    scale_w(ii) = getParameter(config,'Scale');
+end
+
+n = 0;
+
+
+%     motion_b{ii} = load_motion(config);
+%     ds_b{ii} = load_ds(config);
+%     ent_b{ii} = load_entropy(config);
+%     pcs_b{ii} = load_pcs(config);
+%     ics_b{ii} = load_ics(config);

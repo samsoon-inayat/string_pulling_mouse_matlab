@@ -1,6 +1,6 @@
 function out = get_masked_values(varsb,varsw,varName,ds_b,ds_w,incr,inverted)
 
-for ii = 1:5
+for ii = 1:length(ds_b)
     ii
     cmdTxt = sprintf('uv = varsb{ii}.%s;',varName);
     eval(cmdTxt)
@@ -36,7 +36,7 @@ barsb = []; barsw = [];
 cdfb = []; cdfw = [];
 minB = min([minb minw]);maxB = max([maxb maxw]);
 bins = (minB-incr):incr:(maxB+incr);
-for ii = 1:5
+for ii = 1:length(ds_b)
     bd = out.b{ii}(:);
     [bar1,xs,bandwidth] = ksdensity(bd,bins);
 %     [bandwidthb(ii),bar1,xs,cdf]=kde(bd,length(bins),minB-incr,maxB+incr);

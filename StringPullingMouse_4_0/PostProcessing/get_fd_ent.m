@@ -6,7 +6,7 @@ function [fd_b,ent_b,fd_w,ent_w,sn_b,sn_w,sp_b,sp_w] =  get_fd_ent (str1,fd_ent_
 % str1 = {'PC1';'Motion'};
 % str1 = {'Max IC';'Motion'};
 str1
-for ii = 1:5
+for ii = 1:length(fd_ent_b)
     thisVal = fd_ent_b{ii}.fd_ent;
     C = thisVal(:,1);
     inds = logical(ones(size(C)));
