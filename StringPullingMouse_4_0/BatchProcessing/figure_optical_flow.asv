@@ -5,9 +5,9 @@ for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
-n = 0; ind1 = 3; ind2  = 4;
-% rng(0,'twister');
-indCs = {randi([1 16],1,8);1:8;randi([1 16],1,8);1:8}; 
+n = 0; ind1 = 1; ind2  = 4;
+rng(0,'twister');
+indCs = {randi([1 16],1,8);1:8}; 
 ds_b = ds(ind1,indCs{ind1}); ds_w = ds(ind2,indCs{ind2});
 motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind2});
 pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind2});
@@ -163,7 +163,7 @@ hmean = h; pmean = p;
 effect_size = computeCohen_d(meanb,meanw);
 mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
 maxY = max(mVar + semVar); maxY = maxY + maxY/5;
-minY = min(mVar - semVar); minY = minY - minY/1.5;
+minY = max(mVar - semVar); minY = minY - minY/1.5;
 plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
         'maxY',maxY,'ySpacing',0.4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.1);
