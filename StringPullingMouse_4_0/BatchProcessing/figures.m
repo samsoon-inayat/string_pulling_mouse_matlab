@@ -5,12 +5,14 @@ for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
-n = 0; ind1 = 2; ind2  = 4;
+n = 0; ind1 = 2; ind2  = ind1 + 2;
 indCs = {1:16;1:8}; 
 ds_b = ds(ind1,indCs{ind1}); ds_w = ds(ind2,indCs{ind1});
 motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind1});
+fd_ent_b = fd_ent(ind1,indCs{ind1}); fd_ent_w = fd_ent(ind2,indCs{ind1});
 pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind1});
 config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind1});
+
 %%
 if 1
 an_b = 1; an_w = 1;
