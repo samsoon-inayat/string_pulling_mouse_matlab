@@ -31,10 +31,12 @@ mask(frame < threshold) = 1;
 
 mask = maskM | mask;
 
+maskc = bwconvhull(mask);
+
 figure(200);clf;
-imagesc(mask);
+imagesc(maskc);
 axis equal
 pause(0.3);
-ds.mean_mask = mask;
+ds.mean_mask = maskc;
 
 

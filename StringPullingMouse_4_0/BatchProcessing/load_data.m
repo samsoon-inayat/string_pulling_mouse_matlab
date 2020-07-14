@@ -1,5 +1,10 @@
 %%
 % clear all
+colormaps = load('colorblind_colormap.mat');
+% colormaps.colorblind = flipud(colormaps.colorblind);
+mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
+%%
+
 reloadConfig = 0; reloadData = 0;
 
 if reloadConfig
@@ -63,4 +68,5 @@ for dii = 1:4
         ds_b{dii,ii} = this_ds;
     end
 end
+
 

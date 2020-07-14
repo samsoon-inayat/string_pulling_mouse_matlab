@@ -1,181 +1,90 @@
 function figure_optical_flow
+
+mData = evalin('base','mData'); colors = mData.colors; 
+
 allVarNames = {'motion','ds','ent','pcs','ics','fd_ent','pdfFolder','configs'};
 variablesToGetFromBase = {'motion_b','ds_b','ent_b','pcs_b','ics_b','fd_ent_b','pdfFolder','configs'};
 for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
-n = 0; ind1 = 3; ind2  = 4;
-% rng(0,'twister');
-indCs = {randi([1 16],1,8);1:8;randi([1 16],1,8);1:8}; 
-ds_b = ds(ind1,indCs{ind1}); ds_w = ds(ind2,indCs{ind2});
-motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind2});
-pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind2});
-config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind2});
-% %%
-% runthis = 1;
-% if runthis
-% an_b = 1; an_w = 1;
-% viewOpticalFlow(config_b{an_b},motion_b{an_b},{pdfFolder,'optical_flow_b'})
-% % viewOpticalFlow(config_w{an_w},motion_w{an_w},{pdfFolder,'optical_flow_w'})
-% return
-% end
-%%
-runthis = 0;
-if runthis
-out = get_masked_values(ds_b,ds_w,'motion.mean',ds_b,ds_w,0.1)
-minb = out.minb; maxb = out.maxb;
-minw = out.minw; maxw = out.maxw;
-vars_to_define = {'barsb','meanb','medianb','maxb','xs','barsw','meanw','medianw','maxw'};
-for ii = 1:length(vars_to_define)
-    cmdTxt = sprintf('%s = out.%s;',vars_to_define{ii},vars_to_define{ii}); eval(cmdTxt);
-end
-
-%%
-hf = figure(10000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[15 7 3.25 1],'color','w');
-hold on;
-mVarB = mean(barsb,2);
-mVarW = mean(barsw,2);
-semVarB = std(barsb,[],2)./sqrt(length(ds_b));
-semVarW = std(barsw,[],2)./sqrt(length(ds_w));
-shadedErrorBar(xs,mVarB,semVarB,'k');
-shadedErrorBar(xs,mVarW,semVarW,'b');
-xlim([0 10]);
-[h,p,ks2stat] = kstest2(mVarB,mVarW)
-hx = xlabel('Speed (cm/s)'); changePosition(hx,[0 7.0 0]);
-hy = ylabel('Percentage');%changePosition(hy,[0.2 0 0]);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-changePosition(gca,[-0.02 0.11 0.08 -0.08]);
-legs = {'Black mice (N = 5)','White mice (N = 5)'};
-legs{3} = [2.25 0.5 5 0.85];
-putLegend(gca,legs,'colors',{'k','b'},'sigR',{[],'','k',7},'lineWidth',1);
-text(2,6,{'Average Distributions'},'FontSize',7,'FontWeight','normal');
-text(3,2.5,{'***'},'FontSize',12,'FontWeight','normal'); text(3.75,2.75,{'(ks-test)'},'FontSize',7,'FontWeight','normal');
-ylim([0 6]);
-% cumulative graph
-cumPos = [0.7 0.28 0.15 0.3];
-pos = get(gca,'Position');
-axesPos = pos + [cumPos(1) cumPos(2) 0 0];
-axesPos(3:4) = [cumPos(3) cumPos(4)];
-hca = axes('Position',axesPos);hold on;
-xlims = xlim;
-plot(xs,cumsum(mVarB),'k');hold on;plot(xs,cumsum(mVarW),'b')
-ylim([0 100]); xlim([0 10])
-set(gca,'TickDir','out','FontSize',7,'FontWeight','Normal');
-xlims = xlim; dx = diff(xlims);
-text(xlims(1)+dx/10,120,'Cumulative','FontSize',7,'FontWeight','Normal');
-axes(hca);
-save_pdf(hf,pdfFolder,'Distribution Speeds',600);
-%%
-hf = figure(1001);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 5 1 1],'color','w');
-hold on;
-[h,p,ci,t_stat] = ttest2(medianb,medianw)
-% [p,h,r_stat] = ranksum(meanuvb,meanuvw)
-maxY = 7.5;
-mVar = [mean(medianb) mean(medianw)]; semVar = [std(medianb)/sqrt(5) std(medianw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
-plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
-        'xdata',xdata,'sigFontSize',8,'sigAsteriskFontSize',12,'sigLinesStartYFactor',0.05);
-xlim([0.5 2.5]);
-set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(20);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-hy = ylabel('Speed (cm/s)');changePosition(hy,[0 -0.3 0]);set(hy,'FontSize',7)
-text(0.6,maxY,{'Median Speed'},'FontSize',7,'FontWeight','Normal');
-changePosition(gca,[0.1 0 -0.08 0]);
-save_pdf(hf,pdfFolder,'Median Speeds',600);
-
-%%
-hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1 1],'color','w');
-hold on;
-[h,p,ci,t_stat] = ttest2(meanb,meanw)
-% [p,h,r_stat] = ranksum(meanuvb,meanuvw)
-maxY = 7.5;
-mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
-plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'sigLinesStartYFactor',0.05);
-xlim([0.5 2.5]);
-set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(20);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-hy = ylabel('Speed (cm/s)');changePosition(hy,[0 -0.3 0]);set(hy,'FontSize',7)
-text(0.6,maxY,{'Mean Speed'},'FontSize',7,'FontWeight','Normal');
-changePosition(gca,[0.1 0 -0.08 0]);
-save_pdf(hf,pdfFolder,'Mean Speeds',600);
-
-%%
-
-hf = figure(1003);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 2 1 1],'color','w');
-hold on;
-[h,p,ci,t_stat] = ttest2(maxb,maxw)
-maxY = 15;
-mVar = [mean(maxb) mean(maxw)]; semVar = [std(maxb)/sqrt(5) std(maxw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
-plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',1.5,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
-        'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',14,'sigLinesStartYFactor',0.05);
-
-    xlim([0.5 2.5]);
-set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(20);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-hy = ylabel('Speed (cm/s)');changePosition(hy,[0 -2 0]);set(hy,'FontSize',7)
-text(0.8,maxY,{'Max Speed'},'FontSize',7,'FontWeight','Normal');
-changePosition(gca,[0.12 0 -0.08 0]);
-save_pdf(hf,pdfFolder,'Max Speeds',600);
-return;
-end
+ind1 = 1; ind2  = 2;
+indCs = {1:16;1:8;1:16;1:8}; 
+ds_bp = ds(ind1,indCs{ind1}); ds_wp = ds(ind2,indCs{ind2});
+ind1 = 3; ind2  = 4;
+ds_br = ds(ind1,indCs{ind1}); ds_wr = ds(ind2,indCs{ind2});
+color_blind_map = load('colorblind_colormap.mat');
+% motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind2});
+% pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind2});
+% config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind2});
+% % %%
+% % runthis = 1;
+% % if runthis
+% % an_b = 1; an_w = 1;
+% % viewOpticalFlow(config_b{an_b},motion_b{an_b},{pdfFolder,'optical_flow_b'})
+% % % viewOpticalFlow(config_w{an_w},motion_w{an_w},{pdfFolder,'optical_flow_w'})
+% % return
+% % end
 
 %% motion mean
 runthis = 1;
 if runthis
 varName = 'motion.mean'; varNameT = 'Speed';
 % out = get_masked_values(ent_b,ent_w,varName,ds_b,ds_w,0.01)
-out = get_masked_values(ds_b,ds_w,varName,ds_b,ds_w,0.1);
-minb = out.minb; maxb = out.maxb;
-minw = out.minw; maxw = out.maxw;
-vars_to_define = {'barsb','meanb','medianb','maxb','xs','barsw','meanw','medianw','maxw','mean_cdfb','mean_cdfw','sem_cdfb','sem_cdfw','mean_barsb','mean_barsw'};
-for ii = 1:length(vars_to_define)
-    cmdTxt = sprintf('%s = out.%s;',vars_to_define{ii},vars_to_define{ii}); eval(cmdTxt);
-end
+outp = get_masked_values_h(ds_bp,ds_wp,varName,ds_bp,ds_wp,0.1);
+outr = get_masked_values_h(ds_br,ds_wr,varName,ds_br,ds_wr,0.1);
+
+colVar1 = [ones(1,16) 2*ones(1,8)];
+betweenTableCtrl = table(outp.meanb',outr.meanb','VariableNames',{'Pantomime','Real'});
+betweenTablePrkn = table(outp.meanw',outr.meanw','VariableNames',{'Pantomime','Real'});
+betweenTable = [table(colVar1','VariableNames',{'Group'}) [betweenTableCtrl;betweenTablePrkn]];
+betweenTable.Group = categorical(betweenTable.Group);
+withinTable = table([1 2]','VariableNames',{'Type'});
+withinTable.Type = categorical(withinTable.Type);
+rm = fitrm(betweenTable,'Pantomime,Real~Group');
+rm.WithinDesign = withinTable;
+mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
+mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Group','ComparisonType','bonferroni'),6);
+n = 0;
 
 %%
-hf = figure(10000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[15 7 1.25 1],'color','w');
+hf = figure(10000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[15 7 1.5 1.25],'color','w');
 hold on;
-shadedErrorBar(xs,mean_cdfb,sem_cdfb,'k');
-shadedErrorBar(xs,mean_cdfw,sem_cdfw,'b');
-xlim([min(xs) max(xs)]);
-[h,p,ks2stat] = kstest2(mean_barsb,mean_barsw);
-hk = h; pk = p;
+h = shadedErrorBar(outp.xs,outp.mean_cdfb,outp.sem_cdfb,'r',0.7);%h.mainLine.Color = colors{1};h.patch.FaceColor = colors{1};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outp.xs,outp.mean_cdfw,outp.sem_cdfw,'m',0.7);%h.mainLine.Color = colors{2};h.patch.FaceColor = colors{2};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outr.xs,outr.mean_cdfb,outr.sem_cdfb,'b',0.7);%h.mainLine.Color = colors{3};h.patch.FaceColor = colors{3};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outr.xs,outr.mean_cdfw,outr.sem_cdfw,'c',0.7);%h.mainLine.Color = colors{4};h.patch.FaceColor = colors{4};h.patch.FaceAlpha = 0.5;
+% xlim([min(xs) max(xs)]);
 hx = xlabel('Speed (cm/s)'); %changePosition(hx,[0 1.25 0]);
 hy = ylabel('Percentage');%changePosition(hy,[0.2 0 0]);
 ylim([0 100]);%xlim([0 30])
 set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 changePosition(gca,[-0.01 -0.01 0.03 0]);
-legs = {'Black (N=5)','White (N=5)'};
-legs{3} = [40 5 45 20];
-putLegend(gca,legs,'colors',{'k','b'},'sigR',{[],'','k',6},'lineWidth',1);
-text(1.2,100,{'CDF'},'FontSize',7,'FontWeight','normal');
+legs = {'Ctrl-P (N=16)','Ctrl-R ','Prkn-P (N=8)','Prkn-R '};
+legs{5} = [37 3 55 10];
+putLegend(gca,legs,'colors',{'r','b','m','c'},'sigR',{[],'','k',6},'lineWidth',1);
+text(60,80,{'CDF'},'FontSize',7,'FontWeight','normal');
 % text(2.75,4,{getNumberOfAsterisks(pk)},'FontSize',12,'FontWeight','normal'); text(3.25,4.5,{'(ks-test)'},'FontSize',7,'FontWeight','normal');
 save_pdf(hf,pdfFolder,sprintf('Distribution %s',varNameT),600);
 %%
-hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.25 1],'color','w');
+hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.5 1.25],'color','w');
 hold on;
-[h,p,ci,t_stat] = ttest2(meanb,meanw)
-hmean = h; pmean = p;
-effect_size = computeCohen_d(meanb,meanw);
-mVar = [mean(meanb) mean(meanw)]; semVar = [std(meanb)/sqrt(5) std(meanw)/sqrt(5)]; xdata = [1 2]; colors = {'k','b'}; combs = nchoosek(1:length(mVar),2);
-maxY = max(mVar + semVar); maxY = maxY + maxY/5;
+mVar = [mean(outp.meanb) mean(outr.meanb) mean(outp.meanw) mean(outr.meanw)]; 
+semVar = [std(outp.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outp.meanw)/sqrt(8) std(outr.meanw)/sqrt(8)];
+
+xdata = [1 2 3 4]; colors = {'r','b','m','c'}; combs = nchoosek(1:length(mVar),2);
+h = [0 1 0 0 1 0]'; p = [1 0.0001 1 1 0.0001 1]';
+maxY = max(mVar + semVar); maxY = maxY + maxY/1.5;
 minY = min(mVar - semVar); minY = minY - minY/1.5;
 plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',0.4,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+        'maxY',maxY,'ySpacing',9,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-xlim([0 3]); ylim([minY maxY]);
-set(gca,'XTick',[1 2],'XTickLabel',{'Black','White'}); xtickangle(45);
+xlim([0 5]); ylim([minY maxY]);
+set(gca,'XTick',[1 2 3 4],'XTickLabel',{'Ctrl-P','Ctrl-R','Prkn-P','Prkn-R'}); xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 hy = ylabel('Speed (cm/s)');%changePosition(hy,[0.1 -0.3 0]);set(hy,'FontSize',7)
 % text(1,-1.85,{'***'},'FontSize',12,'FontWeight','Normal');
 changePosition(gca,[0.1 0 -0.3 0]);
 save_pdf(hf,pdfFolder,sprintf('Mean %s',varNameT),600);
-[hk hmean]
-[pk pmean]
-effect_size
 return;
 end
