@@ -17,7 +17,7 @@ ent_br = ent(ind1,indCs{ind1}); ent_wr = ent(ind2,indCs{ind2});
 color_blind_map = load('colorblind_colormap.mat');
 
 %% Entropy
-runthis = 0;
+runthis = 1;
 if runthis
 varName = 'motion.ent'; varNameT = 'ENT';
 % out = get_masked_values(ent_b,ent_w,varName,ds_b,ds_w,0.01)
@@ -52,7 +52,7 @@ set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 changePosition(gca,[-0.01 -0.01 0.03 0]);
 legs = {'Ctrl-P (N=16)','Ctrl-R ','Prkn-P (N=8)','Prkn-R '};
 legs{5} = [1 0.5 95 10];
-putLegend(gca,legs,'colors',{'b','c','r','m'},'sigR',{[],'','k',6},'lineWidth',1);
+putLegend(gca,legs,'colors',{'b','r','c','m'},'sigR',{[],'','k',6},'lineWidth',1);
 text(60,80,{'CDF'},'FontSize',7,'FontWeight','normal');
 % text(2.75,4,{getNumberOfAsterisks(pk)},'FontSize',12,'FontWeight','normal'); text(3.25,4.5,{'(ks-test)'},'FontSize',7,'FontWeight','normal');
 save_pdf(hf,pdfFolder,sprintf('Distribution %s',varNameT),600);
@@ -62,12 +62,12 @@ hold on;
 mVar = [mean(outp.meanb) mean(outr.meanb) mean(outp.meanw) mean(outr.meanw)]; 
 semVar = [std(outp.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outp.meanw)/sqrt(8) std(outr.meanw)/sqrt(8)];
 combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
-p(5) = 0.0044; p(1) = 0.004748; p(6) = 0.007195;
-xdata = [1 2 3 4]; colors = {'b','c','r','m'}; 
+% p(5) = 0.0044; p(1) = 0.004748; p(6) = 0.007195;
+xdata = [1 2 3 4]; colors = {'b','r','c','m'}; 
 [~,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',0.3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.01);
-xlim([0 5]); ylim([5 maxY]);
+xlim([0 5]); ylim([3 maxY]);
 set(gca,'XTick',[1 2 3 4],'XTickLabel',{'Ctrl-P','Ctrl-R','Prkn-P','Prkn-R'}); xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 hy = ylabel('Temporal Entropy');%changePosition(hy,[0.1 -0.3 0]);set(hy,'FontSize',7)
@@ -123,7 +123,7 @@ hold on;
 mVar = [mean(outp.meanb) mean(outr.meanb) mean(outp.meanw) mean(outr.meanw)]; 
 semVar = [std(outp.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outp.meanw)/sqrt(8) std(outr.meanw)/sqrt(8)];
 combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
-p(5) = 1.5e-05; p(2) = 0.00954; p(6) = 0.013236;
+% p(5) = 1.5e-05; p(2) = 0.00954; p(6) = 0.013236;
 xdata = [1 2 3 4]; colors = {'b','c','r','m'}; 
 [~,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',0.3,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...

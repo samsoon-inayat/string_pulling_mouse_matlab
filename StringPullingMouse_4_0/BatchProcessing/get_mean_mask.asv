@@ -37,9 +37,9 @@ maskc = bwconvhull(mask);
 % imagesc(maskc);
 % axis equal
 % pause(0.3);
-% ds.old_mask = ds.mean_mask;
-ds.mean_mask = ones(size(maskc));
-figure(100);clf;imagesc(ds.mean_mask);axis equal
+ds.old_mask = ds.mean_mask;
+ds.mean_mask = maskc;
+
 pause(0.3);
 
 

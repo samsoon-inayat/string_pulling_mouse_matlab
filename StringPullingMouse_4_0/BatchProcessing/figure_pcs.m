@@ -1,86 +1,64 @@
 function figure_pcs
 
-allVarNames = {'motion','ds','ent','pcs','ics','fd_ent','pdfFolder','configs'};
-variablesToGetFromBase = {'motion_b','ds_b','ent_b','pcs_b','ics_b','fd_ent_b','pdfFolder','configs'};
+allVarNames = {'motion','ds','ent','pcs','ics','fd_ent','pdfFolder','configs','N'};
+variablesToGetFromBase = {'motion_b','ds_b','ent_b','pcs_b','ics_b','fd_ent_b','pdfFolder','configs','N_frames'};
 for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
-n = 0; ind1 = 1; ind2  = 2;
-indCs = {1:16;1:8}; 
-ds_b = ds(ind1,indCs{ind1}); ds_w = ds(ind2,indCs{ind1});
-motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind1});
-fd_ent_b = fd_ent(ind1,indCs{ind1}); fd_ent_w = fd_ent(ind2,indCs{ind1});
-ent_b = ent(ind1,indCs{ind1}); ent_w = ent(ind2,indCs{ind2});
-pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind2});
-config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind1});
-%%
-runthis = 1;
-if runthis
-an_b = 1; an_w = an_b;
-% viewPCs(config_b{an_b},pcs_b{an_b},{pdfFolder,'pcs_b'},[101 102]);
-viewPCs(config_w{an_w},pcs_w{an_w},{pdfFolder,'pcs_w'},[103 104]);
-return;
-end
+ind1 = 1; ind2  = 2;
+indCs = {1:16;1:8;1:16;1:8}; 
+pcs_bp = pcs(ind1,indCs{ind1}); pcs_wp = pcs(ind2,indCs{ind2});
+N_b = N(ind1,indCs{ind1}); N_w = N(ind2,indCs{ind2});
+ind1 = 3; ind2  = 4;
+pcs_br = pcs(ind1,indCs{ind1}); pcs_wr = pcs(ind2,indCs{ind2});
 
 %%
-runthis = 0;
-if runthis == 1
-ds_types_vars = {'Img','Motion'};
-ds_types = {'PC1-Position','PC1-Speed'};
-fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types_vars,{'PC1'});
-n = 0;
-
-maxY = 9; ySpacing = 0.5; params = {'ENT',maxY ySpacing};
-[hf,ha] = param_figure(1000,[12 8 1.5 1],ds_types,fes,params);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-xlh = xlabel(''); ylh = ylabel({'Spatial Entropy'});changePosition(ylh,[0.1 2.5 0])
-changePosition(ha,[0.08 -0.02 -0.01 -0.01]);
-ylim([6 maxY]);
-legs = {'Black mice (N = 5)','White mice (N = 5)',[2.75 0.5 maxY 0.5]};
-% putLegend(ha,legs,'colors',{'k','b'},'sigR',{[],'','k',6},'lineWidth',5);
-save_pdf(hf,pdfFolder,'PC Ent',600);
-
-maxY = 1.8; ySpacing = 0.1; params = {'FD',maxY ySpacing};
-[hf,ha] = param_figure(1001,[12 5 1.5 1],ds_types,fes,params);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-xlh = xlabel(''); ylh = ylabel({'Hausdorff FD'});changePosition(ylh,[-0.4 0.75 0]);
-changePosition(ha,[0.1 -0.02 -0.015 -0.01]);
-ylim([1.5 maxY]);
-save_pdf(hf,pdfFolder,'PC FD',600);
-
-maxY = 0.03; ySpacing = 0.04; params = {'SN',maxY ySpacing};
-[hf,ha] = param_figure(1002,[12 2 1.5 1],ds_types,fes,params);
-set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
-xlh = xlabel(''); ylh = ylabel({'Shaprness'});changePosition(ylh,[0.1 0 0])
-changePosition(ha,[0.1 -0.02 -0.02 -0.01]);
-ylim([0 maxY]);
-save_pdf(hf,pdfFolder,'PC SN',600);
-return;
-end
+% runthis = 0;
+% if runthis
+% an_b = 2; an_w = an_b;
+% % viewPCs(config_b{an_b},pcs_b{an_b},{pdfFolder,'pcs_b'},[101 102]);
+% viewPCs(config_w{an_w},pcs_w{an_w},{pdfFolder,'pcs_w'},[103 104]);
+% return;
+% end
 
 ev_threshold = 0:0.1:1;
 for ee = 1:length(ev_threshold)
-for ii = 1:5
-    ev_b(ii,:) = pcs_b{ii}.explained(1);    ev_w(ii,:) = pcs_w{ii}.explained(1);
-    aev_b(ii,:) = pcs_b{ii}.explained(1:10);    aev_w(ii,:) = pcs_w{ii}.explained(1:10);
-    count_pcs_b(ee,ii) = sum(pcs_b{ii}.explained > ev_threshold(ee))/N_b(ii);
-    count_pcs_w(ee,ii) = sum(pcs_w{ii}.explained > ev_threshold(ee))/N_w(ii);
-end
-[hcntpcs(ee),pcntpcs(ee),ci,stats] = ttest2(count_pcs_b(ee,:),count_pcs_w(ee,:));
+    for ii = 1:16
+        evm_bp(ii,:) = pcs_bp{ii}.motion.explained(1);  evm_br(ii,:) = pcs_br{ii}.motion.explained(1); 
+        aevm_bp(ii,:) = pcs_bp{ii}.motion.explained(1:10); aevm_br(ii,:) = pcs_br{ii}.motion.explained(1:10);
+        count_pcsm_bp(ee,ii) = sum(pcs_bp{ii}.motion.explained > ev_threshold(ee))/N_b(ii);
+        count_pcsm_br(ee,ii) = sum(pcs_br{ii}.motion.explained > ev_threshold(ee))/N_b(ii);
+    end
+    for ii = 1:8
+        evm_wp(ii,:) = pcs_wp{ii}.motion.explained(1);  evm_wr(ii,:) = pcs_wr{ii}.motion.explained(1); 
+        aevm_wp(ii,:) = pcs_wp{ii}.motion.explained(1:10); aevm_wr(ii,:) = pcs_wr{ii}.motion.explained(1:10);
+        count_pcsm_wp(ee,ii) = sum(pcs_wp{ii}.motion.explained > ev_threshold(ee))/N_w(ii);
+        count_pcsm_wr(ee,ii) = sum(pcs_wr{ii}.motion.explained > ev_threshold(ee))/N_w(ii);
+    end
 end
 
-ev_threshold = 0:0.01:1;
-for ee = 1:length(ev_threshold)
-for ii = 1:5
-    evm_b(ii,:) = pcs_b{ii}.motion.explained(1);    evm_w(ii,:) = pcs_w{ii}.motion.explained(1);
-    aevm_b(ii,:) = pcs_b{ii}.motion.explained(1:10);    aevm_w(ii,:) = pcs_w{ii}.motion.explained(1:10);
-    count_pcsm_b(ee,ii) = sum(pcs_b{ii}.motion.explained > ev_threshold(ee))/N_b(ii);
-    count_pcsm_w(ee,ii) = sum(pcs_w{ii}.motion.explained > ev_threshold(ee))/N_w(ii);
+colVar1 = [ones(1,16) 2*ones(1,8)];
+betweenTableCtrlp = array2table(aevm_bp); betweenTableCtrlr = array2table(aevm_br);
+betweenTableCtrl = [betweenTableCtrlp betweenTableCtrlr];
+betweenTablePrknp = array2table(aevm_wp); betweenTablePrknr = array2table(aevm_wr);
+betweenTablePrkn = [betweenTablePrknp betweenTablePrknr];
+for ii = 1:10
+    varNames{ii} = sprintf('P%d',ii);
 end
-[hcntpcsm(ee),pcntpcsm(ee),ci,stats] = ttest2(count_pcsm_b(ee,:),count_pcsm_w(ee,:));
+for ii = 11:20
+    varNames{ii} = sprintf('R%d',ii-10);
 end
-[paev,tblaev,statsaev] = anova1([aevm_b' aevm_w'],[ones(1,5) 2*ones(1,5)],'off');
+betweenTableCtrl.Properties.VariableNames = varNames; betweenTablePrkn.Properties.VariableNames = varNames;
+betweenTable = [table(colVar1','VariableNames',{'Group'}) [betweenTableCtrl;betweenTablePrkn]];
+betweenTable.Group = categorical(betweenTable.Group);
+withinTable = table([ones(1,10) 2*ones(1,10)]','VariableNames',{'Type'});
+withinTable.Type = categorical(withinTable.Type);
+rm = fitrm(betweenTable,'P1-P10,R1-R10~Group');
+rm.WithinDesign = withinTable;
+mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
+mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Group','ComparisonType','bonferroni'),6);
+mc3 = multcompare(rm,'Group','ComparisonType','bonferroni')
 n = 0;
 %%
 runthis = 1;

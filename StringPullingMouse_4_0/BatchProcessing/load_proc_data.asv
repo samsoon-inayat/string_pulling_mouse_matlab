@@ -5,7 +5,7 @@ colormaps = load('colorblind_colormap.mat');
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 %%
 
-reloadConfig = 0; reloadData = 0;
+reloadConfig = 0; reloadData = 1;
 
 if reloadConfig
     clc
@@ -60,15 +60,15 @@ if reloadData
     return;
 end
 %%
-ind = 1;
-for dii = 1:4
-    for ii = 1:number_of_files(dii)
-        this_ds = ds_b{dii,ii}; this_ent = ent_b{dii,ii};
-        this_pc = pcs_b{dii,ii}; this_ic = ics_b{dii,ii};
-        this_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
-        ds_b{dii,ii} = this_ds;
-    end
-end
+% ind = 1;
+% for dii = 1:4
+%     for ii = 1:number_of_files(dii)
+%         this_ds = ds_b{dii,ii}; this_ent = ent_b{dii,ii};
+%         this_pc = pcs_b{dii,ii}; this_ic = ics_b{dii,ii};
+%         thid_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
+%         ds_b{dii,ii} = this_ds;
+%     end
+% end
 
 
 for dii = 1:4

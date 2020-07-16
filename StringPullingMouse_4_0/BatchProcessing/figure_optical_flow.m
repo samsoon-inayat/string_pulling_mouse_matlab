@@ -51,7 +51,7 @@ set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 changePosition(gca,[-0.01 -0.01 0.03 0]);
 legs = {'Ctrl-P (N=16)','Ctrl-R ','Prkn-P (N=8)','Prkn-R '};
 legs{5} = [37 3 55 10];
-putLegend(gca,legs,'colors',{'b','c','r','m'},'sigR',{[],'','k',6},'lineWidth',1);
+putLegend(gca,legs,'colors',{'b','r','c','m'},'sigR',{[],'','k',6},'lineWidth',1);
 text(60,80,{'CDF'},'FontSize',7,'FontWeight','normal');
 % text(2.75,4,{getNumberOfAsterisks(pk)},'FontSize',12,'FontWeight','normal'); text(3.25,4.5,{'(ks-test)'},'FontSize',7,'FontWeight','normal');
 save_pdf(hf,pdfFolder,sprintf('Distribution %s',varNameT),600);
@@ -61,8 +61,9 @@ hold on;
 mVar = [mean(outp.meanb) mean(outr.meanb) mean(outp.meanw) mean(outr.meanw)]; 
 semVar = [std(outp.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outp.meanw)/sqrt(8) std(outr.meanw)/sqrt(8)];
 
-xdata = [1 2 3 4]; colors = {'b','c','r','m'}; combs = nchoosek(1:length(mVar),2);
-h = [0 1 0 0 1 0]'; p = [1 0.0001 1 1 0.0001 1]';
+xdata = [1 2 3 4]; colors = {'b','r','c','m'}; combs = nchoosek(1:length(mVar),2);
+combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
+% h = [0 1 0 0 1 0]'; p = [1 0.0001 1 1 0.0001 1]';
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',9,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.1);

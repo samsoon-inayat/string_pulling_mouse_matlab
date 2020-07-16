@@ -84,7 +84,7 @@ if defineZoomWindows
     return;
 end
 
-%% defining zoom windows
+%% defining zoom windows ICA
 if defineZoomWindowsICA
     for ii = 1:length(vid_files)
         if ~ismember(files_to_process_indices,ii)
@@ -92,59 +92,25 @@ if defineZoomWindowsICA
         end
 %         ii =  1;
         config = config_info{ii}; config1 = config;
+        disp(config.pd_folder);
         [sfn,efn] = getFrameNums(config);
-        [success,config.data] = load_data(config,sfn:efn);
-        rfact = 0.125;
-        frames = config.data.frames;
+        frames = get_zoomed_frames(config,sfn:efn,imrf);
+        rgbFrames = [];
         for fn = 1:length(frames)
-            fn
+%             fn
             temp = rgb2gray(frames{fn});
 %             tempR = imresize(temp,rfact);
-            rgbFramesO(:,:,fn) = temp;
+            rgbFrames(:,:,fn) = temp;
         end
-        d_rgbFrames = diff(rgbFramesO,1,3);
+        d_rgbFrames = diff(rgbFrames,1,3);
         md_rgbFrames = max(d_rgbFrames,[],3);
-        for fn = 1:size(d_rgbFrames,3)
-            fn
-            figure(100);clf;imagesc(d_rgbFrames(:,:,fn));axis equal;
-            pause(0.1)
-        end
-        nrows = size(rgbFrames,1); ncols = size(rgbFrames,2); nFrames = size(rgbFrames,3);
-        nics = floor(nFrames/2);
-        fs = double(reshape(rgbFrames,nrows*ncols,nFrames));
-        [pcm.coeff,pcm.score,pcm.latent,pcm.tsquared,pcm.explained,pcm.mu] = pca(fs);
-        [Z, W, T, mu] = fastICA(fs',nics,'kurtosis',1);%,type,flag)
-        Zp = Z';
-        ics = reshape(Zp,nrows,ncols,nics);
-        max_ics = max(ics,[],3); max_ics_r = imresize(max_ics,1/rfact);
-        min_ics = min(ics,[],3); min_ics_r = imresize(min_ics,1/rfact);
-        maxMask = max_ics_r > mean(max_ics_r(:)); minMask = min_ics_r < mean(min_ics_r(:));
-        mask = maxMask | minMask; mask = bwconvhull(mask);
-        figure(100);clf;imagesc(mask);axis equal;
-        
-        [success,config1.data] = load_data(config,1:5);
-        no_gui_set_zoom_window_manually(config1,1);
-        tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-        zw = getParameter(config,'Auto Zoom Window');
-        zw = [zw(1)-100 zw(2)-200 zw(3)+100 zw(4)];
-        if zw(1) < 0
-            zw(1) = 1;
-        end
-        if zw(2) < 0
-            zw(2) = 1;
-        end
-        if zw(3) > config1.data.frame_size(2)
-            zw(3) = config1.data.frame_size(2);
-        end
-        if zw(4) > config1.data.frame_size(1)
-            zw(4) = config1.data.frame_size(1);
-        end
-        setParameter(config,'Auto Zoom Window',zw);
-        tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-        playFrames(config,10);
-        no_gui_set_scale(config1,1);
-        config = rmfield(config,'data');
-        config_info{ii} = config;
+        mask = bwconvhull(md_rgbFrames > mean(md_rgbFrames(:)));
+        figure(100);clf;subplot 121;imagesc(md_rgbFrames);axis equal;subplot 122;imagesc(mask);axis equal;
+        ds = load_ds(config);
+        ds.mean_mask = mask;
+        fileName = sprintf('descriptive_statistics_%d_%d.mat',sfn,efn);
+        fileName = fullfile(config.md.processed_data_folder,fileName);
+        save(fileName,'-struct','ds');
         n = 0;
     end
     return;
