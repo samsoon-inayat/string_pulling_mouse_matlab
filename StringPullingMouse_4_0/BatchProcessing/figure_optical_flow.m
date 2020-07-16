@@ -14,17 +14,6 @@ ds_bp = ds(ind1,indCs{ind1}); ds_wp = ds(ind2,indCs{ind2});
 ind1 = 3; ind2  = 4;
 ds_br = ds(ind1,indCs{ind1}); ds_wr = ds(ind2,indCs{ind2});
 color_blind_map = load('colorblind_colormap.mat');
-% motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind2});
-% pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind2});
-% config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind2});
-% % %%
-% % runthis = 1;
-% % if runthis
-% % an_b = 1; an_w = 1;
-% % viewOpticalFlow(config_b{an_b},motion_b{an_b},{pdfFolder,'optical_flow_b'})
-% % % viewOpticalFlow(config_w{an_w},motion_w{an_w},{pdfFolder,'optical_flow_w'})
-% % return
-% % end
 
 %% motion mean
 runthis = 1;
@@ -50,10 +39,10 @@ n = 0;
 %%
 hf = figure(10000);clf;set(gcf,'Units','Inches');set(gcf,'Position',[15 7 1.5 1.25],'color','w');
 hold on;
-h = shadedErrorBar(outp.xs,outp.mean_cdfb,outp.sem_cdfb,'r',0.7);%h.mainLine.Color = colors{1};h.patch.FaceColor = colors{1};h.patch.FaceAlpha = 0.5;
-h = shadedErrorBar(outp.xs,outp.mean_cdfw,outp.sem_cdfw,'m',0.7);%h.mainLine.Color = colors{2};h.patch.FaceColor = colors{2};h.patch.FaceAlpha = 0.5;
-h = shadedErrorBar(outr.xs,outr.mean_cdfb,outr.sem_cdfb,'b',0.7);%h.mainLine.Color = colors{3};h.patch.FaceColor = colors{3};h.patch.FaceAlpha = 0.5;
-h = shadedErrorBar(outr.xs,outr.mean_cdfw,outr.sem_cdfw,'c',0.7);%h.mainLine.Color = colors{4};h.patch.FaceColor = colors{4};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outp.xs,outp.mean_cdfb,outp.sem_cdfb,'b',0.7);%h.mainLine.Color = colors{1};h.patch.FaceColor = colors{1};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outp.xs,outp.mean_cdfw,outp.sem_cdfw,'c',0.7);%h.mainLine.Color = colors{2};h.patch.FaceColor = colors{2};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outr.xs,outr.mean_cdfb,outr.sem_cdfb,'r',0.7);%h.mainLine.Color = colors{3};h.patch.FaceColor = colors{3};h.patch.FaceAlpha = 0.5;
+h = shadedErrorBar(outr.xs,outr.mean_cdfw,outr.sem_cdfw,'m',0.7);%h.mainLine.Color = colors{4};h.patch.FaceColor = colors{4};h.patch.FaceAlpha = 0.5;
 % xlim([min(xs) max(xs)]);
 hx = xlabel('Speed (cm/s)'); %changePosition(hx,[0 1.25 0]);
 hy = ylabel('Percentage');%changePosition(hy,[0.2 0 0]);
@@ -62,7 +51,7 @@ set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 changePosition(gca,[-0.01 -0.01 0.03 0]);
 legs = {'Ctrl-P (N=16)','Ctrl-R ','Prkn-P (N=8)','Prkn-R '};
 legs{5} = [37 3 55 10];
-putLegend(gca,legs,'colors',{'r','b','m','c'},'sigR',{[],'','k',6},'lineWidth',1);
+putLegend(gca,legs,'colors',{'b','c','r','m'},'sigR',{[],'','k',6},'lineWidth',1);
 text(60,80,{'CDF'},'FontSize',7,'FontWeight','normal');
 % text(2.75,4,{getNumberOfAsterisks(pk)},'FontSize',12,'FontWeight','normal'); text(3.25,4.5,{'(ks-test)'},'FontSize',7,'FontWeight','normal');
 save_pdf(hf,pdfFolder,sprintf('Distribution %s',varNameT),600);
@@ -72,14 +61,12 @@ hold on;
 mVar = [mean(outp.meanb) mean(outr.meanb) mean(outp.meanw) mean(outr.meanw)]; 
 semVar = [std(outp.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outp.meanw)/sqrt(8) std(outr.meanw)/sqrt(8)];
 
-xdata = [1 2 3 4]; colors = {'r','b','m','c'}; combs = nchoosek(1:length(mVar),2);
+xdata = [1 2 3 4]; colors = {'b','c','r','m'}; combs = nchoosek(1:length(mVar),2);
 h = [0 1 0 0 1 0]'; p = [1 0.0001 1 1 0.0001 1]';
-maxY = max(mVar + semVar); maxY = maxY + maxY/1.5;
-minY = min(mVar - semVar); minY = minY - minY/1.5;
-plotBarsWithSigLines(mVar,semVar,combs,[h p],'colors',colors,'sigColor','k',...
-        'maxY',maxY,'ySpacing',9,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
+[hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
+        'ySpacing',9,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-xlim([0 5]); ylim([minY maxY]);
+xlim([0 5]); ylim([0 maxY]);
 set(gca,'XTick',[1 2 3 4],'XTickLabel',{'Ctrl-P','Ctrl-R','Prkn-P','Prkn-R'}); xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 hy = ylabel('Speed (cm/s)');%changePosition(hy,[0.1 -0.3 0]);set(hy,'FontSize',7)

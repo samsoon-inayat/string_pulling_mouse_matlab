@@ -1,4 +1,4 @@
-function plotBarsWithSigLines (means,sems,combs,sig,varargin)
+function [hbs,myys] = plotBarsWithSigLines (means,sems,combs,sig,varargin)
 
 p = inputParser;
 default_maxY = max(means+sems);
@@ -45,6 +45,7 @@ for ii = 1:length(xdata)
 %     xdata = get(hb,'XData');
 %     dx = xdata(2) - xdata(1);
     errorbar(xdata(ii), means(ii), sems(ii), 'k', 'linestyle', 'none','CapSize',3);
+    hbs(ii) = hb;
 end
 % xlim([0.5 length(means)+0.5]);
 
@@ -52,6 +53,10 @@ end
 dx = xdata(2) - xdata(1);
 
 yl = get(gca,'YLim');
+
+tSig = sig;
+sig(:,1) = tSig<0.05;
+sig(:,2) = tSig;
 
 dy = (maxY-yl(1));
 diffCombs  = combs(:,2) - combs(:,1);
@@ -91,9 +96,16 @@ if numberOfSigLines > 0
             sigText = getNumberOfAsterisks(pvalue);
             xt1 = x1 + (x2-x1)/2;
             text(xt1,yy+dy/7,sigText,'FontSize',sigAsteriskFontSize,'HorizontalAlignment','center','Color',sigColor);
+            all_yys(ii,jj) = yy;
         end
     end
-    ylimvs = [yl(1) myy];
+    myys = max(all_yys(:));
+    if myys > myy
+        ylimvs = [yl(1) myys];
+    else
+        ylimvs = [yl(1) myy];
+    end
+%     ylimvs = [yl(1) myy];
     ylim(ylimvs);
     yt = ylimvs(2);
     xdata = xlim;
@@ -104,6 +116,7 @@ if numberOfSigLines > 0
     xt = xdata(1) + indent + total/10;
     set(ht,'Position',[xt yt 0]);
 else
+    myys = maxY;
     ylimvs = [yl(1) myy];
     ylim(ylimvs);
     yt = default_maxY + ((ylimvs(2)-ylimvs(1))/10);
@@ -123,3 +136,5 @@ else
     xt = xdata(1) + indent + total/10;
     set(ht,'Position',[xt yt 0]);
 end
+
+myys = 1.1*myys;

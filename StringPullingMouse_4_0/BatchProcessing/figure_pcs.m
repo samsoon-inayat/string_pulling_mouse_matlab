@@ -6,19 +6,19 @@ for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
-n = 0; ind1 = 2; ind2  = 4;
+n = 0; ind1 = 1; ind2  = 2;
 indCs = {1:16;1:8}; 
 ds_b = ds(ind1,indCs{ind1}); ds_w = ds(ind2,indCs{ind1});
 motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind1});
 fd_ent_b = fd_ent(ind1,indCs{ind1}); fd_ent_w = fd_ent(ind2,indCs{ind1});
-ent_b = ent(ind1,indCs{ind1}); ent_w = ent(ind2,indCs{ind1});
-pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind1});
+ent_b = ent(ind1,indCs{ind1}); ent_w = ent(ind2,indCs{ind2});
+pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind2});
 config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind1});
 %%
 runthis = 1;
 if runthis
 an_b = 1; an_w = an_b;
-viewPCs(config_b{an_b},pcs_b{an_b},{pdfFolder,'pcs_b'},[101 102]);
+% viewPCs(config_b{an_b},pcs_b{an_b},{pdfFolder,'pcs_b'},[101 102]);
 viewPCs(config_w{an_w},pcs_w{an_w},{pdfFolder,'pcs_w'},[103 104]);
 return;
 end

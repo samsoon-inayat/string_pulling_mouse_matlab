@@ -59,14 +59,21 @@ if reloadData
     return;
 end
 %%
+ind = 1;
 for dii = 1:4
     for ii = 1:number_of_files(dii)
+        config = configs{dii,ii};
+        scale_data{ind,1} = dataFolders{dii};
+        scale_data{ind,2} = config.file_name;
+        scale_data{ind,3} = getParameter(config,'Scale');
+        ind = ind + 1;
         [dii ii]
-        this_ds = ds_b{dii,ii}; this_ent = ent_b{dii,ii};
-        this_pc = pcs_b{dii,ii}; this_ic = ics_b{dii,ii};
-        thid_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
-        ds_b{dii,ii} = this_ds;
+%         this_ds = ds_b{dii,ii}; this_ent = ent_b{dii,ii};
+%         this_pc = pcs_b{dii,ii}; this_ic = ics_b{dii,ii};
+%         thid_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
+%         ds_b{dii,ii} = this_ds;
     end
 end
 
-
+scales_table = table(scale_data(:,1),scale_data(:,2),scale_data(:,3),'VariableNames',{'FolderName','FileName','Scale'});
+save(fullfile(pwd,'temp','scales.mat'),'scales_table');
