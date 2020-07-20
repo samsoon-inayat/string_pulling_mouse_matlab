@@ -17,7 +17,8 @@ for ii = 1:length(fd_ent_b)
     ent_b(ii) = thisVal{inds,3};
     sn_b(ii) = thisVal{inds,4};
     sp_b(ii) = thisVal{inds,5};
-    
+end
+for ii = 1:length(fd_ent_w)
     thisVal = fd_ent_w{ii}.fd_ent;
     C = thisVal(:,1);
     inds = logical(ones(size(C)));

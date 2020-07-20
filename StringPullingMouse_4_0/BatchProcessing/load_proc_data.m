@@ -44,8 +44,10 @@ end
 %%
 if reloadData
     allLoadingFunctions = {'load_motion','load_ds','load_entropy','load_pcs','load_ics','load_fractal_dim_and_entropy'};
-%     allLoadingFunctions = {'load_ds'};
     allVarNames = {'motion','ds','ent','pcs','ics','fd_ent'};
+    selInd = 1:length(allLoadingFunctions);
+    allLoadingFunctions = allLoadingFunctions(selInd);
+    allVarNames = allVarNames(selInd);
     for dii = 1:4
         for ii = 1:number_of_files(dii)
             config = configs{dii,ii};
@@ -57,26 +59,30 @@ if reloadData
             end
         end
     end
+    for dii = 1:4
+        for ii = 1:number_of_files(dii)
+            config = configs{dii,ii};
+            [sfn,efn] = getFrameNums(config);
+            N_frames(dii,ii) = efn - sfn + 1;
+        end
+    end
     return;
 end
 %%
 ind = 1;
 for dii = 1:4
     for ii = 1:number_of_files(dii)
+        [dii ii]
         this_ds = ds_b{dii,ii}; this_ent = ent_b{dii,ii};
         this_pc = pcs_b{dii,ii}; this_ic = ics_b{dii,ii};
-        this_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
-        ds_b{dii,ii} = this_ds;
+%         this_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
+        ds_b{dii,ii} = set_mean_mask(this_ds);
+%         this_ds = get_mean_mask(this_ds,this_ent,this_pc,this_ic);
+%         ds_b{dii,ii} = this_ds;
     end
 end
 
 
-for dii = 1:4
-    for ii = 1:number_of_files(dii)
-        config = configs{dii,ii};
-        [sfn,efn] = getFrameNums(config);
-        N_frames(dii,ii) = efn - sfn + 1;
-    end
-end
+
 
 

@@ -38,8 +38,12 @@ maskc = bwconvhull(mask);
 % axis equal
 % pause(0.3);
 % ds.old_mask = ds.mean_mask;
-ds.mean_mask = ones(size(maskc));
-figure(100);clf;imagesc(ds.mean_mask);axis equal
-pause(0.3);
+% ds.mean_mask = maskc;
+% figure(100);clf;subplot 121;imagesc(ds.mean_mask);axis equal;subplot 122;imagesc(maskc);axis equal
+% pause(0.3);
+
+ds.mean_mask_from_ica = maskc;
+ds.mean_mask_ones = ones(size(maskc));
+
 
 

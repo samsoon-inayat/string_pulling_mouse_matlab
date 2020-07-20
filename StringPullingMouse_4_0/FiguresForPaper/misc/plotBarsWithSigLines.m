@@ -54,9 +54,11 @@ dx = xdata(2) - xdata(1);
 
 yl = get(gca,'YLim');
 
+if size(sig,2) == 1
 tSig = sig;
 sig(:,1) = tSig<0.05;
 sig(:,2) = tSig;
+end
 
 dy = (maxY-yl(1));
 diffCombs  = combs(:,2) - combs(:,1);

@@ -107,7 +107,13 @@ if defineZoomWindowsICA
         mask = bwconvhull(md_rgbFrames > mean(md_rgbFrames(:)));
         figure(100);clf;subplot 121;imagesc(md_rgbFrames);axis equal;subplot 122;imagesc(mask);axis equal;
         ds = load_ds(config);
-        ds.mean_mask = mask;
+        try
+            ds = rmfield(ds,'mean_mask');
+        catch
+        end
+        ds.mean_mask_from_diff = mask;
+        ds.max_diff_grayFrames = md_rgbFrames;
+        ds.mean_diff_grayFrames = mean(d_rgbFrames,3);
         fileName = sprintf('descriptive_statistics_%d_%d.mat',sfn,efn);
         fileName = fullfile(config.md.processed_data_folder,fileName);
         save(fileName,'-struct','ds');
@@ -159,13 +165,13 @@ if processData
             continue;
         end
         config = config_info{ii};
-        [success,config.data] = load_data(config);
-        tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-        estimate_motion(config);
-        descriptive_statistics(config);
-        find_temporal_xics(config);
-        find_PCs(config);
-        find_ICs(config);
+%         [success,config.data] = load_data(config);
+%         tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
+%         estimate_motion(config);
+%         descriptive_statistics(config);
+%         find_temporal_xics(config);
+%         find_PCs(config);
+%         find_ICs(config);
         find_fractal_dimensions_and_entropy(config);
         clear config;
     end

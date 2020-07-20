@@ -1,14 +1,14 @@
-function out = get_masked_values(varsb,varsw,varName,ds_b,ds_w,incr,inverted)
+function out = get_masked_values_h(varsb,varsw,varName,ds_b,ds_w,incr,threshold)
 
 for ii = 1:length(ds_b)
     ii
     cmdTxt = sprintf('uv = varsb{ii}.%s;',varName);
     eval(cmdTxt)
 %     figure(100000);clf;imagesc(ds_b{ii}.mean_mask);axis equal;colormap jet;colorbar;pause(0.5);
-    if exist('inverted','var')
-        out.b{ii} = uv(ds_b{ii}.mean_mask == 0);
-    else
+    if ~exist('threshold','var')
         out.b{ii} = uv(ds_b{ii}.mean_mask == 1);
+    else
+        out.b{ii} = uv(ds_b{ii}.mean_mask == 1 & uv > threshold(1) & uv < threshold(2));
     end
     uv = out.b{ii};
     out.minb(ii) = min(uv(:));    out.maxb(ii) = max(uv(:)); out.meanb(ii) = mean(uv(:)); out.medianb(ii) = median(uv(:));
@@ -18,10 +18,10 @@ for ii = 1:length(ds_w)
     cmdTxt = sprintf('uv = varsw{ii}.%s;',varName);
     eval(cmdTxt)
 %     figure(100000);clf;imagesc(ds_w{ii}.mean_mask);axis equal;colormap jet;colorbar;pause(0.5);
-    if exist('inverted','var')
-        out.w{ii} = uv(ds_w{ii}.mean_mask == 0);
-    else
+    if ~exist('threshold','var')
         out.w{ii} = uv(ds_w{ii}.mean_mask == 1);
+    else
+        out.w{ii} = uv(ds_w{ii}.mean_mask == 1 & uv > threshold(1) & uv < threshold(2));
     end
     uv = out.w{ii};
     out.minw(ii) = min(uv(:));    out.maxw(ii) = max(uv(:)); out.meanw(ii) = mean(uv(:)); out.medianw(ii) = median(uv(:));
@@ -63,11 +63,11 @@ out.barsb = barsb;
 out.barsw = barsw;
 out.mean_barsb = mean(barsb,2);
 out.mean_barsw = mean(barsw,2);
-out.sem_barsb = std(barsb,[],2)./sqrt(5);
-out.sem_barsw = std(barsw,[],2)./sqrt(5);
+out.sem_barsb = std(barsb,[],2)./sqrt(length(ds_b));
+out.sem_barsw = std(barsw,[],2)./sqrt(length(ds_w));
 out.cdfb = cdfb;
 out.cdfw = cdfw;
 out.mean_cdfb = mean(cdfb,2);
 out.mean_cdfw = mean(cdfw,2);
-out.sem_cdfb = std(cdfb,[],2)./sqrt(5);
-out.sem_cdfw = std(cdfw,[],2)./sqrt(5);
+out.sem_cdfb = std(cdfb,[],2)./sqrt(length(ds_b));
+out.sem_cdfw = std(cdfw,[],2)./sqrt(length(ds_w));
