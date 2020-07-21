@@ -21,7 +21,7 @@ ds.mean_mask = maskz & mask;
 figure(100);clf;
 subplot 141;imagesc(ds.mean_mask);axis equal;
 subplot 142;imagesc(ds.mean_mask_from_diff);axis equal;
-subplot 143;imagesc(ds.mean_mask_from_ica);axis equal;
-subplot 144;imagesc(ds.mean_mask_ones);axis equal;
+% subplot 143;imagesc(ds.mean_mask_from_ica);axis equal;
+% subplot 144;imagesc(ds.mean_mask_ones);axis equal;
 pause(0.01);
 

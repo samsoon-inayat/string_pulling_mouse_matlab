@@ -6,22 +6,17 @@ for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
-% n = 0; ind1 = 2; ind2  = ind1 + 2;
-% indCs = {1:16;1:8}; 
-% ds_b = ds(ind1,indCs{ind1}); ds_w = ds(ind2,indCs{ind1});
-% motion_b = motion(ind1,indCs{ind1}); motion_w = motion(ind2,indCs{ind1});
-% fd_ent_b = fd_ent(ind1,indCs{ind1}); fd_ent_w = fd_ent(ind2,indCs{ind1});
-% pcs_b = pcs(ind1,indCs{ind1}); pcs_w = pcs(ind2,indCs{ind1});
-% config_b = configs(ind1,indCs{ind1}); config_w = configs(ind2,indCs{ind1});
 ind1 = 1; ind2  = 2;
 indCs = {1:16;1:8;1:16;1:8}; 
 ds_bp = ds(ind1,indCs{ind1}); ds_wp = ds(ind2,indCs{ind2});
 config_bp = configs(ind1,indCs{ind1}); config_wp = configs(ind2,indCs{ind2});
+fd_ent_bp = fd_ent(ind1,indCs{ind1}); fd_ent_wp = fd_ent(ind2,indCs{ind2});
 ind1 = 3; ind2  = 4;
 ds_br = ds(ind1,indCs{ind1}); ds_wr = ds(ind2,indCs{ind2});
 config_br = configs(ind1,indCs{ind1}); config_wr = configs(ind2,indCs{ind2});
+fd_ent_br = fd_ent(ind1,indCs{ind1}); fd_ent_wr = fd_ent(ind2,indCs{ind2});
 %%
-runthis = 1;
+runthis = 0;
 if runthis
     for ii = 1:16
         an_b = ii; 
@@ -34,7 +29,7 @@ return;
 end
 
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 an_b = 6; an_w = an_b;
 view_descriptive_statistics_V(config_b{an_b},ds_b{an_b},{pdfFolder,'Descriptive Statistics_b'});
@@ -42,7 +37,7 @@ view_descriptive_statistics_V(config_w{an_w},ds_w{an_w},{pdfFolder,'Descriptive 
 return;
 end
 %%
-runthis = 1;
+runthis = 0;
 if runthis
 ds_types = {'mean','median','mode'};%,'standard_deviation','skewness','kurtosis'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types,{'Img'});
@@ -78,7 +73,7 @@ end
 
 
 %%
-runthis = 0;
+runthis = 1;
 if runthis
 ds_types = {'mean','median','mode'};%,'standard_deviation','skewness','kurtosis'};
 fes = get_2d_image_xics(fd_ent_b,fd_ent_w,ds_types,{'Motion'});

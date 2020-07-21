@@ -34,14 +34,14 @@ for ii = 1:length(ds_types)
 %     out.power_sn(ii) = sampsizepwr('t2',[mean(sn_b) std(sn_b)],mean(sn_w),[],5,'Ratio',1);
 end
 
-out.mean_fd_b = mean(out.all_fd_b); out.sem_fd_b = std(out.all_fd_b)/sqrt(5);
-out.mean_fd_w = mean(out.all_fd_w); out.sem_fd_w = std(out.all_fd_w)/sqrt(5);
-out.mean_ent_b = mean(out.all_ent_b); out.sem_ent_b = std(out.all_ent_b)/sqrt(5);
-out.mean_ent_w = mean(out.all_ent_w); out.sem_ent_w = std(out.all_ent_w)/sqrt(5);
-out.mean_sn_b = mean(out.all_sn_b); out.sem_sn_b = std(out.all_sn_b)/sqrt(5);
-out.mean_sn_w = mean(out.all_sn_w); out.sem_sn_w = std(out.all_sn_w)/sqrt(5);
-out.mean_sp_b = mean(out.all_sp_b); out.sem_sp_b = std(out.all_sp_b)/sqrt(5);
-out.mean_sp_w = mean(out.all_sp_w); out.sem_sp_w = std(out.all_sp_w)/sqrt(5);
+out.mean_fd_b = mean(out.all_fd_b); out.sem_fd_b = std(out.all_fd_b)/sqrt(size(out.all_fd_b,1));
+out.mean_fd_w = mean(out.all_fd_w); out.sem_fd_w = std(out.all_fd_w)/sqrt(size(out.all_fd_w,1));
+out.mean_ent_b = mean(out.all_ent_b); out.sem_ent_b = std(out.all_ent_b)/sqrt(size(out.all_fd_b,1));
+out.mean_ent_w = mean(out.all_ent_w); out.sem_ent_w = std(out.all_ent_w)/sqrt(size(out.all_fd_w,1));
+out.mean_sn_b = mean(out.all_sn_b); out.sem_sn_b = std(out.all_sn_b)/sqrt(size(out.all_fd_b,1));
+out.mean_sn_w = mean(out.all_sn_w); out.sem_sn_w = std(out.all_sn_w)/sqrt(size(out.all_fd_w,1));
+out.mean_sp_b = mean(out.all_sp_b); out.sem_sp_b = std(out.all_sp_b)/sqrt(size(out.all_fd_b,1));
+out.mean_sp_w = mean(out.all_sp_w); out.sem_sp_w = std(out.all_sp_w)/sqrt(size(out.all_fd_w,1));
 
 out.std_fd_b = std(out.all_fd_b);
 out.std_fd_w = std(out.all_fd_w);

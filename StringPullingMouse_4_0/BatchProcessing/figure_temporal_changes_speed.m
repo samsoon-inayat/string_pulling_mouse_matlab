@@ -207,7 +207,6 @@ rm.WithinDesign = withinTable;
 mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
 mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Group','ComparisonType','bonferroni'),6);
 mc3 = find_sig_mctbl(multcompare(rm,'Group','ComparisonType','bonferroni'),5);
-mc4 = find_sig_mctbl(multcompare(rm,'Type','ComparisonType','bonferroni'),5);
 n = 0;
 
 %%
@@ -291,7 +290,30 @@ ds_types_vars = {'standard_deviation','skewness','kurtosis','Fano Factor','Entro
 ds_types = {'Std. Dev.','Skewness','Kurtosis','Fano Factor','Entropy','Higuchi FD'};
 fesp = get_2d_image_xics(fd_ent_bp,fd_ent_wp,ds_types_vars,{'Motion'});
 fesr = get_2d_image_xics(fd_ent_br,fd_ent_wr,ds_types_vars,{'Motion'});
-fes = fesp;
+fes = fesr;
+for ind1 = 1:6
+    varSel = 'all_ent';
+    cmdTxt = sprintf('CtrlP = fesp.%s_b(:,ind1);',varSel); eval(cmdTxt);
+    cmdTxt = sprintf('CtrlR = fesr.%s_b(:,ind1);',varSel); eval(cmdTxt);
+    cmdTxt = sprintf('PrknP = fesp.%s_w(:,ind1);',varSel); eval(cmdTxt);
+    cmdTxt = sprintf('PrknR = fesr.%s_w(:,ind1);',varSel); eval(cmdTxt);
+
+    colVar1 = [ones(1,16) 2*ones(1,8)];
+    betweenTableCtrl = table(CtrlP,CtrlR,'VariableNames',{'Pantomime','Real'});
+    betweenTablePrkn = table(PrknP,PrknR,'VariableNames',{'Pantomime','Real'});
+    betweenTable = [table(colVar1','VariableNames',{'Group'}) [betweenTableCtrl;betweenTablePrkn]];
+    betweenTable.Group = categorical(betweenTable.Group);
+    withinTable = table([1 2]','VariableNames',{'Type'});
+    withinTable.Type = categorical(withinTable.Type);
+    rm = fitrm(betweenTable,'Pantomime,Real~Group');
+    rm.WithinDesign = withinTable;
+    rm.WithinModel = 'Type';
+    mc1{ind1} = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
+    mc2{ind1} = find_sig_mctbl(multcompare(rm,'Type','By','Group','ComparisonType','bonferroni'),6);
+    mc3{ind1} = find_sig_mctbl(multcompare(rm,'Group','ComparisonType','bonferroni'),5);
+    mc4{ind1} = find_sig_mctbl(multcompare(rm,'Type','ComparisonType','bonferroni'),5);
+end
+n = 0;
 
 maxY = 11; ySpacing = 0.5; params = {'ENT',maxY ySpacing};
 [hf,ha] = param_figure(1000,[12 8 2 1],ds_types,fes,params);

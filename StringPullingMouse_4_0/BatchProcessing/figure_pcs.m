@@ -52,10 +52,11 @@ end
 betweenTableCtrl.Properties.VariableNames = varNames; betweenTablePrkn.Properties.VariableNames = varNames;
 betweenTable = [table(colVar1','VariableNames',{'Group'}) [betweenTableCtrl;betweenTablePrkn]];
 betweenTable.Group = categorical(betweenTable.Group);
-withinTable = table([ones(1,10) 2*ones(1,10)]','VariableNames',{'Type'});
+withinTable = table([ones(1,10) 2*ones(1,10)]',[1:10 1:10]','VariableNames',{'Type','PC'});
 withinTable.Type = categorical(withinTable.Type);
 rm = fitrm(betweenTable,'P1-P10,R1-R10~Group');
 rm.WithinDesign = withinTable;
+rm.WithinModel = 'Type+PC';
 mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
 mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Group','ComparisonType','bonferroni'),6);
 mc3 = multcompare(rm,'Group','ComparisonType','bonferroni')
