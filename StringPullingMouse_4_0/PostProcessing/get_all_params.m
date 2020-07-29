@@ -163,11 +163,21 @@ for ii = 1:length(frameNums)
     end
     
     if adv == 1
-        ind = ismember(M.P(:,[1 2]),[fn tagRH],'rows');
-        boundaryPixelsRH(ii).ps = M.P(ind,3);
-
-        ind = ismember(M.P(:,[1 2]),[fn tagLH],'rows');
-        boundaryPixelsLH(ii).ps = M.P(ind,3);
+        indR = ismember(M.R(:,[1 2]),[fn tagRH],'rows');
+        if any(indR)
+            ind = ismember(M.P(:,[1 2]),[fn tagRH],'rows');
+            boundaryPixelsRH(ii).ps = M.P(ind,3);
+        else
+            boundaryPixelsRH(ii).ps = NaN;
+        end
+        
+        indR = ismember(M.R(:,[1 2]),[fn tagLH],'rows');
+        if any(indR)
+            ind = ismember(M.P(:,[1 2]),[fn tagLH],'rows');
+            boundaryPixelsLH(ii).ps = M.P(ind,3);
+        else
+            boundaryPixelsLH(ii).ps = NaN;
+        end
         
         indR = ismember(M.R(:,[1 2]),[fn tagRE],'rows');
         if any(indR)
