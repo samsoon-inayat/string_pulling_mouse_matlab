@@ -66,6 +66,7 @@ mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonfer
 mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Dominance','ComparisonType','bonferroni'),6);
 mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Dominance','ComparisonType','bonferroni'),6);
 mc2 = find_sig_mctbl(multcompare(rm,'Dominance','By','Group','ComparisonType','bonferroni'),6);
+% writetable(rm.BetweenDesign,sprintf('%s.csv',varNameT));
 n = 0;
 
 %%
@@ -86,7 +87,7 @@ mVar = [mean(outp.meanb) mean(outpn.meanb) mean(outr.meanb) mean(outrn.meanb) me
 semVar = [std(outp.meanb)/sqrt(16) std(outpn.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outrn.meanb)/sqrt(16) ...
     std(outp.meanw)/sqrt(8) std(outpn.meanw)/sqrt(8) std(outr.meanw)/sqrt(8) std(outrn.meanw)/sqrt(8)];
 combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
-p(1) = mc1{2,6}; 
+% p(1) = mc1{2,6}; 
 xdata = [1 2 3 4 5 6 7 8]; colors = {'b',[0 0 0.75],'r',[0.75 0 0],'c',[0 0 0.5],'m',[0.5 0 0.5]}; 
 [~,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',0.1,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
