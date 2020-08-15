@@ -104,7 +104,7 @@ semVar = [std(outp.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outp.meanw)/sqrt
 xdata = [1 2 3 4]; colors = {'b','r','c','m'}; combs = nchoosek(1:length(mVar),2);
 combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
 % p(5) = mc1{1,6}; 
-p(2) = mc1{1,6}; p(1) = mc2{1,6}; p(6) = mc2{2,6};
+% p(2) = mc1{1,6}; p(1) = mc2{1,6}; p(6) = mc2{2,6};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',6,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.1);
