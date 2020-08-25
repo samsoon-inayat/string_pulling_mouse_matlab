@@ -14,8 +14,8 @@ maskz = zeros(size(mask));
 % maskz(bb(2):cc(2),bb(1):(bb(1)+bb(3)-1)) = 1;
 maskz((cc(2)):(bb(2)+bb(4)-1),bb(1):(bb(1)+bb(3)-1)) = 1;
 
-ds.mean_mask = maskz & mask;
-% ds.mean_mask = mask;
+% ds.mean_mask = maskz & mask;
+ds.mean_mask = mask;
 
 
 figure(100);clf;
