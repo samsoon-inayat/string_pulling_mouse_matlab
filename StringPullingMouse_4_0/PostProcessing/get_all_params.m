@@ -199,7 +199,11 @@ for ii = 1:length(frameNums)
     iii = ismember(M.R(:,[1 2]),[fn 8],'rows');
     jj = ismember(M.R(:,[1 2]),[fn 7],'rows');
     bodyFit(ii) = getSubjectFit(M.R(jj,[3 4]),M.R(iii,3),M.R(iii,4),M.R(iii,5));
-    mB(ii) = M.R(jj,5);
+    try
+        mB(ii) = M.R(jj,5);
+    catch
+        mB(ii) = NaN;
+    end
    
     t = toc;
     timeRemaining = ((length(frameNums)-ii)*t)/3600;
