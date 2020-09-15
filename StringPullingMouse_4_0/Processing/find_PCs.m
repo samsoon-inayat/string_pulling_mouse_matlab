@@ -61,4 +61,4 @@ save(fileNamePC,'-struct','pc');
 if isfield(handles,'figure1')
     set(handles.pushbutton_find_PCs,'userdata',pc);
 end
-viewPCs(handles,pc,'PCs');
+viewPCs(handles,pc,'PCs',[101,102]);

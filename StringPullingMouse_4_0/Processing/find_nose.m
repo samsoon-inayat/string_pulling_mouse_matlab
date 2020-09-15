@@ -27,7 +27,7 @@ In = get_mask(handles,fn,4);
 
 Cs{1} = getRegions(handles,fn,'body',1);
 if isempty(Cs{1})
-    displayMessageBlinking(handles,sprintf('Can not find ears in frame %d ... find body first',fn),{'ForegroundColor','r'},2);
+    displayMessageBlinking(handles,sprintf('Can not find nose in frame %d ... find body first',fn),{'ForegroundColor','r'},2);
     return;
 end
 if fn > 1
