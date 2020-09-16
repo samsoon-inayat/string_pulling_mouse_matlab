@@ -5,7 +5,7 @@ pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
 mainFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
 pdfFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
 
-dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body'};
+dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Pantomime_YOUNG_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body';'Real_YOUNG_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat'};
 dii = 4;
 data_folder = fullfile(mainFolder,dataFolders{dii});
