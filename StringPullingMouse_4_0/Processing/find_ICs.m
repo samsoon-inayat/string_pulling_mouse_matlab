@@ -28,6 +28,13 @@ if isfield(handles,'figure1')
         viewICs_min_max(handles,ics,'ICs');
         return;
     end
+else
+    owr = evalin('base','overwrite');
+    if exist(fileName,'file') && ~owr
+        ics = load_ics(handles);
+        viewICs_min_max(handles,ics,'ICs');
+        return;
+    end
 end
 
 fn = get_zoomed_frames(handles,frameNums,selfRun);

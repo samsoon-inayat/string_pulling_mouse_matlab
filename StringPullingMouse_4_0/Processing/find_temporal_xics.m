@@ -29,6 +29,13 @@ if isfield(handles,'figure1')
         view_entropy(handles,ds,'entropy');
         return;
     end
+else
+    owr = evalin('base','overwrite')
+    if exist(fileName,'file') && ~owr
+        ds = load(fileName);
+        view_entropy(handles,ds,'entropy');
+        return;
+    end
 end
 
 [fn,imrf] = get_zoomed_frames(handles,frameNums,selfRun);
