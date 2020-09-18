@@ -48,7 +48,7 @@ end
 
 %% defining zoom windows
 if defineZoomWindows
-    for ii = 1:length(vid_files)
+    for ii = 9:length(vid_files)
         if ~ismember(files_to_process_indices,ii)
             continue;
         end
@@ -159,7 +159,7 @@ end
 %% Whole Body Analysis
 if processData
     find_temporal_xics_options = [1 2 3];%{'Entropy','Higuchi Fractal Dimension','Fano Factor'};
-    for ii = 2:length(vid_files)
+    for ii =1:length(vid_files)
         if ~ismember(files_to_process_indices,ii)
             continue;
         end
