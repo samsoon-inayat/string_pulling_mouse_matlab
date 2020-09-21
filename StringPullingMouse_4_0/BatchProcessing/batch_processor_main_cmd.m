@@ -7,7 +7,7 @@ pdfFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\St
 
 dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Pantomime_YOUNG_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body';'Real_YOUNG_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat';'vid_name_range.mat';'vid_name_range.mat';};
-dii = 6;
+dii = 3;
 data_folder = fullfile(mainFolder,dataFolders{dii});
 filename = fullfile(data_folder,metaFiles{dii});
 
@@ -19,7 +19,7 @@ for ii = 1:length(vid_files)
 end
 files_to_process_indices = 1:length(files_to_process);
 image_resize_factor = 4; imrf = image_resize_factor; % define both variables because both are being used in different files
-readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 0; miscFunc = 0; processData = 1;
+readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 1; miscFunc = 0; processData = 1;
 %% Load Config Files
 if readConfigs
     for ii = 1:length(vid_files)

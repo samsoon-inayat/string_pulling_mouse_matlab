@@ -5,7 +5,7 @@ colormaps = load('colorblind_colormap.mat');
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 %%
 
-reloadConfig = 0; reloadData = 1;
+reloadConfig = 0; reloadData = 0;
 
 if reloadConfig
     clc
@@ -70,7 +70,7 @@ if reloadData
 end
 %%
 ind = 1;
-for dii = 1:4
+for dii = 1:6
     for ii = 1:number_of_files(dii)
         [dii ii]
         this_ds = ds_b{dii,ii}; this_ent = ent_b{dii,ii};

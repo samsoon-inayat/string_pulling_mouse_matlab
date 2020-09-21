@@ -94,8 +94,7 @@ semVar = [std(mds_data_y_p.meanb)/sqrt(10) std(mds_data_y_r.meanb)/sqrt(10) std(
 xdata = [1 2 3 4 5 6]; colors = {'b','r','b','r','c','m'}; combs = nchoosek(1:length(mVar),2);
 combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
 row = [1 2]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc2{1,6}; h(ii) = 1;
-row = [1 3]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc2{1,6}; h(ii) = 1;
-row = [2 4]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc2{1,6}; h(ii) = 1;
+row = [1 5]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc1{1,6}; h(ii) = 1;
 % p(5) = mc1{1,6}; 
 % p(2) = mc1{1,6}; p(1) = mc2{1,6}; p(6) = mc2{2,6};
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
