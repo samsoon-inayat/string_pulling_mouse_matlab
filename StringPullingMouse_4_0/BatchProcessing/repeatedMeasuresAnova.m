@@ -23,68 +23,105 @@ for ii = 1:length(b_varNames)
     end
 end
 
-cmdTxt = sprintf('dataT = table(');
-for ii = 1:(size(between,2)-1)
-    cmdTxt = sprintf('%sdata(:,%d),',cmdTxt,ii);
-end
-cmdTxt = sprintf('%sdata(:,size(between,2)));',cmdTxt);
-eval(cmdTxt);
-dataT.Properties.VariableNames = varNames;
-withinVarNames = within.Properties.VariableNames;
-for ii = 1:length(withinVarNames)
-    cmdTxt = sprintf('within.%s = categorical(within.%s);',withinVarNames{ii},withinVarNames{ii});
-    eval(cmdTxt);
-end
-withinModel = withinVarNames{1};
-if length(unique(within{:,2})) == 1
-    interactTerm = '+';
-else
-    interactTerm = '*';
-end
-for ii = 2:length(withinVarNames)
-    withinModel = [withinModel interactTerm withinVarNames{ii}];
-end
-
-% writetable(between,'Training_Data.xls');
-if betweenFactors == 1
-    cmdTxt = sprintf('rm = fitrm(dataT,''');
-    for ii = 1:(length(varNames)-1)
-        cmdTxt = sprintf('%s%s,',cmdTxt,varNames{ii});
+within_factors = size(within,2);
+n=0;
+%%
+if between_factors == 1 && within_factors == 1
+    wilk_text = '';
+    for ii = 2:size(between,2)
+        wilk_text = [wilk_text between.Properties.VariableNames{ii} ','];
     end
-    cmdTxt = sprintf('%s%s~1'');',cmdTxt,varNames{length(varNames)});
-else
-    cmdTxt = sprintf('dataT.%s = categorical(dataT.%s);',varNames{1},varNames{1});
-    eval(cmdTxt);    
-    cmdTxt = sprintf('rm = fitrm(dataT,''');
-    for ii = 2:(length(varNames)-1)
-        cmdTxt = sprintf('%s%s,',cmdTxt,varNames{ii});
+    wilk_text(end) = '~';
+    wilk_text = [wilk_text between.Properties.VariableNames{1}];
+    rm = fitrm(between,wilk_text);
+    rm.WithinDesign = within;
+    rm.WithinModel = within.Properties.VariableNames{1};
+    out.rm = rm;
+    out.ranova = rm.ranova('WithinModel',rm.WithinModel);
+    mc_between_by_within = find_sig_mctbl(multcompare(rm,between.Properties.VariableNames{1},'By',within.Properties.VariableNames{1},'ComparisonType','bonferroni'),6);
+    mc_within_by_between = find_sig_mctbl(multcompare(rm,within.Properties.VariableNames{1},'By',between.Properties.VariableNames{1},'ComparisonType','bonferroni'),6);
+    mc_between = find_sig_mctbl(multcompare(rm,between.Properties.VariableNames{1},'ComparisonType','bonferroni'),5);
+    mc_within = find_sig_mctbl(multcompare(rm,within.Properties.VariableNames{1},'ComparisonType','bonferroni'),5);
+    est_margmean = margmean(rm,{between.Properties.VariableNames{1},within.Properties.VariableNames{1}});
+    combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
+    if ~isempty(mc_between_by_within)
+        for ii = 1:size(mc_between_by_within,1)
+            wit = mc_between_by_within{ii,1};
+            bet1 = mc_between_by_within{ii,2};
+            num1 = find(ismember(est_margmean{:,1:2},[bet1,wit],'rows'));
+            bet2 = mc_between_by_within{ii,3};
+            num2 = find(ismember(est_margmean{:,1:2},[bet2,wit],'rows'));
+            ind = find(ismember(combs,[num1,num2],'rows'));
+            p(ind) = mc_between_by_within{ii,6};
+        end
     end
-    cmdTxt = sprintf('%s%s~%s'');',cmdTxt,varNames{length(varNames)},varNames{1});
+    if ~isempty(mc_within_by_between)
+        for ii = 1:size(mc_within_by_between,1)
+            bet = mc_within_by_between{ii,1};
+            wit1 = mc_within_by_between{ii,2};
+            num1 = find(ismember(est_margmean{:,1:2},[bet,wit1],'rows'));
+            wit2 = mc_within_by_between{ii,3};
+            num2 = find(ismember(est_margmean{:,1:2},[bet,wit2],'rows'));
+            ind = find(ismember(combs,[num1,num2],'rows'));
+            p(ind) = mc_within_by_between{ii,6};
+        end
+    end
+    out.mc_between = mc_between;
+    out.mc_within = mc_within;
+    out.mc_between_by_within = mc_between_by_within;
+    out.mc_within_by_between = mc_within_by_between;
+    out.est_marginal_means = est_margmean;
+    out.combs = combs;
+    out.p = p;
+    return;
 end
-eval(cmdTxt);
-rm.WithinDesign = within;
-
-rm.WithinModel = withinModel;
-out.rm = rm;
-out.table = ranova(rm,'WithinModel',rm.WithinModel);
-out.mauchlytbl = mauchly(rm);
-% multcompare(rm,'Day','ComparisonType','bonferroni')
-% mcTI = find_sig_mctbl(multcompare(rm,'TrialDiff','By','Condition','ComparisonType','bonferroni'),6);
-% mcDays = find_sig_mctbl(multcompare(rm,'Condition','By','TrialDiff','ComparisonType','bonferroni'),6);
-% [mVar semVar] = findMeanAndStandardError(between);
-% 
-% combs = nchoosek(1:size(between,2),2); p = ones(size(combs,1),1); h = logical(zeros(size(combs,1),1));
-% for rr = 1:size(mcTI,1)
-%     thisRow = mcTI(rr,:);
-%     conditionN =  thisRow{1,1}; Rtype1 = thisRow{1,2}; Rtype2 = thisRow{1,3};
-%     Num1 = find(ismember(within{:,:},[conditionN Rtype1],'rows'));
-%     Num2 = find(ismember(within{:,:},[conditionN Rtype2],'rows'));
-%     row = [Num1 Num2]; ii = ismember(combs,row,'rows'); p(ii) = mcTI{1,6}; h(ii) = 1;
-% end
-% for rr = 1:size(mcDays,1)
-%     thisRow = mcDays(rr,:);
-%     Rtype =  thisRow{1,1}; Condition1 = thisRow{1,2}; Condition2 = thisRow{1,3};
-%     Num1 = find(ismember(within{:,:},[Condition1 Rtype],'rows'));
-%     Num2 = find(ismember(within{:,:},[Condition2 Rtype],'rows'));
-%     row = [Num1 Num2]; ii = ismember(combs,row,'rows'); p(ii) = mcDays{1,6}; h(ii) = 1;
-% end
+%%
+if between_factors == 1 && within_factors == 2
+    wilk_text = '';
+    for ii = 2:size(between,2)
+        wilk_text = [wilk_text between.Properties.VariableNames{ii} ','];
+    end
+    wilk_text(end) = '~';
+    wilk_text = [wilk_text between.Properties.VariableNames{1}];
+    rm = fitrm(between,wilk_text);
+    rm.WithinDesign = within;
+    rm.WithinModel = [within.Properties.VariableNames{1} '*' within.Properties.VariableNames{2}];
+    out.rm = rm;
+    out.ranova = rm.ranova('WithinModel',rm.WithinModel);
+    mc_between_by_within = find_sig_mctbl(multcompare(rm,between.Properties.VariableNames{1},'By',within.Properties.VariableNames{1},'ComparisonType','bonferroni'),6);
+    mc_within_by_between = find_sig_mctbl(multcompare(rm,within.Properties.VariableNames{1},'By',between.Properties.VariableNames{1},'ComparisonType','bonferroni'),6);
+    mc_between = find_sig_mctbl(multcompare(rm,between.Properties.VariableNames{1},'ComparisonType','bonferroni'),5);
+    mc_within = find_sig_mctbl(multcompare(rm,within.Properties.VariableNames{1},'ComparisonType','bonferroni'),5);
+    est_margmean = margmean(rm,{between.Properties.VariableNames{1},within.Properties.VariableNames{1}});
+    combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
+    if ~isempty(mc_between_by_within)
+        for ii = 1:size(mc_between_by_within,1)
+            wit = mc_between_by_within{ii,1};
+            bet1 = mc_between_by_within{ii,2};
+            num1 = find(ismember(est_margmean{:,1:2},[bet1,wit],'rows'));
+            bet2 = mc_between_by_within{ii,3};
+            num2 = find(ismember(est_margmean{:,1:2},[bet2,wit],'rows'));
+            ind = find(ismember(combs,[num1,num2],'rows'));
+            p(ind) = mc_between_by_within{ii,6};
+        end
+    end
+    if ~isempty(mc_within_by_between)
+        for ii = 1:size(mc_within_by_between,1)
+            bet = mc_within_by_between{ii,1};
+            wit1 = mc_within_by_between{ii,2};
+            num1 = find(ismember(est_margmean{:,1:2},[bet,wit1],'rows'));
+            wit2 = mc_within_by_between{ii,3};
+            num2 = find(ismember(est_margmean{:,1:2},[bet,wit2],'rows'));
+            ind = find(ismember(combs,[num1,num2],'rows'));
+            p(ind) = mc_within_by_between{ii,6};
+        end
+    end
+    out.mc_between = mc_between;
+    out.mc_within = mc_within;
+    out.mc_between_by_within = mc_between_by_within;
+    out.mc_within_by_between = mc_within_by_between;
+    out.est_marginal_means = est_margmean;
+    out.combs = combs;
+    out.p = p;
+    return;
+end

@@ -19,15 +19,15 @@ color_blind_map = load('colorblind_colormap.mat');
 runthis = 1;
 if runthis
 varName = 'motion.mean'; varNameT = 'Speed';
-mds_data_o_p = get_masked_values_h(ds_data.ds_o_p,varName,ds_data.ds_o_p,0.1,[0 Inf]);
-mds_data_o_r = get_masked_values_h(ds_data.ds_o_r,varName,ds_data.ds_o_r,0.1,[0 Inf]);
-mds_data_p_p = get_masked_values_h(ds_data.ds_p_p,varName,ds_data.ds_p_p,0.1,[0 Inf]);
-mds_data_p_r = get_masked_values_h(ds_data.ds_p_r,varName,ds_data.ds_p_r,0.1,[0 Inf]);
-mds_data_y_p = get_masked_values_h(ds_data.ds_y_p,varName,ds_data.ds_y_p,0.1,[0 Inf]);
-mds_data_y_r = get_masked_values_h(ds_data.ds_y_r,varName,ds_data.ds_y_r,0.1,[0 Inf]);
+mds_data_o_p = get_masked_values_h(ds_data.ds_o_p,varName,ds_data.ds_o_p,0.1,[-Inf Inf]);
+mds_data_o_r = get_masked_values_h(ds_data.ds_o_r,varName,ds_data.ds_o_r,0.1,[-Inf Inf]);
+mds_data_p_p = get_masked_values_h(ds_data.ds_p_p,varName,ds_data.ds_p_p,0.1,[-Inf Inf]);
+mds_data_p_r = get_masked_values_h(ds_data.ds_p_r,varName,ds_data.ds_p_r,0.1,[-Inf Inf]);
+mds_data_y_p = get_masked_values_h(ds_data.ds_y_p,varName,ds_data.ds_y_p,0.1,[-Inf Inf]);
+mds_data_y_r = get_masked_values_h(ds_data.ds_y_r,varName,ds_data.ds_y_r,0.1,[-Inf Inf]);
 % outp = get_masked_values_h(ds_bp,ds_wp,varName,ds_bp,ds_wp,0.1,[0 Inf]);
 % outr = get_masked_values_h(ds_br,ds_wr,varName,ds_br,ds_wr,0.1,[0 Inf]);
-colVar1 = [ones(1,16) 2*ones(1,8) 3*ones(1,10)];
+colVar1 = [ones(1,10) 2*ones(1,16) 3*ones(1,8)];
 betweenTableOld = table(mds_data_o_p.meanb',mds_data_o_r.meanb','VariableNames',{'Pantomime','Real'});
 betweenTablePrkn = table(mds_data_p_p.meanb',mds_data_p_r.meanb','VariableNames',{'Pantomime','Real'});
 betweenTableYoung = table(mds_data_y_p.meanb',mds_data_y_r.meanb','VariableNames',{'Pantomime','Real'});
@@ -35,14 +35,7 @@ betweenTable = [table(colVar1','VariableNames',{'Group'}) [betweenTableYoung;bet
 betweenTable.Group = categorical(betweenTable.Group);
 withinTable = table([1 2]','VariableNames',{'Type'});
 withinTable.Type = categorical(withinTable.Type);
-rm = fitrm(betweenTable,'Pantomime,Real~Group');
-rm.WithinDesign = withinTable;
-rm.WithinModel = 'Type'
-rm.ranova('WithinModel',rm.WithinModel)
-mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
-mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Group','ComparisonType','bonferroni'),6);
-mc3 = find_sig_mctbl(multcompare(rm,'Group','ComparisonType','bonferroni'),5);
-mc4 = find_sig_mctbl(multcompare(rm,'Type','ComparisonType','bonferroni'),5);
+rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
 n = 0;
 
 %%
@@ -87,24 +80,23 @@ n = 0;
 % save_pdf(hf,pdfFolder,sprintf('Distribution_cdf %s',varNameT),600);
 
 %%
-hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 1.5 1.25],'color','w');
+hf = figure(1003);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 3 1.25],'color','w');
 hold on;
-mVar = [mean(mds_data_y_p.meanb) mean(mds_data_y_r.meanb) mean(mds_data_o_p.meanb) mean(mds_data_o_r.meanb) mean(mds_data_p_p.meanb) mean(mds_data_p_r.meanb)]; 
-semVar = [std(mds_data_y_p.meanb)/sqrt(10) std(mds_data_y_r.meanb)/sqrt(10) std(mds_data_o_p.meanb)/sqrt(16) std(mds_data_o_r.meanb)/sqrt(16) std(mds_data_p_p.meanb)/sqrt(8) std(mds_data_p_r.meanb)/sqrt(8)];
-xdata = [1 2 3 4 5 6]; colors = {'b','r','b','r','c','m'}; combs = nchoosek(1:length(mVar),2);
-combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
-row = [1 2]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc2{1,6}; h(ii) = 1;
-row = [1 3]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc2{1,6}; h(ii) = 1;
-row = [2 4]; ii = ismember(categorical(combs),row,'rows'); p(ii) = mc2{1,6}; h(ii) = 1;
-% p(5) = mc1{1,6}; 
-% p(2) = mc1{1,6}; p(1) = mc2{1,6}; p(6) = mc2{2,6};
+mVar = rmaR.est_marginal_means{:,3}';
+semVar = rmaR.est_marginal_means{:,4}';
+xdata = [1:2:12]; colors = {'b','r','b','r','c','m'};
+combs = rmaR.combs; p = rmaR.p;
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',6,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...
         'xdata',xdata,'sigFontSize',7,'sigAsteriskFontSize',12,'barWidth',0.7,'sigLinesStartYFactor',0.1);
-xlim([0 7]); ylim([0 50]);
+for ii = 3:4
+    set(hbs(ii),'facecolor','none','edgecolor',colors{ii},'linewidth',1.25);
+end
+xlim([0 13]); ylim([0 maxY]);
 % yval = 42; line([0.75 2.25],[yval yval]); line([2.75 4.25],[yval yval]);line([1.5 3.5],[47 47]); line([1.5 1.5],[yval 47]);line([3.5 3.5],[yval 47]);
 % text(1.8,49,getNumberOfAsterisks(mc3{1,5}),'FontSize',12);
-set(gca,'XTick',[1 2 3 4],'XTickLabel',{'Ctrl-P','Ctrl-R','Prkn-P','Prkn-R'}); xtickangle(45);
+set(gca,'XTick',xdata,'XTickLabel',{'Young-P','Young-R','Old-P','Old-R','Prkn-P','Prkn-R'}); xtickangle(45);
+xtickangle(30);
 set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 hy = ylabel('Speed (cm/s)');%changePosition(hy,[0.1 -0.3 0]);set(hy,'FontSize',7)
 % text(1,-1.85,{'***'},'FontSize',12,'FontWeight','Normal');
