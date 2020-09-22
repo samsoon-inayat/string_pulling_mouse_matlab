@@ -60,33 +60,38 @@ betweenTable.Group = categorical(betweenTable.Group);
 withinTable = table([1 1 2 2]',[1 2 1 2]','VariableNames',{'Type','Dominance'});
 withinTable.Type = categorical(withinTable.Type);
 withinTable.Dominance = categorical(withinTable.Dominance);
-rm = fitrm(betweenTable,'Pantomime,Pantomime_N,Real,Real_N~Group');
-rm.WithinDesign = withinTable;
-mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
-mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Dominance','ComparisonType','bonferroni'),6);
-mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Dominance','ComparisonType','bonferroni'),6);
-mc2 = find_sig_mctbl(multcompare(rm,'Dominance','By','Group','ComparisonType','bonferroni'),6);
-% writetable(rm.BetweenDesign,sprintf('%s.csv',varNameT));
-n = 0;
-
-%%
-rm1 = fitrm(betweenTableCtrl,'Pantomime,Pantomime_N,Real,Real_N~1');
-rm1.WithinDesign = withinTable;
-rm1.WithinModel = 'Type*Dominance';
-mc1 = find_sig_mctbl(multcompare(rm1,'Dominance','By','Type','ComparisonType','bonferroni'),6);
-
-rm2 = fitrm(betweenTablePrkn,'Pantomime,Pantomime_N,Real,Real_N~1');
-rm2.WithinDesign = withinTable;
-rm2.WithinModel = 'Type*Dominance';
-mc2 = find_sig_mctbl(multcompare(rm2,'Dominance','By','Type','ComparisonType','bonferroni'),6);
+rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
+% rm = fitrm(betweenTable,'Pantomime,Pantomime_N,Real,Real_N~Group');
+% rm.WithinDesign = withinTable;
+% mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Type','ComparisonType','bonferroni'),6);
+% mc2 = find_sig_mctbl(multcompare(rm,'Type','By','Dominance','ComparisonType','bonferroni'),6);
+% mc1 = find_sig_mctbl(multcompare(rm,'Group','By','Dominance','ComparisonType','bonferroni'),6);
+% mc2 = find_sig_mctbl(multcompare(rm,'Dominance','By','Group','ComparisonType','bonferroni'),6);
+% % writetable(rm.BetweenDesign,sprintf('%s.csv',varNameT));
+% n = 0;
+% 
+% %%
+% rm1 = fitrm(betweenTableCtrl,'Pantomime,Pantomime_N,Real,Real_N~1');
+% rm1.WithinDesign = withinTable;
+% rm1.WithinModel = 'Type*Dominance';
+% mc1 = find_sig_mctbl(multcompare(rm1,'Dominance','By','Type','ComparisonType','bonferroni'),6);
+% 
+% rm2 = fitrm(betweenTablePrkn,'Pantomime,Pantomime_N,Real,Real_N~1');
+% rm2.WithinDesign = withinTable;
+% rm2.WithinModel = 'Type*Dominance';
+% mc2 = find_sig_mctbl(multcompare(rm2,'Dominance','By','Type','ComparisonType','bonferroni'),6);
 
 %%
 hf = figure(1002);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 3 1.25],'color','w');
 hold on;
-mVar = [mean(outp.meanb) mean(outpn.meanb) mean(outr.meanb) mean(outrn.meanb) mean(outp.meanw) mean(outpn.meanw) mean(outr.meanw) mean(outrn.meanw)]; 
-semVar = [std(outp.meanb)/sqrt(16) std(outpn.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outrn.meanb)/sqrt(16) ...
-    std(outp.meanw)/sqrt(8) std(outpn.meanw)/sqrt(8) std(outr.meanw)/sqrt(8) std(outrn.meanw)/sqrt(8)];
-combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
+mVar = rmaR.est_marginal_means{:,4}';
+semVar = rmaR.est_marginal_means{:,5}';
+combs = rmaR.combs; p = rmaR.p;
+
+% mVar = [mean(outp.meanb) mean(outpn.meanb) mean(outr.meanb) mean(outrn.meanb) mean(outp.meanw) mean(outpn.meanw) mean(outr.meanw) mean(outrn.meanw)]; 
+% semVar = [std(outp.meanb)/sqrt(16) std(outpn.meanb)/sqrt(16) std(outr.meanb)/sqrt(16) std(outrn.meanb)/sqrt(16) ...
+%     std(outp.meanw)/sqrt(8) std(outpn.meanw)/sqrt(8) std(outr.meanw)/sqrt(8) std(outrn.meanw)/sqrt(8)];
+% combs = nchoosek(1:length(mVar),2); p = ones(size(combs,1),1);
 % p(1) = mc1{2,6}; 
 xdata = [1 2 3 4 5 6 7 8]; colors = {'b',[0 0 0.75],'r',[0.75 0 0],'c',[0 0 0.5],'m',[0.5 0 0.5]}; 
 [~,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
