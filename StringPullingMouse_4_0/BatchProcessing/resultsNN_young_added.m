@@ -46,6 +46,7 @@ for iii = 1:length(h_Group_i)
     make_graph(pdfFolder,param_names{ii},out);
 end
 n = 0;
+
 function [data_table,withinTable] = build_table_dom_non_dom(mainDataTable,param_name)
 varNames = mainDataTable.Properties.VariableNames;
 param_name_dom = [param_name '_DOM'];
