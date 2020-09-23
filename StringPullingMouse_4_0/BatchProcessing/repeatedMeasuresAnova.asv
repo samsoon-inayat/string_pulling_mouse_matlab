@@ -112,18 +112,18 @@ if number_bet_factors == 1 && number_wit_factors == 2
         cmdTxt = sprintf('%s = %s;',nameOfVariable,rhs); eval(cmdTxt)
     end
     nameOfVariable = sprintf('out.mc_%s_by_%s',between_factors{1},within_factors{3});
-    cmdTxt = sprintf('mc_between_by_within= %s;',nameOfVariable);
+    cmdTxt = sprintf('mc_between_by_within= %s',nameOfVariable);
     eval(cmdTxt)
     if ~isempty(mc_between_by_within)
         for ii = 1:size(mc_between_by_within,1)
             wit = mc_between_by_within{ii,1};
             wit_idx = double(wit);
             wit1 = within{wit_idx,1}; wit2 = within{wit_idx,2};
-            numw = find(ismember(est_margmean{:,2:3},[wit1,wit2],'rows'));
+            num1 = find(ismember(est_margmean{:,2:3},[wit1,wit2],'rows'));
             bet1 = mc_between_by_within{ii,2};
+            num1 = find(ismember(est_margmean{:,1:2},[bet1,wit],'rows'));
             bet2 = mc_between_by_within{ii,3};
-            num1 = numw(bet1);
-            num2 = numw(bet2);
+            num2 = find(ismember(est_margmean{:,1:2},[bet2,wit],'rows'));
             ind = find(ismember(combs,[num1,num2],'rows'));
             p(ind) = mc_between_by_within{ii,6};
         end
