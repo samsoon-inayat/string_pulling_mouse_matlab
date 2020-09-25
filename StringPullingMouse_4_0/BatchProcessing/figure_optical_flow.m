@@ -11,7 +11,7 @@ for ii = 1:length(variablesToGetFromBase)
     eval(cmdTxt);
 end
 
-ds_data = get_data('ds')
+ds_data = get_data('ds');
 color_blind_map = load('colorblind_colormap.mat');
 
 

@@ -1,7 +1,7 @@
 function out = get_masked_values_h(varsb,varName,ds_b,incr,threshold)
 
 for ii = 1:length(ds_b)
-    ii
+%     ii
     cmdTxt = sprintf('uv = varsb{ii}.%s;',varName);
     eval(cmdTxt)
 %     figure(100000);clf;imagesc(ds_b{ii}.mean_mask);axis equal;colormap jet;colorbar;pause(0.5);
