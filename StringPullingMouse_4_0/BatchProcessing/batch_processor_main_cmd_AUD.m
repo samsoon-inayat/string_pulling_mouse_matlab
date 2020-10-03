@@ -26,7 +26,7 @@ end
 
 files_to_process_indices = 1:length(files_to_process);
 image_resize_factor = 4; imrf = image_resize_factor; % define both variables because both are being used in different files
-readConfigs = 0; setEpochs = 0; defineZoomWindows = 1; defineZoomWindowsICA = 0; miscFunc = 0; processData = 1;
+readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 0; miscFunc = 0; processData = 1;
 %% Load Config Files
 if readConfigs
     for ii = 1:length(vid_files)
@@ -55,7 +55,7 @@ end
 
 %% defining zoom windows
 if defineZoomWindows
-    for ii = 13:length(vid_files)
+    for ii = 23:length(vid_files)
         if ~ismember(files_to_process_indices,ii)
             continue;
         end
@@ -171,20 +171,26 @@ end
 
 %% Whole Body Analysis
 if processData
-    find_temporal_xics_options = [1 2 3];%{'Entropy','Higuchi Fractal Dimension','Fano Factor'};
-    for ii =1:length(vid_files)
-        if ~ismember(files_to_process_indices,ii)
-            continue;
+    try
+        send_email({'samsoon.inayat@uleth.ca'},'Neuroimaging 1 String-Pulling Process')
+        find_temporal_xics_options = [1 2 3];%{'Entropy','Higuchi Fractal Dimension','Fano Factor'};
+        for ii =1:length(vid_files)
+            if ~ismember(files_to_process_indices,ii)
+                continue;
+            end
+            config = config_info{ii};
+            [success,config.data] = load_data(config);
+            tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
+            estimate_motion(config);
+            descriptive_statistics(config);
+            find_temporal_xics(config);
+    %         find_PCs(config);
+    %         find_ICs(config);
+    %         find_fractal_dimensions_and_entropy(config);
+            clear config;
         end
-        config = config_info{ii};
-        [success,config.data] = load_data(config);
-        tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-        estimate_motion(config);
-        descriptive_statistics(config);
-        find_temporal_xics(config);
-        find_PCs(config);
-        find_ICs(config);
-        find_fractal_dimensions_and_entropy(config);
-        clear config;
+        send_email({'samsoon.inayat@uleth.ca'},'Complete - Neuroimaging 1 String-Pulling Process')
+    catch
+        send_email({'samsoon.inayat@uleth.ca'},'Error! - Neuroimaging 1 String-Pulling Process')
     end
 end
