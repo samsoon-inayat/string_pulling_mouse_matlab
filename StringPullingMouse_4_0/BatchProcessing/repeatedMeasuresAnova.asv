@@ -41,26 +41,27 @@ if number_bet_factors == 0 && number_wit_factors == 1
     out.rm = rm;
     out.ranova = rm.ranova('WithinModel',rm.WithinModel);
     for ii = 1:length(within_factors)
-        nameOfVariable = sprintf('mc_%s',within_factors{ii});
+        nameOfVariable = sprintf('out.mc_%s',within_factors{ii});
         rhs = sprintf('find_sig_mctbl(multcompare(rm,within_factors{ii},''ComparisonType'',''bonferroni''),5);');
         cmdTxt = sprintf('%s = %s;',nameOfVariable,rhs); eval(cmdTxt)
     end
-    eval(sprintf('mc_within = %s;',nameOfVariable));
     est_margmean = margmean(rm,{within_factors{1}});
     combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
-    if ~isempty(mc_within)
-        for ii = 1:size(mc_within,1)
-            num1 = mc_within{ii,1};
-            num2 = mc_within{ii,2};
-            ind = find(ismember(categorical(combs),[num1,num2],'rows'));
-            p(ind) = mc_within{ii,5};
+    if ~isempty(mc_Type)
+        for ii = 1:size(mc_Type,1)
+            wit = mc_Type{ii,1};
+            bet1 = mc_Type{ii,2};
+            num1 = find(ismember(est_margmean{:,1:2},[bet1,wit],'rows'));
+            bet2 = mc_Type{ii,3};
+            num2 = find(ismember(est_margmean{:,1:2},[bet2,wit],'rows'));
+            ind = find(ismember(combs,[num1,num2],'rows'));
+            p(ind) = mc_Type{ii,5};
         end
     end
     out.est_marginal_means = est_margmean;
     out.combs = combs;
     out.p = p;
-    eval(sprintf('out.%s = %s;',nameOfVariable,nameOfVariable));
-    [out.mean,out.sem] = findMeanAndStandardError(between{:,:});
+    [out.mean,out.sem] = findMeanAndStandardError(between{:,:})
     return;
 end
 %%

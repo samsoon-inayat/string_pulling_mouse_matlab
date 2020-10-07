@@ -11,7 +11,7 @@ for ii = 1:length(variablesToGetFromBase)
     eval(cmdTxt);
 end
 
-data = get_data('pcs');
+data = get_data_from_base_ws('pcs');
 color_blind_map = load('colorblind_colormap.mat');
 groups = {'y','o','p'};
 types = {'p','r'};

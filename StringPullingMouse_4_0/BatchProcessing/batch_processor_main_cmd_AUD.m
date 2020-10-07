@@ -145,6 +145,12 @@ for ii = 1:length(vid_files)
         disp(sprintf('%d = bad',ii));
         error
     end
+    zw = getParameter(config,'Auto Zoom Window');
+%     disp(zw)
+    if zw(2) <=0 
+        zw(2) = 1;
+        setParameter(config,'Auto Zoom Window',zw);
+    end
 end
 
 
@@ -171,26 +177,28 @@ end
 
 %% Whole Body Analysis
 if processData
+    overwrite = 0
     try
         send_email({'samsoon.inayat@uleth.ca'},'Neuroimaging 1 String-Pulling Process')
         find_temporal_xics_options = [1 2 3];%{'Entropy','Higuchi Fractal Dimension','Fano Factor'};
-        for ii =1:length(vid_files)
+        for ii =1:5%6:length(vid_files)
             if ~ismember(files_to_process_indices,ii)
                 continue;
             end
             config = config_info{ii};
             [success,config.data] = load_data(config);
             tconfig = get_config_file(config.pd_folder); config.names = tconfig.names; config.values = tconfig.values;
-            estimate_motion(config);
-            descriptive_statistics(config);
-            find_temporal_xics(config);
-    %         find_PCs(config);
-    %         find_ICs(config);
-    %         find_fractal_dimensions_and_entropy(config);
+%             estimate_motion(config);
+%             descriptive_statistics(config);
+%             find_temporal_xics(config);
+            find_PCs(config);
+            find_ICs(config);
+            find_fractal_dimensions_and_entropy(config);
             clear config;
         end
         send_email({'samsoon.inayat@uleth.ca'},'Complete - Neuroimaging 1 String-Pulling Process')
     catch
         send_email({'samsoon.inayat@uleth.ca'},'Error! - Neuroimaging 1 String-Pulling Process')
+        rethrow(lasterror);
     end
 end
