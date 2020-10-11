@@ -28,6 +28,7 @@ betweenTable = table(mds_data_r6.meanb',mds_data_r7.meanb',mds_data_rf.meanb','V
 withinTable = table([1 2 3]','VariableNames',{'Type'});
 withinTable.Type = categorical(withinTable.Type);
 rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
+writetable(rmaR.ranova,'speed_ranova.xlsx','writerows','True')
 n = 0;
 
 %%

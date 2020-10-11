@@ -26,7 +26,7 @@ end
 
 files_to_process_indices = 1:length(files_to_process);
 image_resize_factor = 4; imrf = image_resize_factor; % define both variables because both are being used in different files
-readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 0; miscFunc = 0; processData = 1;
+readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 1; miscFunc = 0; processData = 0;
 %% Load Config Files
 if readConfigs
     for ii = 1:length(vid_files)

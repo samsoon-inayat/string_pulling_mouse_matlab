@@ -5,7 +5,7 @@ colormaps = load('colorblind_colormap.mat');
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 %%
 
-reloadConfig = 0; reloadData = 1; reloadData_NN = 0;
+reloadConfig = 0; reloadData = 0; reloadData_NN = 1;
 
 if reloadConfig
     clc

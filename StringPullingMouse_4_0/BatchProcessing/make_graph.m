@@ -2,8 +2,8 @@ function make_graph(pdfFolder,param_name,rmaR)
 
 hf = figure(1003);clf;set(gcf,'Units','Inches');set(gcf,'Position',[12 8 5 2.5],'color','w');
 hold on;
-mVar = rmaR.est_marginal_means{:,4}';
-semVar = rmaR.est_marginal_means{:,5}';
+mVar = rmaR.est_marginal_means.Mean';
+semVar = rmaR.est_marginal_means.Formula_StdErr';
 xdata = [1:2:24]; colors = {'b',[0 0 0.5],'r',[0.5 0 0],'b',[0 0 0.5],'r',[0.5 0 0],'c',[0 0.5 0.5],'m',[0.5 0 0.5]};
 combs = rmaR.combs; p = rmaR.p;
 rough_scale = max(mVar+semVar);
@@ -21,7 +21,7 @@ xtickangle();
 xtickangle(45);
 set(gca,'FontSize',7,'FontWeight','Bold','TickDir','out');
 yl = param_name;
-inds = strfind(param_name,'_')
+inds = strfind(param_name,'_');
 yl(inds) = ' ';
 hy = ylabel(yl);%changePosition(hy,[0.1 -0.3 0]);set(hy,'FontSize',7)
 % text(1,-1.85,{'***'},'FontSize',12,'FontWeight','Normal');

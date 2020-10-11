@@ -39,6 +39,7 @@ if number_bet_factors == 0 && number_wit_factors == 1
     rm.WithinDesign = within;
     rm.WithinModel = within_factors{1};
     out.rm = rm;
+    out.mauchly = mauchly(rm);
     out.ranova = rm.ranova('WithinModel',rm.WithinModel);
     for ii = 1:length(within_factors)
         nameOfVariable = sprintf('mc_%s',within_factors{ii});
@@ -56,11 +57,14 @@ if number_bet_factors == 0 && number_wit_factors == 1
             p(ind) = mc_within{ii,5};
         end
     end
+    eval(sprintf('out.%s = %s;',nameOfVariable,nameOfVariable));
+    [~,sem] = findMeanAndStandardError(between{:,:});
+    cemm = size(est_margmean,2);
+    est_margmean{:,cemm+1} = sem';
+    est_margmean.Properties.VariableNames{cemm+1} = 'Formula_StdErr';
     out.est_marginal_means = est_margmean;
     out.combs = combs;
     out.p = p;
-    eval(sprintf('out.%s = %s;',nameOfVariable,nameOfVariable));
-    [out.mean,out.sem] = findMeanAndStandardError(between{:,:});
     return;
 end
 %%
@@ -75,6 +79,7 @@ if number_bet_factors == 1 && number_wit_factors == 1
     rm.WithinDesign = within;
     rm.WithinModel = within_factors{1};
     out.rm = rm;
+    out.mauchly = mauchly(rm);
     out.ranova = rm.ranova('WithinModel',rm.WithinModel);
     mc_between_by_within = find_sig_mctbl(multcompare(rm,between_factors{1},'By',within_factors{1},'ComparisonType','bonferroni'),6);
     mc_within_by_between = find_sig_mctbl(multcompare(rm,within_factors{1},'By',between_factors{1},'ComparisonType','bonferroni'),6);
@@ -108,6 +113,17 @@ if number_bet_factors == 1 && number_wit_factors == 1
     out.mc_within = mc_within;
     out.mc_between_by_within = mc_between_by_within;
     out.mc_within_by_between = mc_within_by_between;
+    cemm = size(est_margmean,2);
+    est_margmean{:,cemm+1} = NaN(size(est_margmean,1),1);
+    for rr = 1:size(est_margmean,1)
+        group_val = est_margmean{rr,1};
+        with_level = est_margmean{rr,2};
+        all_bet_vals = between{:,1};
+        col_num = find(within{:,1} == with_level)+1;
+        values = between{all_bet_vals == group_val,col_num};
+        est_margmean{rr,cemm+1} = std(values)/sqrt(length(values));
+    end
+    est_margmean.Properties.VariableNames{cemm+1} = 'Formula_StdErr';
     out.est_marginal_means = est_margmean;
     out.combs = combs;
     out.p = p;
@@ -131,6 +147,7 @@ if number_bet_factors == 1 && number_wit_factors == 2
     est_margmean = margmean(rm,{between_factors{1},within_factors{1},within_factors{2}});
     combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
     out.rm = rm;
+    out.mauchly = mauchly(rm);
     out.ranova = rm.ranova('WithinModel',rm.WithinModel);
     ii = 1;
     nameOfVariable = sprintf('out.mc_%s',between_factors{ii});
@@ -179,6 +196,18 @@ if number_bet_factors == 1 && number_wit_factors == 2
 %     out.mc_within = mc_within;
 %     out.mc_between_by_within = mc_between_by_within;
 %     out.mc_within_by_between = mc_within_by_between;
+    cemm = size(est_margmean,2);
+    est_margmean{:,cemm+1} = NaN(size(est_margmean,1),1);
+    for rr = 1:size(est_margmean,1)
+        group_val = est_margmean{rr,1};
+        with_level_1 = est_margmean{rr,2};
+        with_level_2 = est_margmean{rr,2};
+        col_num = find(ismember([within{:,1} within{:,2}],[with_level_1 with_level_2],'rows'))+1;
+        all_bet_vals = between{:,1};
+        values = between{all_bet_vals == group_val,col_num};
+        est_margmean{rr,cemm+1} = std(values)/sqrt(length(values));
+    end
+    est_margmean.Properties.VariableNames{cemm+1} = 'Formula_StdErr';
     out.est_marginal_means = est_margmean;
     out.combs = combs;
     out.p = p;

@@ -5,7 +5,7 @@ colormaps = load('colorblind_colormap.mat');
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 %%
 
-reloadConfig = 0; reloadData = 1; reloadData_NN = 0;
+reloadConfig = 0; reloadData = 0; reloadData_NN = 0;
 
 if reloadConfig
     clc
@@ -45,7 +45,7 @@ end
 if reloadData
     allLoadingFunctions = {'load_motion','load_ds','load_entropy','load_pcs','load_ics','load_fractal_dim_and_entropy'};
     allVarNames = {'motion','ds','ent','pcs','ics','fd_ent'};
-    selInd = 1:length(allLoadingFunctions);
+    selInd = 2;%1:length(allLoadingFunctions);
     allLoadingFunctions = allLoadingFunctions(selInd);
     allVarNames = allVarNames(selInd);
     for dii = 1
@@ -69,13 +69,7 @@ if reloadData
     return;
 end
 
-%%
-if reloadData_NN
-    fileName = 'ALL_Park_Params_for_Sam_Updated.mat';
-    fileName = fullfile(mainFolder,fileName);
-    NN = load(fileName);
-    return;
-end
+
 %%
 ind = 1;
 for dii = 1

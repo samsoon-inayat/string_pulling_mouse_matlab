@@ -15,7 +15,7 @@ ds_data = get_data_from_base_ws('ds','AUD');
 color_blind_map = load('colorblind_colormap.mat');
 
 %% Entropy
-runthis = 1;
+runthis = 0;
 if runthis
 varName = 'motion.ent';
 mds_data_r6 = get_masked_values_h(data.ent_r6,varName,ds_data.ds_r6,0.1,[-Inf Inf]);
@@ -27,6 +27,8 @@ betweenTable = table(mds_data_r6.meanb',mds_data_r7.meanb',mds_data_rf.meanb','V
 withinTable = table([1 2 3]','VariableNames',{'Type'});
 withinTable.Type = categorical(withinTable.Type);
 rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
+writetable(rmaR.ranova,fullfile(pdfFolder,'temporal_entropy_ranova.xlsx'),'WriteRowNames',true)
+writetable(rmaR.mc_Type,fullfile(pdfFolder,'temporal_entropy_multiple_comparisons.xlsx'),'WriteRowNames',true);
 n = 0;
 hf = make_graph_whole_body_AUD(pdfFolder,'Temporal Entropy',rmaR,0.3,0.01);
 ylims = ylim;
@@ -37,7 +39,7 @@ return;
 end
 
 %% Higuchi
-runthis = 1;
+runthis = 0;
 if runthis
 varName = 'HFD.motion.ent'; 
 mds_data_r6 = get_masked_values_h(data.ent_r6,varName,ds_data.ds_r6,0.1,[-Inf Inf]);
@@ -50,6 +52,8 @@ betweenTable = table(mds_data_r6.meanb',mds_data_r7.meanb',mds_data_rf.meanb','V
 withinTable = table([1 2 3]','VariableNames',{'Type'});
 withinTable.Type = categorical(withinTable.Type);
 rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
+writetable(rmaR.ranova,fullfile(pdfFolder,'Higuchi_FD_ranova.xlsx'),'WriteRowNames',true)
+writetable(rmaR.mc_Type,fullfile(pdfFolder,'Higuchi_FD_multiple_comparisons.xlsx'),'WriteRowNames',true);
 n = 0;
 hf = make_graph_whole_body_AUD(pdfFolder,'Higuchi FD',rmaR,0.1,0.01);
 ylims = ylim;
@@ -71,10 +75,12 @@ betweenTable = table(mds_data_r6.meanb',mds_data_r7.meanb',mds_data_rf.meanb','V
 withinTable = table([1 2 3]','VariableNames',{'Type'});
 withinTable.Type = categorical(withinTable.Type);
 rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
+% writetable(rmaR.ranova,fullfile(pdfFolder,'Fano_Factor_ranova.xlsx'),'WriteRowNames',true)
+% writetable(rmaR.mc_Type,fullfile(pdfFolder,'Fano_Factor_multiple_comparisons.xlsx'),'WriteRowNames',true);
 n = 0;
 make_graph_whole_body_AUD(pdfFolder,'Fano Factor',rmaR,0.1,0.01);
 ylims = ylim;
-ylim([1.5 ylims(2)])
+ylim([0.22 ylims(2)])
 return;
 end
 
