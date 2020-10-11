@@ -145,7 +145,7 @@ if number_bet_factors == 1 && number_wit_factors == 2
     rm.WithinDesign = within;
     rm.WithinModel = [within_factors{1} '*' within_factors{2}];
     est_margmean = margmean(rm,{between_factors{1},within_factors{1},within_factors{2}});
-    combs = nchoosek(1:size(est_margmean,1),2); p = ones(size(combs,1),1);
+    combs = nchoosek(1:size(est_margmean,1),2); p = NaN(size(combs,1),1); p1 = ones(size(combs,1),1);
     out.rm = rm;
     out.mauchly = mauchly(rm);
     out.ranova = rm.ranova('WithinModel',rm.WithinModel);
@@ -178,7 +178,7 @@ if number_bet_factors == 1 && number_wit_factors == 2
             num1 = numw(bet1);
             num2 = numw(bet2);
             ind = find(ismember(combs,[num1,num2],'rows'));
-            p(ind) = mc_between_by_within{ii,6};
+            p1(ind) = mc_between_by_within{ii,6};
         end
     end
 %     if ~isempty(mc_within_by_between)
@@ -196,12 +196,14 @@ if number_bet_factors == 1 && number_wit_factors == 2
 %     out.mc_within = mc_within;
 %     out.mc_between_by_within = mc_between_by_within;
 %     out.mc_within_by_between = mc_within_by_between;
+    mc_b_by_w = multcompare(rm,between_factors{1},'By',within_factors{3},'ComparisonType','bonferroni');
+    mc_w_by_b = multcompare(rm,within_factors{3},'By',between_factors{1},'ComparisonType','bonferroni');
     cemm = size(est_margmean,2);
     est_margmean{:,cemm+1} = NaN(size(est_margmean,1),1);
     for rr = 1:size(est_margmean,1)
         group_val = est_margmean{rr,1};
         with_level_1 = est_margmean{rr,2};
-        with_level_2 = est_margmean{rr,2};
+        with_level_2 = est_margmean{rr,3};
         col_num = find(ismember([within{:,1} within{:,2}],[with_level_1 with_level_2],'rows'))+1;
         all_bet_vals = between{:,1};
         values = between{all_bet_vals == group_val,col_num};
@@ -209,6 +211,38 @@ if number_bet_factors == 1 && number_wit_factors == 2
     end
     est_margmean.Properties.VariableNames{cemm+1} = 'Formula_StdErr';
     out.est_marginal_means = est_margmean;
+    for rr = 1:size(combs,1)
+        row1 = combs(rr,1); row2 = combs(rr,2);
+        group_val_1 = est_margmean{row1,1};
+        with_level_1_1 = est_margmean{row1,2};
+        with_level_2_1 = est_margmean{row1,2};
+        w12_1 = categorical(with_level_1_1).*categorical(with_level_2_1);
+        
+        group_val_2 = est_margmean{row2,1};
+        with_level_1_2 = est_margmean{row2,2};
+        with_level_2_2 = est_margmean{row2,3};
+        w12_2 = categorical(with_level_1_2).*categorical(with_level_2_2);
+        
+        if group_val_1 == group_val_2
+            all_g_vals = mc_w_by_b{:,1};
+            tmc = mc_w_by_b(all_g_vals == group_val_1,2:end);
+            value_to_check = w12_1; row_col1 = tmc{:,1}==value_to_check;
+            value_to_check = w12_2; row_col2 = tmc{:,2}==value_to_check;
+            rowN = find(row_col1 & row_col2);
+            p(rr) = tmc{rowN,5};
+        else
+            if w12_1 == w12_2
+                all_w12 = mc_b_by_w{:,1};
+                tmc = mc_b_by_w(all_w12 == w12_1,2:end);
+                value_to_check = group_val_1; row_col1 = tmc{:,1}==value_to_check;
+                value_to_check = group_val_2; row_col2 = tmc{:,2}==value_to_check;
+                rowN = find(row_col1 & row_col2);
+                p(rr) = tmc{rowN,5};
+            else
+                n = 0;
+            end
+        end
+    end
     out.combs = combs;
     out.p = p;
     return;

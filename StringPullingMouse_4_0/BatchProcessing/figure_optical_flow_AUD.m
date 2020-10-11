@@ -28,8 +28,8 @@ betweenTable = table(mds_data_r6.meanb',mds_data_r7.meanb',mds_data_rf.meanb','V
 withinTable = table([1 2 3]','VariableNames',{'Type'});
 withinTable.Type = categorical(withinTable.Type);
 rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
-writetable(rmaR.ranova,fullfile(pdfFolder,'speed1_ranova.xlsx'),'WriteRowNames',true);
-writetable(rmaR.mc_Type,fullfile(pdfFolder,'speed_multiple_comparisons.xlsx'),'WriteRowNames',true);
+% writetable(rmaR.ranova,fullfile(pdfFolder,'speed1_ranova.xlsx'),'WriteRowNames',true);
+% writetable(rmaR.mc_Type,fullfile(pdfFolder,'speed_multiple_comparisons.xlsx'),'WriteRowNames',true);
 n = 0;
 
 %%
