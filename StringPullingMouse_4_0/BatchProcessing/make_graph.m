@@ -5,7 +5,7 @@ hold on;
 mVar = rmaR.est_marginal_means.Mean';
 semVar = rmaR.est_marginal_means.Formula_StdErr';
 xdata = [1:2:24]; colors = {'b',[0 0 0.5],'r',[0.5 0 0],'b',[0 0 0.5],'r',[0.5 0 0],'c',[0 0.5 0.5],'m',[0.5 0 0.5]};
-combs = rmaR.combs; p = rmaR.p;
+combs = rmaR.mcs.combs; p = rmaR.mcs.p;
 rough_scale = max(mVar+semVar);
 [hbs,maxY] = plotBarsWithSigLines(mVar,semVar,combs,p,'colors',colors,'sigColor','k',...
         'ySpacing',rough_scale/10,'sigTestName','','sigLineWidth',0.25,'BaseValue',0.001,...

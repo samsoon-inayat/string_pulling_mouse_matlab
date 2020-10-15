@@ -198,7 +198,7 @@ else
             with_level_1_2 = est_margmean{row2,1};
             tmc = mc_tbl;
             value_to_check = with_level_1_1; row_col1 = tmc{:,1}==value_to_check;
-            value_to_check = with_level_1_2; row_col2 = tmc{:,2}==value_to_check;
+            value_to_check = with_level_1_2; row_col2 = tmc{:,1}==value_to_check;
             rowN = find(row_col1 & row_col2);
             p(rr) = tmc{rowN,5};
         end

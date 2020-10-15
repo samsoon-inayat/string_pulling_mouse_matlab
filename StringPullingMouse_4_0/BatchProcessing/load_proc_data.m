@@ -13,6 +13,8 @@ if reloadConfig
     pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
     mainFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
     pdfFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
+    mainFolder = 'G:\OneDrives\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
+    pdfFolder = 'G:\OneDrives\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
     if ~exist(pdfFolder,'dir')
         mkdir(pdfFolder)
     end
