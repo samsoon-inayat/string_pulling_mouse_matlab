@@ -21,12 +21,14 @@ for ii = 1:length(field_names)
 end
 
 function write_this_table(this_table,fileName,sheet_name)
+if exist(fileName,'file')
 tn = 0;
 while 1
     fid = fopen(fileName);
     if fid == -1
         tn = tn + 1;
         if tn < 11
+            pause(0.5);
             continue;
         else
             break;
@@ -38,7 +40,7 @@ while 1
         break;
     end
 end
-
+end
 tn = 1;
 while tn < 3
     try
