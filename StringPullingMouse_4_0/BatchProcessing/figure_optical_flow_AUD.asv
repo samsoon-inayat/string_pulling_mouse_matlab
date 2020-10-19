@@ -32,7 +32,7 @@ rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
 % writetable(rmaR.mc_Type,fullfile(pdfFolder,'speed_multiple_comparisons.xlsx'),'WriteRowNames',true);
 % writetable(betweenTable,fullfile(pdfFolder,'speed_multiple_comparisons.xlsx'),'WriteRowNames',true);
 n = 0;
-write_ranova_tables_to_XL(rmaR,pdfFolder,'U_Speed');
+write_ranova_tables_to_XL(rmaR,pdfFolder,'Speed1');
 
 
 %%

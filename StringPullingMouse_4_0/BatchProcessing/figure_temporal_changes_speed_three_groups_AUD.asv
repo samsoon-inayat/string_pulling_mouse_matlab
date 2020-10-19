@@ -56,7 +56,7 @@ rmaR = repeatedMeasuresAnova(betweenTable,withinTable);
 % writetable(rmaR.ranova,fullfile(pdfFolder,'Higuchi_FD_ranova.xlsx'),'WriteRowNames',true)
 % writetable(rmaR.mc_Type,fullfile(pdfFolder,'Higuchi_FD_multiple_comparisons.xlsx'),'WriteRowNames',true);
 n = 0;
-write_ranova_tables_to_XL(rmaR,pdfFolder,'temporal_entropy');
+write_ranova_tables_to_XL(rmaR,pdfFolder,'Higuchi');
 
 hf = make_graph_whole_body_AUD(pdfFolder,'Higuchi FD',rmaR,0.1,0.01);
 ylims = ylim;

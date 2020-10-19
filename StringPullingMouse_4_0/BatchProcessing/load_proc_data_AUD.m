@@ -45,7 +45,7 @@ end
 if reloadData
     allLoadingFunctions = {'load_motion','load_ds','load_entropy','load_pcs','load_ics','load_fractal_dim_and_entropy'};
     allVarNames = {'motion','ds','ent','pcs','ics','fd_ent'};
-    selInd = 2;%1:length(allLoadingFunctions);
+    selInd = 1:length(allLoadingFunctions);
     allLoadingFunctions = allLoadingFunctions(selInd);
     allVarNames = allVarNames(selInd);
     for dii = 1
