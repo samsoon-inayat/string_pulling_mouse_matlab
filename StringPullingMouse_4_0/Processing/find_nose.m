@@ -25,10 +25,12 @@ end
 % masksMap = {'body','ears','hands','nose','string'};
 In = get_mask(handles,fn,4);
 
-Cs{1} = getRegions(handles,fn,'body',1);
-if isempty(Cs{1})
-    displayMessageBlinking(handles,sprintf('Can not find nose in frame %d ... find body first',fn),{'ForegroundColor','r'},2);
-    return;
+if get(handles.checkbox_check_relationship_regions_nose,'Value')
+    Cs{1} = getRegions(handles,fn,'body',1);
+    if isempty(Cs{1})
+        displayMessageBlinking(handles,sprintf('Can not find nose in frame %d ... find body first',fn),{'ForegroundColor','r'},2);
+        return;
+    end
 end
 if fn > 1
     Cs{2} = getRegions(handles,fn-1,'nose');
@@ -44,23 +46,26 @@ else
     M.sNose = Cs{2}(1);
 end
 Ih = imfill(In,'holes');
-Ih = bwareaopen(Ih,100,8);
+Ih = bwareaopen(Ih,str2double(get(handles.edit_smallest_area_to_neglect_nose,'String')),8);
+% Ih = bwareaopen(Ih,100,8);
 Ih = bwconvhull(Ih,'objects');
-s_r1 = findRegions(Ih);
+s_r1 = findRegions(Ih,str2double(get(handles.edit_smallest_area_to_neglect_nose,'String')));
 plotStringAndRegions(100,[],[],M,{s_r1},[]);
 pause(0.15);
-bC = Cs{1};
-toDiscard = [];
-for ii = 1:length(s_r1)
-    thisX = s_r1(ii).Centroid(1);
-    thisY = s_r1(ii).Centroid(2);
-    if thisX < min(bC.Ellipse_xs) | thisX > max(bC.Ellipse_xs) | thisY < min(bC.Ellipse_ys)
-        toDiscard = [toDiscard ii];
+if get(handles.checkbox_check_relationship_regions_nose,'Value')
+    bC = Cs{1};
+    toDiscard = [];
+    for ii = 1:length(s_r1)
+        thisX = s_r1(ii).Centroid(1);
+        thisY = s_r1(ii).Centroid(2);
+        if thisX < min(bC.Ellipse_xs) | thisX > max(bC.Ellipse_xs) | thisY < min(bC.Ellipse_ys)
+            toDiscard = [toDiscard ii];
+        end
     end
+    s_r1(toDiscard) = [];
+    plotStringAndRegions(100,[],[],M,{s_r1},[]);
+    pause(0.15);
 end
-s_r1(toDiscard) = [];
-plotStringAndRegions(100,[],[],M,{s_r1},[]);
-pause(0.15);
 if ~firstFrame
     [d_l,ol_l,bd_l] = findDistsAndOverlaps(M,M.thisFrame,M.sNose,s_r1);
     toDiscard = d_l*M.scale > 10;

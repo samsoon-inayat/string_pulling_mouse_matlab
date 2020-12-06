@@ -2,7 +2,7 @@ function oC = findRegions(temp,varargin)
 
 if nargin == 1
     temp = imfill(temp,'holes');
-    temp = bwareaopen(temp,100);
+%     temp = bwareaopen(temp,100);
     temp = bwconvhull(temp,'objects');
 end
 

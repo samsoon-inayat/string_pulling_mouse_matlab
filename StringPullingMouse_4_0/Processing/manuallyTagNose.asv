@@ -23,7 +23,7 @@ while 1
         pvs = round(hrect.getPosition);
         pvs = bbox2points(pvs);
         BW = poly2mask(pvs(:,1),pvs(:,2),M.sizeMasks(1),M.sizeMasks(2));
-        s = findRegions(BW,str2double(get(handles.edit_smallest_area_to_neglect_nose,'String')));
+        s = findRegfigions(BW);
     else
         hrect = imrect(gca);
         pos = round(hrect.getPosition);
@@ -50,12 +50,12 @@ while 1
         CVs = colorVals(:,4:6);
         Ih = getThisMask(subFrame,CVs,nrows,ncols,radius);
         Ih = imfill(Ih,'holes');
-        Ih = bwareaopen(Ih,str2double(get(handles.edit_smallest_area_to_neglect_nose,'String')),8);
+        Ih = bwareaopen(Ih,100,8);
         Ih = bwconvhull(Ih,'objects');
         Ih = bwconvhull(Ih);
         Ihm = zeros(size(thisFrame(:,:,1)));
         Ihm(top:bottom,left:right) = Ih;
-        s = findRegions(Ihm,str2double(get(handles.edit_smallest_area_to_neglect_nose,'String')));
+        s = findRegions(Ihm);
     end
     if length(s) == 1
         Cs = s;

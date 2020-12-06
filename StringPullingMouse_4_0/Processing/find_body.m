@@ -125,18 +125,18 @@ Ih = imfill(Im,'holes');
 Ih = bwareaopen(Ih,str2double(get(handles.edit_uipanel_body_smallest_area,'String')),8);
 % In = get_mask(handles,fn,'nose');
 % Im = Im | In;
-C = findC(Ih,M,thisFrame);
+C = findC(Ih,M,thisFrame,str2double(get(handles.edit_uipanel_body_smallest_area,'String')));
 % Cp = getRegions(handles,fn-1,'body',1);
 % Im = C.In & Im;
 % C = findC(Im,M,thisFrame);
 saveValsBody(handles,M,fn,C,0);
 
 
-function C = findC(Im,M,thisFrame)
+function C = findC(Im,M,thisFrame,smA)
 
 Ih = bwconvhull(Im,'objects');
 % Ih = Ih & M.Imp;
-s_r1 = findRegions(Ih);
+s_r1 = findRegions(Ih,smA);
 plotStringAndRegions(100,thisFrame,[],M,{s_r1},[]);
 title(M.fn);
 pause(0.15);
