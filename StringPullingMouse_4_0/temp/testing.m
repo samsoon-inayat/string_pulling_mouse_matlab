@@ -25,6 +25,8 @@ binsX = linspace(0,200,nbinsX+1);
 binsY = linspace(0,365,nbinsY+1);
 
 pmap = zeros(nbinsY,nbinsX);
+fnums = cell(nbinsY,nbinsX);
+tmap = pmap;
 n = 0;
 %%
 for xx = 1:nbinsX
@@ -43,11 +45,12 @@ for xx = 1:nbinsX
             continue;
         else
             pmap(yy,xx) = length(ypoints);
+            fnums{yy,xx} = ypoints;
         end
     end
 end
-pmap = pmap/sum(pmap(:));
-f_pmap = imgaussfilt(pmap,1);
+pmap1 = pmap/sum(pmap(:));
+f_pmap = imgaussfilt(pmap1,1);
 figure(2000);clf;imagesc(f_pmap);
 set(gca,'Ydir','normal')
 axis equal
@@ -57,4 +60,48 @@ cbh_title = get(cbh,'title');
 set(cbh_title,'String','Probability');
 changePosition(gca,[0 0 0 0])
 changePosition(cbh,[0.01 -0.001 0 0])
+n = 0;
+%%
+[rr,cc] = find(f_pmap > 0.03);
+frameNums = [];
+for ii = 1:length(rr)
+    frameNums = [frameNums;fnums{rr(ii),cc(ii)}];
+end
+frameNums = unique(frameNums);
+%%
+fh = findall(0, 'Type', 'Figure', 'Name', 'String Pulling Behavior Analytics');
+handles = guidata(fh);
+% [sfn,efn] = getFrameNums(handles);
+% frameNums1 = sfn:efn;
+% ds = descriptive_statistics(handles,frameNums1)
+fn = get_zoomed_frames(handles,41:207,0);
+fng = convertToGrayScale(handles,fn,0);
+motion = load_motion(handles);
+sicps = motion.speedInCmPerSec;
+mspeed = mean(sicps(:,:,frameNums),3);
+oframeNums = setdiff(1:size(sicps,3),frameNums);
+omspeed = mean(sicps(:,:,oframeNums),3);
+stdspeed = std(sicps(:,:,frameNums),[],3);
+mframe = mean(fng(:,:,frameNums),3);
+figure(3000);clf;
+subplot(1,2,1);
+imagesc(mspeed,[0,10]);
+axis equal
+axis off
+cbh = colorbar
+cbh_title = get(cbh,'title');
+set(cbh_title,'String','Speed (mm/sec)');
+changePosition(gca,[0 0 0 0])
+changePosition(cbh,[0 0 0 0])
+title('Mean Speed (sweet spot)');
 
+subplot(1,2,2);
+imagesc(omspeed,[0,10]);
+axis equal
+axis off
+cbh = colorbar
+cbh_title = get(cbh,'title');
+set(cbh_title,'String','Speed (mm/sec)');
+changePosition(gca,[0 0 0 0])
+changePosition(cbh,[0 0 0 0])
+title('Mean Speed (around sweet spot)');
