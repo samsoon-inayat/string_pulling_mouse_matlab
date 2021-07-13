@@ -40,7 +40,7 @@ pc.nrows = size(fn,1);
 pc.ncols = size(fn,2);
 pc.nFrames = size(fn,3);
 fs = reshape(fn,pc.nrows*pc.ncols,pc.nFrames);
-[pc.coeff,pc.score,pc.latent,pc.tsquared,pc.explained,pc.mu] = pca(fs);
+[pc.score,pc.coeff,pc.latent,pc.tsquared,pc.explained,pc.mu] = pca(fs');
 
 motion = load_motion(handles);
 if isempty(motion)
@@ -53,7 +53,7 @@ else
     pcm.ncols = size(fn,2);
     pcm.nFrames = size(fn,3);
     fs = reshape(fn,pcm.nrows*pcm.ncols,pcm.nFrames);
-    [pcm.coeff,pcm.score,pcm.latent,pcm.tsquared,pcm.explained,pcm.mu] = pca(fs);
+    [pcm.score,pcm.coeff,pcm.latent,pcm.tsquared,pcm.explained,pcm.mu] = pca(fs');
     pc.motion = pcm;
 end
 
