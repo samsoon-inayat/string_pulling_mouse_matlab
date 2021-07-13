@@ -1,20 +1,20 @@
-function viewPCs(handles,pc,saveFileName,varargin)
+function viewPCs1(handles,pc,saveFileName,varargin)
 
 if nargin == 4
     figNums = varargin{1};
 end
 
 if ~exist('figNums','var')
-    figNums = [101,102];
+    figNums = [103,104];
 end
 
 if ~iscell(saveFileName)
     tpc = pc;
-    plot_pcs(handles,figNums(1),9,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName '_img_seq']);
+    plot_pcs(handles,figNums(1),9,tpc.score,tpc.coeff,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName '_img_seq']);
 
     if ~isempty(pc.motion)
     tpc = pc.motion;
-    plot_pcs(handles,figNums(2),6,tpc.coeff,tpc.score,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName 'motion']);
+    plot_pcs(handles,figNums(2),6,tpc.score,tpc.coeff,tpc.latent,tpc.tsquared,tpc.explained,tpc.mu,tpc.nrows,tpc.ncols,tpc.nFrames,[saveFileName 'motion']);
     end
 else
     tpc = pc;
@@ -105,8 +105,8 @@ catch
     mouse_color = 'White';
 end
 if strcmp(mouse_color,'Black')
-    minpcs = min(pcs(:))+0.2;
-    maxpcs = max(pcs(:))+38.6;
+    minpcs = min(pcs(:));%+0.2;
+    maxpcs = max(pcs(:));%+38.6;
 else
     minpcs = min(pcs(:));
     maxpcs = max(pcs(:));

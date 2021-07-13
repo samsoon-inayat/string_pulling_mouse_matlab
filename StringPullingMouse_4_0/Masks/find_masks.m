@@ -41,7 +41,8 @@ if get(handles.checkbox_Reduce_Image_Size,'Value')
         return;
     end
 end
-
+% para_CLG = [alpha_1,ratio_1,minWidth_1,nOuterFPIterations_1,nInnerFPIterations_1,nSORIterations_1];
+para_CLG = [0.01,0.5,20,7,1,30];
 % hf = figure(100);clf;
 startTime = tic;
 for oo = 1:length(os)
@@ -88,6 +89,9 @@ for oo = 1:length(os)
             thisFrame = frames{fn}-frames{fn-1};
         else
             thisFrame = frames{fn};
+            if fn > 1
+                previousFrame = frames{fn-1};
+            end
         end
         if (strcmp(object,'nose') && get(handles.checkbox_use_head_box_nose,'Value')) || (strcmp(object,'ears') && get(handles.checkbox_use_headbox,'Value'))
             try
@@ -104,6 +108,9 @@ for oo = 1:length(os)
         else
             headBoxUsed = 0;
             thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
+            if fn > 1
+                previousFrame = previousFrame(zw(2):zw(4),zw(1):zw(3),:);
+            end
         end
         
         if get(handles.checkbox_Reduce_Image_Size,'Value') & ~strcmp(object,'nose')
@@ -139,6 +146,17 @@ for oo = 1:length(os)
                 thisFrame = frames{fn};
                 thisFrame = thisFrame(zw(2):zw(4),zw(1):zw(3),:);
             end
+        end
+        
+        if fn>1
+            thisFrameR = mean(imresize(thisFrame,(1/4)),3);
+            previousFrameR = mean(imresize(previousFrame,(1/4)),3);
+            [vx,vy,~] = Coarse2FineTwoFrames(previousFrameR,thisFrameR,para_CLG);
+            speedFrame = abs(vx + i*vy);
+            speedMask = speedFrame > nanmean(speedFrame(:)) + 3*nanstd(speedFrame(:));
+%             [regions_f,rrs] = detectMSERFeatures(thisFrameR,'ThresholdDelta',0.1);
+%             mask_r = makeMaskFromRegions(handles,thisFrame,rrs);
+            n = 0;
         end
         save_mask(handles,fn,object,mask);
         if get(handles.checkbox_updateDisplay,'Value')
