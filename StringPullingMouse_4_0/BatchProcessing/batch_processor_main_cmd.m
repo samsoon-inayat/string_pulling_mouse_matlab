@@ -1,13 +1,13 @@
 % clear all
 clc
-mainFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet';
-pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
-mainFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
-pdfFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
+overwrite = 0;
+mainFolder = 'D:\Dropbox\OneDrive\Data\String_Pulling\Surjeet';
+pdfFolder = 'D:\Dropbox\OneDrive\Data\String_Pulling\Surjeet\pdfs';
+
 
 dataFolders = {'Pantomime_OLD_Whole_body';'Pantomime_PARK_Whole_body';'Pantomime_YOUNG_Whole_body';'Real_OLD_Whole_body';'REAL_PARK_Whole_body';'Real_YOUNG_Whole_body'};
 metaFiles = {'vid_name_range (1).mat';'vid_name_range (1).mat';'vid_name_range.mat';'vid_name_range.mat';'vid_name_range.mat';'vid_name_range.mat';};
-dii = 3;
+dii = 6;
 data_folder = fullfile(mainFolder,dataFolders{dii});
 filename = fullfile(data_folder,metaFiles{dii});
 
@@ -19,9 +19,9 @@ for ii = 1:length(vid_files)
 end
 files_to_process_indices = 1:length(files_to_process);
 image_resize_factor = 4; imrf = image_resize_factor; % define both variables because both are being used in different files
-readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 1; miscFunc = 0; processData = 1;
+readConfigs = 0; setEpochs = 0; defineZoomWindows = 0; defineZoomWindowsICA = 0; miscFunc = 0; processData = 1;
 %% Load Config Files
-if readConfigs
+while readConfigs
     for ii = 1:length(vid_files)
         pd_folder = fullfile(data_folder,sprintf('%s_processed_data',files_to_process{ii}(1:(end-4))));
         config = get_config_file(pd_folder);
@@ -35,7 +35,7 @@ if readConfigs
 end
 
 %% set Epochs
-if setEpochs
+while setEpochs
     for ii = 1:length(vid_files)
         config = config_info{ii};
         data = {vid_files(ii).startstopF(1),vid_files(ii).startstopF(2)};
@@ -47,8 +47,8 @@ if setEpochs
 end
 
 %% defining zoom windows
-if defineZoomWindows
-    for ii = 9:length(vid_files)
+while defineZoomWindows
+    for ii = 1:length(vid_files)
         if ~ismember(files_to_process_indices,ii)
             continue;
         end
@@ -85,7 +85,7 @@ if defineZoomWindows
 end
 
 %% defining zoom windows ICA
-if defineZoomWindowsICA
+while defineZoomWindowsICA
     for ii = 1:length(vid_files)
         if ~ismember(files_to_process_indices,ii)
             continue;

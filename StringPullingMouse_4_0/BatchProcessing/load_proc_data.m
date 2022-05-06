@@ -5,16 +5,15 @@ colormaps = load('colorblind_colormap.mat');
 mData.colors = mat2cell(colormaps.colorblind,[ones(1,size(colormaps.colorblind,1))]);%{[0 0 0],[0.1 0.7 0.3],'r','b','m','c','g','y'}; % mData.colors = getColors(10,{'w','g'});
 %%
 
-reloadConfig = 0; reloadData = 0; reloadData_NN = 1;
+reloadConfig = 0; reloadData = 1; reloadData_NN = 0;
 
 if reloadConfig
     clc
-    mainFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet';
-    pdfFolder = 'G:\OneDrives\OneDrive\Data\String_Pulling\Surjeet\pdfs';
-    mainFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
-    pdfFolder = 'E:\Users\samsoon.inayat\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
-    mainFolder = 'G:\OneDrives\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
-    pdfFolder = 'G:\OneDrives\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet\pdfs';
+
+    mainFolder = 'D:\Dropbox\OneDrive\Data\String_Pulling\Surjeet';
+    pdfFolder = 'D:\Dropbox\OneDrive\Data\String_Pulling\Surjeet\pdfs';
+    mainFolder = 'D:\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
+    pdfFolder = 'D:\OneDrive - University of Lethbridge\Data\StringPulling\Surjeet';
     if ~exist(pdfFolder,'dir')
         mkdir(pdfFolder)
     end

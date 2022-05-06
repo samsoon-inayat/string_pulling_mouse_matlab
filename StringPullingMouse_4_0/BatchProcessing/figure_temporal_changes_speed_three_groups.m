@@ -3,17 +3,17 @@ mData = evalin('base','mData'); colors = mData.colors;
 
 % allVarNames = {'motion','ds','ent','pcs','ics','fd_ent','pdfFolder','configs'};
 % variablesToGetFromBase = {'motion_b','ds_b','ent_b','pcs_b','ics_b','fd_ent_b','pdfFolder','configs'};
-allVarNames = {'pdfFolder','configs'};
-variablesToGetFromBase = {'pdfFolder','configs'};
+% allVarNames = {'pdfFolder','configs'};
+% variablesToGetFromBase = {'pdfFolder','configs'};
 for ii = 1:length(variablesToGetFromBase)
     cmdTxt = sprintf('%s = evalin(''base'',''%s'');',allVarNames{ii},variablesToGetFromBase{ii});
     eval(cmdTxt);
 end
 
-data = get_data('ent');
-ds_data = get_data('ds');
+% data = get_data('ent');
+% ds_data = get_data('ds');
 color_blind_map = load('colorblind_colormap.mat');
-
+n = 0;
 %% Entropy
 runthis = 1;
 if runthis

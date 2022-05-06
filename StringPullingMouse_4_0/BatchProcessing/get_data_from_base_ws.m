@@ -1,4 +1,4 @@
-function out = get_data(varName,type)
+function out = get_data_from_base_ws(varName,type)
 
 if ~exist('type','var')
     allVarNames = {'motion','ds','ent','pcs','ics','fd_ent','pdfFolder','configs'};
